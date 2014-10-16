@@ -26,7 +26,7 @@
 	</target>
 
 	<property name="src.dir" value="src"/>
-	<property name="gwt.home" value="C:\IDE\eclipse\plugins\com.google.gwt.eclipse.sdkbundle_2.6.0"/>
+	<property name="gwt.home" value="../../../../"/>
 	<target name="gwt-compile" description="GWT compile to JavaScript">
 		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
 		    <classpath>
