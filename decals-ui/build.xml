@@ -46,7 +46,7 @@
 		    <jvmarg value="-Xmx2g" />
 		    <arg line="-style"/>
 			<arg value="PRETTY" />
-		    <arg value="com.eduworks.russel.ds.Russel_ds" />
+		    <arg value="com.eduworks.decals.ui.client.Decals_ui" />
 		</java>  
 	</target>
 	
