@@ -153,17 +153,18 @@ public class DsGuestScreen extends DecalsScreen {
       else {
          ESBApi.sessionId = sessionId;
          ESBApi.username = username;
-         ESBApi.getUser(new ESBCallback<ESBPacket>() {
-            @Override
-            public void onSuccess(ESBPacket result) {
-               parseUserInfo(result.get(ESBApi.ESBAPI_RETURN_OBJ).isObject());
-               PageAssembler.closePopup(REGISTER_MODAL);
-               PageAssembler.setTemplate(getTemplates().getHeader().getText(), getTemplates().getFooter().getText(), CONTENT_PANE);
-               DsUtil.setUpAppropriateHomePage(getDispatcher());
-            }
-            @Override
-            public void onFailure(Throwable caught) {DsUtil.showSimpleErrorMessage(LOGIN_ERROR_CONTAINER,INFO_RETRIEVE_FAILED);}
-            });                
+         //TODO update this for new getUser version
+//         ESBApi.getUser(new ESBCallback<ESBPacket>() {
+//            @Override
+//            public void onSuccess(ESBPacket result) {
+//               parseUserInfo(result.get(ESBApi.ESBAPI_RETURN_OBJ).isObject());
+//               PageAssembler.closePopup(REGISTER_MODAL);
+//               PageAssembler.setTemplate(getTemplates().getHeader().getText(), getTemplates().getFooter().getText(), CONTENT_PANE);
+//               DsUtil.setUpAppropriateHomePage(getDispatcher());
+//            }
+//            @Override
+//            public void onFailure(Throwable caught) {DsUtil.showSimpleErrorMessage(LOGIN_ERROR_CONTAINER,INFO_RETRIEVE_FAILED);}
+//            });                
       }
    }
    
