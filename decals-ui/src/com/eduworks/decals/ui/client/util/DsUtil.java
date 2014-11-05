@@ -337,6 +337,18 @@ public class DsUtil {
    }
    
    /**
+    * Sets the given attribute of the given field to the given value
+    * 
+    * @param labelFieldId The ID of the label field 
+    * @param attribute The ID of the attribute
+    * @param value The new value of the attribute
+    */
+   public static final void setLabelAttribute(String labelFieldId, String attribute, String value) {
+      if (labelFieldId != null && !labelFieldId.trim().isEmpty())
+         ((Label)PageAssembler.elementToWidget(labelFieldId, PageAssembler.LABEL)).getElement().setAttribute(attribute,value);
+   }
+   
+   /**
     * Sets the style of the image with the given ID to the given style.
     * 
     * @param imageFieldId The ID of the image field to hide.

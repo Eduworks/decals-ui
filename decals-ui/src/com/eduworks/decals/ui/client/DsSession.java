@@ -8,11 +8,15 @@ package com.eduworks.decals.ui.client;
  */
 public class DsSession {
    
+   public enum SearchType{INTERACTIVE,BASIC,DUAL}
+   
    private String firstName;
    private String lastName;
    private String assignmentId = null;
    private String solrUrl = null;
    private String interactiveSearchThumbnailRootUrl = null;
+   
+   private SearchType sessionSearchType = SearchType.DUAL;
    
    private static final DsSession INSTANCE = new DsSession();
    
@@ -51,12 +55,17 @@ public class DsSession {
    public void setInteractiveSearchThumbnailRootUrl(String interactiveSearchThumbnailRootUrl) {this.interactiveSearchThumbnailRootUrl = interactiveSearchThumbnailRootUrl;}
    
    /**
+    * {@link DsSession#sessionSearchType}
+    */
+   public SearchType getSessionSearchType() {return sessionSearchType;}
+   public void setSessionSearchType(SearchType sessionSearchType) {this.sessionSearchType = sessionSearchType;}
+   
+   /**
     * Returns first name and last name separated by a space.
     * 
     * @return  Returns first name and last name separated by a space.
     */
    public String getFullName() {return firstName + " " + lastName;}
-
    
    
 }

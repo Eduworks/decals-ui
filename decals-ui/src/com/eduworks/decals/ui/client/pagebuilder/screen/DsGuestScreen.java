@@ -35,6 +35,10 @@ public class DsGuestScreen extends DecalsScreen {
    
    private static final String ASSIGNMENT_ID = "assignmentId";
    
+   private static final String SEARCH_TYPE_ID = "searchType";
+   private static final String INTERACTIVE_SEARCH_TYPE = "is";
+   private static final String BASIC_SEARCH_TYPE = "bs";
+   
    private static final String EMAIL_IN_USE = "The given email has already been registered.";
    private static final String INVALID_LOGIN = "Invalid username/password";
    private static final String INFO_RETRIEVE_FAILED = "Could not obtain user information.";
@@ -62,6 +66,10 @@ public class DsGuestScreen extends DecalsScreen {
    private static final String BS_COUNTER = "basicSearchResultsCounter";
    private static final String BS_BUSY = "basicSearchBusy";
    
+   private static final String IS_DESC_HEADER = "interactiveSearchDescHeader";
+   private static final String IS_FOOTER_TEXT = "interactiveSearchFooter";
+   
+   private static final String IS_WHATIS = "whatIsThis";
    private static final String IS_FIELD = "interactiveSearchInput";
    private static final String IS_HEADER_FIELD = "interactiveSearchHeaderInput";
    private static final String IS_RESULTS = "interactiveSearchResults";
@@ -318,49 +326,59 @@ public class DsGuestScreen extends DecalsScreen {
       }
    };
    
+   //Sets the interactive search tab as the active tab
+   private void setInterativeTabAsActiveTab() {
+      currentTab = Tabs.INTERACTIVE_TAB;
+      DsUtil.hideLabel(BS_DIV);
+      String isSearchText = DsUtil.getTextBoxText(IS_HEADER_FIELD);
+      if (isSearchText == null || isSearchText.trim().isEmpty()) {
+         DsUtil.hideLabel(SEARCH_HEADER);
+         DsUtil.showLabel(DEFAULT_HEADER);
+         DsUtil.showLabel(IS_DIV);
+         DsUtil.setFocus(IS_FIELD);            
+      }
+      else{
+         DsUtil.hideLabel(DEFAULT_HEADER);
+         DsUtil.showLabel(SEARCH_HEADER);            
+         DsUtil.setFocus(IS_HEADER_FIELD);
+         if (haveInteractiveSearchResults) {
+            DsUtil.showLabel(IS_FILTER_TOOLS);
+            DsUtil.showLabel(IS_FILTER_NAVIGATION);               
+            DsUtil.showLabel(IS_RESULTS_SCREEN);
+         }
+         else DsUtil.showLabel(IS_TYPING);
+      }      
+   }
+   
    //Interactive search tab listener and handler
    protected EventCallback interactiveTabListener = new EventCallback() {
       @Override
       public void onEvent(Event event) {
          if (Tabs.INTERACTIVE_TAB.equals(currentTab)) return;
-         currentTab = Tabs.INTERACTIVE_TAB;
-         DsUtil.hideLabel(BS_DIV);
-         String isSearchText = DsUtil.getTextBoxText(IS_HEADER_FIELD);
-         if (isSearchText == null || isSearchText.trim().isEmpty()) {
-            DsUtil.hideLabel(SEARCH_HEADER);
-            DsUtil.showLabel(DEFAULT_HEADER);
-            DsUtil.showLabel(IS_DIV);
-            DsUtil.setFocus(IS_FIELD);            
-         }
-         else{
-            DsUtil.hideLabel(DEFAULT_HEADER);
-            DsUtil.showLabel(SEARCH_HEADER);            
-            DsUtil.setFocus(IS_HEADER_FIELD);
-            if (haveInteractiveSearchResults) {
-               DsUtil.showLabel(IS_FILTER_TOOLS);
-               DsUtil.showLabel(IS_FILTER_NAVIGATION);               
-               DsUtil.showLabel(IS_RESULTS_SCREEN);
-            }
-            else DsUtil.showLabel(IS_TYPING);
-         }
+         setInterativeTabAsActiveTab();
       }
    };
+   
+   //Sets the basic search tab as the active tab
+   private void setBasicTabAsActiveTab() {
+      currentTab = Tabs.BASIC_TAB;
+      DsUtil.hideLabel(SEARCH_HEADER);
+      DsUtil.showLabel(DEFAULT_HEADER);
+      DsUtil.hideLabel(IS_DIV);
+      DsUtil.hideLabel(IS_TYPING);
+      DsUtil.hideLabel(IS_FILTER_TOOLS);
+      DsUtil.hideLabel(IS_FILTER_NAVIGATION);         
+      DsUtil.hideLabel(IS_RESULTS_SCREEN);
+      DsUtil.showLabel(BS_DIV);
+      DsUtil.setFocus(BS_FIELD);
+   }
    
    //Basic search tab listener and handler
    protected EventCallback basicTabListener = new EventCallback() {
       @Override
       public void onEvent(Event event) {
          if (Tabs.BASIC_TAB.equals(currentTab)) return;
-         currentTab = Tabs.BASIC_TAB;
-         DsUtil.hideLabel(SEARCH_HEADER);
-         DsUtil.showLabel(DEFAULT_HEADER);
-         DsUtil.hideLabel(IS_DIV);
-         DsUtil.hideLabel(IS_TYPING);
-         DsUtil.hideLabel(IS_FILTER_TOOLS);
-         DsUtil.hideLabel(IS_FILTER_NAVIGATION);         
-         DsUtil.hideLabel(IS_RESULTS_SCREEN);
-         DsUtil.showLabel(BS_DIV);
-         DsUtil.setFocus(BS_FIELD);
+         setBasicTabAsActiveTab();
       }
    };
    
@@ -378,6 +396,48 @@ public class DsGuestScreen extends DecalsScreen {
             }
          }
       }
+   }
+   
+   //Attempts to retrieve the search type from the query string
+   private void getSearchTypeFromQueryString() {
+      DsSession.getInstance().setSessionSearchType(DsSession.SearchType.DUAL);
+      String queryString = Window.Location.getQueryString();      
+      if (queryString != null && !queryString.trim().isEmpty()) {
+         queryString = queryString.substring(1); 
+         String[] qps = queryString.split("&");
+         String[] st;
+         for (String qp:qps) {
+            if (qp.startsWith(SEARCH_TYPE_ID + "=")) {
+               st = qp.split("=");
+               if (INTERACTIVE_SEARCH_TYPE.equalsIgnoreCase(st[1])) DsSession.getInstance().setSessionSearchType(DsSession.SearchType.INTERACTIVE);
+               else if (BASIC_SEARCH_TYPE.equalsIgnoreCase(st[1])) DsSession.getInstance().setSessionSearchType(DsSession.SearchType.BASIC);               
+            }
+         }
+      }
+      //Window.alert("Search Type: " + DsSession.getInstance().getSessionSearchType());
+   }
+   
+   //Set up the search tabs based on search type - being used for Memphis evaluation
+   private void setUpSearchTabs() {
+      if (DsSession.SearchType.DUAL.equals(DsSession.getInstance().getSessionSearchType())) {
+         //DUAL search is the default search configuration...do nothing
+      }
+      else if (DsSession.SearchType.INTERACTIVE.equals(DsSession.getInstance().getSessionSearchType())) {         
+         setInterativeTabAsActiveTab();
+         DsUtil.hideLabel(BS_TAB);
+         DsUtil.setLabelAttribute(IS_TAB,"class","tab active");
+         DsUtil.setAnchorText(IS_TAB_LINK,"Search");
+         DsUtil.hideLabel(IS_WHATIS);         
+         DsUtil.setLabelText(IS_DESC_HEADER,"Access a Wide Range of Learning Registry Resources");
+         DsUtil.hideLabel(IS_FOOTER_TEXT);
+      } 
+      else if (DsSession.SearchType.BASIC.equals(DsSession.getInstance().getSessionSearchType())) {
+         setBasicTabAsActiveTab();
+         DsUtil.hideLabel(IS_TAB);
+         DsUtil.setLabelAttribute(BS_TAB,"class","tab active");
+         DsUtil.setAnchorText(BS_TAB_LINK,"Search");
+         DsUtil.hideLabel(BS_WHATIS);
+      }      
    }
 
    //Display handler for guest screen display
@@ -398,6 +458,8 @@ public class DsGuestScreen extends DecalsScreen {
       PageAssembler.attachHandler(IS_HEADER_FIELD,Event.ONKEYDOWN,interactiveSearchHeaderListener);
       PageAssembler.attachHandler(IS_FIELD,Event.ONKEYDOWN,interactiveSearchListener);
       getAssignmentIdFromQueryString();
+      getSearchTypeFromQueryString();
+      setUpSearchTabs();
       DsUtil.sendTrackingMessage("Entered guest screen");
       
       //TODO make magnifying glass active

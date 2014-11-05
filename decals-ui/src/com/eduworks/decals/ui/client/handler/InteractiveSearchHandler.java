@@ -42,7 +42,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    
    private static final int MAX_NUM_DEF_TERMS = 200;
    
-   private static final String WORD_BOOST = "^3";
+   private static final String WORD_BOOST = "^4";
    
    private static final String TH_KEYWORDS_KEY = "keywords";
    private static final String TH_NOUNS_KEY = "nouns";
