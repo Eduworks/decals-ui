@@ -20,7 +20,7 @@ public abstract class SearchHandler {
    protected String counterElementId;
    protected String counterContainerElementId;
    protected String searchBusyElementId;
-   protected String searchTerm;   
+   protected String searchQuery;   
    protected long syncId = 0;
    protected String showMoreResultsOuterDivId;
    protected String showMoreResultsButtonId;   
@@ -79,7 +79,7 @@ public abstract class SearchHandler {
       setCounterContainerDisplay(false);
       setSearchBusyDisplay(false);
       hideShowMoreResultsDiv();
-      DsUtil.showSimpleErrorMessage(parentElementId,"Search Term: \"" + searchTerm + "\" : " + errorMessage, false);      
+      DsUtil.showSimpleErrorMessage(parentElementId,"Search Term: \"" + searchQuery + "\" : " + errorMessage, false);      
    }   
 
 }

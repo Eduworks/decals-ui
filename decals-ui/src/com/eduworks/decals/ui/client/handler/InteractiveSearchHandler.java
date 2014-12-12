@@ -24,6 +24,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -48,8 +49,8 @@ public class InteractiveSearchHandler extends SearchHandler {
    private static final String TH_NOUNS_KEY = "nouns";
    //private static final String TH_TEXT_KEY = "text";
    
-   private static final String MORE_OPTS_MORE_TEXT = "More Options";
-   private static final String MORE_OPTS_LESS_TEXT = "Less Options";
+   private static final String MORE_OPTS_MORE_TEXT = "Show Options";
+   private static final String MORE_OPTS_LESS_TEXT = "Hide Options";
    
    //private static final String TEMP_NAV_QUESTION = "Initializing helper...";
    private static final String TEMP_NAV_QUESTION = "Searching...";
@@ -76,6 +77,11 @@ public class InteractiveSearchHandler extends SearchHandler {
    private static final String GRADE_LEVEL_HS = "HS";
    private static final String GRADE_LEVEL_CU = "CU";
    private static final String GRADE_LEVEL_VTP = "VTP";
+   
+   private static final String SEARCH_HISTORY_DESC = "Search History:";
+   private static final String SEARCH_HISTORY_ID_PREFIX = "srchHist_"; 
+   private String searchHistoryElementId;
+   private ArrayList<SearchHistoryItem> searchHistory = new ArrayList<SearchHistoryItem>();
    
    private static final String APPLIED_GRADE_LEVELS_DESC = "Applied Grade Levels:";
    private static final String GRADE_LEVEL_ALL_DESC = "All";
@@ -119,10 +125,8 @@ public class InteractiveSearchHandler extends SearchHandler {
    private OntologyHelper ontologyHelper;
    private WikiInfoHelper wikiInfoHelper;
       
-   private String counterStatementDisplayTerm;
+   private String displayedSearchTerm;
    
-   @SuppressWarnings("unused")
-   private String breadCrumbElementId;
    @SuppressWarnings("unused")
    private String filterNavMoreOptGrdLvlLiId;
    
@@ -170,6 +174,40 @@ public class InteractiveSearchHandler extends SearchHandler {
    private boolean cuGlApplied = true;
    private boolean vtpGlApplied = true;
    
+   //Represents a search history item
+   private class SearchHistoryItem {
+      private String displayedSearchTerm;
+      private String searchQuery;
+      
+      public SearchHistoryItem(String displayedSearchTerm, String searchQuery) {
+         this.displayedSearchTerm = displayedSearchTerm;
+         this.searchQuery = searchQuery;
+      }
+      
+      public String getDisplayedSearchTerm() {return displayedSearchTerm;}      
+      public String getSearchQuery() {return searchQuery;}                
+   }
+   
+   
+   /**
+    * Listener for search history clicks.
+    */
+   protected EventCallback searchHistoryListener = new EventCallback() {
+      @Override
+      public void onEvent(Event event) {
+         syncId++;
+         try {
+            String id;
+            Element e = Element.as(event.getEventTarget());
+            if (e.getId() == null || e.getId().trim().isEmpty()) id = e.getParentElement().getId();
+            else id = e.getId();            
+            int itemIdx = getIndexFromElementId(id,SEARCH_HISTORY_ID_PREFIX);
+            handleSearchHistorySelection(itemIdx,syncId);        
+         }
+         catch (Exception e) {}                        
+      }
+   };
+   
    /**
     * Listener for show more results click.
     */
@@ -180,7 +218,7 @@ public class InteractiveSearchHandler extends SearchHandler {
          int newStartResult = lastResultStart + RESULTS_PER_PAGE;      
          hideShowMoreResultsButton();
          showShowMoreResultsBusyImage();
-         performSolrSearch(searchTerm,RESULTS_PER_PAGE,newStartResult,syncId);                           
+         performSolrSearch(searchQuery,RESULTS_PER_PAGE,newStartResult,syncId,false);                           
       }
    };
    
@@ -196,7 +234,7 @@ public class InteractiveSearchHandler extends SearchHandler {
          else if (currentNavMode.equals(NavMode.NYM)) addNextNymNavigation();
          else if (currentNavMode.equals(NavMode.TOPIC)) addNextTopicNavigation();
          else if (currentNavMode.equals(NavMode.CATEGORY)) addNextCategoryNavigation();
-         else if (currentNavMode.equals(NavMode.GRADE)) findAndHandleWordOntology(searchTerm, syncId);
+         else if (currentNavMode.equals(NavMode.GRADE)) findAndHandleWordOntology(searchQuery, syncId);
       }
    };
    
@@ -411,7 +449,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    private void handleApplyGradeLevel(final long currentSyncId) {  
       updateAppliedGradeLevels();      
       addAppliedGradeLevelDisplay();
-      performSolrSearch(searchTerm,RESULTS_PER_PAGE,0,currentSyncId);            
+      performSolrSearch(searchQuery,RESULTS_PER_PAGE,0,currentSyncId,false);            
    }
    
    //Update grade level flags based on check box values.
@@ -481,6 +519,34 @@ public class InteractiveSearchHandler extends SearchHandler {
       DsUtil.applyCheckBoxValue(filterNavGrdLvlVtpCbId,value);
    }
    
+   //Returns a sub list of the search history list (GWT and sub list don't work well together)
+   private ArrayList<SearchHistoryItem> getSearchHistorySubList(ArrayList<SearchHistoryItem> list, int size) {
+      ArrayList<SearchHistoryItem> ret = new ArrayList<SearchHistoryItem>();
+      for (int i=0;i<size;i++) {
+         if (i < list.size()) ret.add(list.get(i));
+      }
+      return ret;
+   }
+   
+   //Handle topic selection when passed the topic index   
+   private void handleSearchHistorySelection(int idx, final long currentSyncId) {
+      //TODO this
+      SearchHistoryItem shi = searchHistory.get(idx);
+      searchHistory = getSearchHistorySubList(searchHistory,idx + 1);
+      DsUtil.removeAllWidgetsFromRootPanel(RootPanel.get(parentElementId));
+      setCounterContainerDisplay(false);
+      setSearchBusyDisplay(true);
+      DsUtil.setLabelText(filterNavQuestionId,TEMP_NAV_QUESTION);      
+      hideAllNavigationLineItems();
+      displayedSearchTerm = shi.getDisplayedSearchTerm();
+      searchQuery = shi.getSearchQuery ();
+      clearWordDefinition();      
+      findAndHandleWordOntology(displayedSearchTerm, currentSyncId);
+      setUpAdvancedOptions(displayedSearchTerm);
+      setSearchTermBoxText(displayedSearchTerm);
+      
+   }
+   
    //Handle topic selections when passed the topic string
    private void handleTopicSelection(String topic, final long currentSyncId) {
       int topicIdx = wikiInfoHelper.getRelatedTopicIndex(topic);
@@ -503,10 +569,9 @@ public class InteractiveSearchHandler extends SearchHandler {
       setSearchBusyDisplay(true);
       DsUtil.setLabelText(filterNavQuestionId,TEMP_NAV_QUESTION);      
       hideAllNavigationLineItems();
-      counterStatementDisplayTerm = wii.getName();
-      searchTerm = wii.getSearchTerm();
-      clearWordDefinition();
-      //performSolrSearch(searchTerm,RESULTS_PER_PAGE,0,currentSyncId);      
+      displayedSearchTerm = wii.getName();
+      searchQuery = wii.getSearchTerm();
+      clearWordDefinition();      
       findAndHandleWordOntology(wii.getName(), currentSyncId);
       setUpAdvancedOptions(wii.getName());
       setSearchTermBoxText(wii.getName());
@@ -522,10 +587,9 @@ public class InteractiveSearchHandler extends SearchHandler {
       setSearchBusyDisplay(true);
       DsUtil.setLabelText(filterNavQuestionId,TEMP_NAV_QUESTION);      
       hideAllNavigationLineItems();
-      counterStatementDisplayTerm = wii.getName();
-      searchTerm = wii.getSearchTerm();
+      displayedSearchTerm = wii.getName();
+      searchQuery = wii.getSearchTerm();
       clearWordDefinition();
-      //performSolrSearch(searchTerm,RESULTS_PER_PAGE,0,currentSyncId);      
       findAndHandleWordOntology(wii.getName(), currentSyncId);
       setUpAdvancedOptions(wii.getName());
       setSearchTermBoxText(wii.getName());
@@ -546,10 +610,9 @@ public class InteractiveSearchHandler extends SearchHandler {
       setSearchBusyDisplay(true);
       DsUtil.setLabelText(filterNavQuestionId,TEMP_NAV_QUESTION);      
       hideAllNavigationLineItems();
-      counterStatementDisplayTerm = woi.getWord();
-      searchTerm = woi.getSearchValue();
+      displayedSearchTerm = woi.getWord();
+      searchQuery = woi.getSearchValue();
       clearWordDefinition();
-      //performSolrSearch(searchTerm,RESULTS_PER_PAGE,0,currentSyncId);      
       findAndHandleWordOntology(woi.getWord(), currentSyncId);
       setUpAdvancedOptions(woi.getWord());
       setSearchTermBoxText(woi.getWord());
@@ -576,8 +639,8 @@ public class InteractiveSearchHandler extends SearchHandler {
       else buildSearchValuesForNonDomainDefintion(currentSyncId);
    }
    
-   //Build the search counter display for the current definition
-   private String buildFancyCounterStatementDisplayTermForCurrentDefinition() {
+   //Build the display term for the current definition
+   private String buildDisplayTermForCurrentDefinition() {
       String detail = ontologyHelper.getCurrentDefinition().getWikiLookupValue().toLowerCase().replace(ontologyHelper.getCurrentDefinition().getWord().toLowerCase(),"").trim();
       StringBuffer sb = new StringBuffer();
       sb.append(ontologyHelper.getCurrentDefinition().getWord());
@@ -591,18 +654,16 @@ public class InteractiveSearchHandler extends SearchHandler {
       DsUtil.removeAllWidgetsFromRootPanel(RootPanel.get(parentElementId));
       setCounterContainerDisplay(false);
       setSearchBusyDisplay(true);
-      //counterStatementDisplayTerm = ontologyHelper.getCurrentDefinition().getWikiLookupValue();
-      counterStatementDisplayTerm = buildFancyCounterStatementDisplayTermForCurrentDefinition();
+      displayedSearchTerm = buildDisplayTermForCurrentDefinition();
       ArrayList<String >nymList = ontologyHelper.getRelatedSingleWordsForCurrentDefinition(MAX_NUM_DEF_TERMS);
-      if (nymList.size() > 0) searchTerm = ontologyHelper.getCurrentDefinition().getWord() + " " + getStringFromList(nymList);
-      else searchTerm = ontologyHelper.getCurrentDefinition().getSearchValue();
-      performSolrSearch(searchTerm,RESULTS_PER_PAGE,0,currentSyncId);
+      if (nymList.size() > 0) searchQuery = ontologyHelper.getCurrentDefinition().getWord() + " " + getStringFromList(nymList);
+      else searchQuery = ontologyHelper.getCurrentDefinition().getSearchValue();
+      performSolrSearch(searchQuery,RESULTS_PER_PAGE,0,currentSyncId);
       lastNavAnswerIndex = -1;
       lastWordForOntology = ontologyHelper.getCurrentDefinition().getWikiLookupValue();
       buildCurrentDefRelatedResultCountsAndPopulateNymNavigation(currentSyncId);
       setUpAdvancedOptions(ontologyHelper.getCurrentDefinition().getWikiLookupValue());
-      setSearchTermBoxText(ontologyHelper.getCurrentDefinition().getWord());
-      
+      setSearchTermBoxText(ontologyHelper.getCurrentDefinition().getWord());      
    }
    
    //Returns a list of strings from a JSON array of strings
@@ -704,6 +765,18 @@ public class InteractiveSearchHandler extends SearchHandler {
       ontologyHelper.getCurrentDefinition().setSearchValue(ontologyHelper.getCurrentDefinition().getWord() + " " + DsUtil.removeStopWords(ontologyHelper.getCurrentDefinition().getDefinition()));      
    }
    
+   //Returns the first matching element of the lists or null if no matches exist
+   private String getFirstMatch(ArrayList<String> list1, ArrayList<String> list2) {      
+      String match = null;
+      for (String s : list1) {
+         if (list2.contains(s)) {
+            match = s;
+            break;
+         }
+      }
+      return match;
+   }
+   
    //Decide how to handle definition
    private void parseAndHandleNonDomainDefintionSearchValueResults(JSONObject result, final long currentSyncId) {
       ArrayList<String> kwList = null;
@@ -712,9 +785,13 @@ public class InteractiveSearchHandler extends SearchHandler {
       if (result.containsKey(TH_NOUNS_KEY)) nounList = getListFromJsonArray(result.get(TH_NOUNS_KEY).isArray());
       if (nounList != null && nounList.size() == 1) handleWithOneWord(nounList.get(0));
       else if (kwList != null && kwList.size() == 1) handleWithOneWord(kwList.get(0));
-      else if (kwList != null && kwList.size() > 1) handleWithMultipleKeywords(kwList,nounList);
-      else if (nounList != null && nounList.size() > 0) handleWithNouns(nounList);
-      else handleWithDefinitionText();
+      else {
+         String match = null;
+         if (kwList != null && kwList.size() > 1 && nounList != null && nounList.size() > 1 && ((match = getFirstMatch(kwList,nounList)) != null)) handleWithOneWord(match);
+         else if (kwList != null && kwList.size() > 1) handleWithMultipleKeywords(kwList,nounList);
+         else if (nounList != null && nounList.size() > 0) handleWithNouns(nounList);
+         else handleWithDefinitionText();
+      }      
       finishDefinitionSelectedActions(currentSyncId);      
    }
    
@@ -748,7 +825,7 @@ public class InteractiveSearchHandler extends SearchHandler {
       long numShown = 0;
       if ((lastResultStart + RESULTS_PER_PAGE) > intSearchResultSet.getNumTotalResultsFound()) numShown = intSearchResultSet.getNumTotalResultsFound();
       else numShown = lastResultStart + RESULTS_PER_PAGE;
-      return "Showing " + counterFormat.format(numShown) + " of " +  counterFormat.format(intSearchResultSet.getNumTotalResultsFound()) + " results for \"" + counterStatementDisplayTerm + "\"";      
+      return "Showing " + counterFormat.format(numShown) + " of " +  counterFormat.format(intSearchResultSet.getNumTotalResultsFound()) + " results for \"" + displayedSearchTerm + "\"";      
    }
    
    //Populate the page with the interactive search results
@@ -783,8 +860,13 @@ public class InteractiveSearchHandler extends SearchHandler {
       return sb.toString();      
    }
    
+   //Performs a solr search with an update to the search history
+   private void performSolrSearch(final String query, int numberOfRecords, final int start, final long currentSyncId) {
+      performSolrSearch(query,numberOfRecords,start,currentSyncId,true);
+   }
+   
    //Performs a solr search
-   private void performSolrSearch(String query, int numberOfRecords, final int start, final long currentSyncId) {
+   private void performSolrSearch(final String query, int numberOfRecords, final int start, final long currentSyncId, final boolean updateHistory) {
       DsUtil.setLabelText("realSearchQuery", "Search Query: " + query + getAppliedGradeLevelsQueryString());
       DsESBApi.decalsSolrSearch(DsSession.getInstance().getSolrUrl(),query + getAppliedGradeLevelsQueryString(),String.valueOf(numberOfRecords),SOLR_QUERY_FIELDS,false,start,new ESBCallback<ESBPacket>() {
          @Override
@@ -793,6 +875,7 @@ public class InteractiveSearchHandler extends SearchHandler {
                if (currentSyncId == syncId) {  
                   if (intSearchResultSet == null) intSearchResultSet = new InteractiveSearchResultSetReturn();
                   if (start == 0) intSearchResultSet.clearSearchResults(); 
+                  if (updateHistory) updateSearchHistory(displayedSearchTerm,query);
                   SolrCruncherResponseParser.parseSolrCruncherResponse(result.getObject(ESBApi.ESBAPI_RETURN_OBJ), intSearchResultSet, DsSession.getInstance().getInteractiveSearchThumbnailRootUrl());                                    
                   populateInteractiveResults(start,currentSyncId);
                }
@@ -802,6 +885,48 @@ public class InteractiveSearchHandler extends SearchHandler {
          @Override
          public void onFailure(Throwable caught) {if (currentSyncId == syncId) showSearchError("Error contacting search server");}
          });         
+   }
+   
+   //Adds a term to the search history and refreshes the search history display
+   private void updateSearchHistory(String displayedSearchTerm, String searchQuery) {
+      if (searchHistory.size() >= 1) {
+         SearchHistoryItem shi = searchHistory.get(searchHistory.size() - 1);
+         if (shi.getDisplayedSearchTerm().equalsIgnoreCase(displayedSearchTerm) && shi.getSearchQuery().equalsIgnoreCase(searchQuery)) {
+            refreshSearchHistoryDisplay();
+            return;
+         }
+      }     
+      searchHistory.add(new SearchHistoryItem(displayedSearchTerm, searchQuery));
+      refreshSearchHistoryDisplay();
+   }
+   
+   //Build search history anchor
+   private String buildSearchHistoryLink(int idx, String value) {
+      return "<a id=" + SEARCH_HISTORY_ID_PREFIX + idx +">" + value + "</a>";
+   }
+   
+   //Build search history event handlers
+   private void buildSearchHistoryEventHandlers() {
+      for (int i=0; i < searchHistory.size();i++) {
+         PageAssembler.attachHandler(SEARCH_HISTORY_ID_PREFIX + i,Event.ONCLICK,searchHistoryListener);
+      }
+   }
+   
+   //Rebuild the search history display
+   private void refreshSearchHistoryDisplay() {
+      //TODO this
+      DsUtil.showLabel(searchHistoryElementId);      
+      DsUtil.removeAllWidgetsFromRootPanel(RootPanel.get(searchHistoryElementId));
+      StringBuffer sb = new StringBuffer();
+      sb.append("<p class=\"" + APPLIED_GRADE_LEVELS_CLASS + "\">");
+      sb.append("<b>" + SEARCH_HISTORY_DESC  + " </b>");
+      for (int i=0; i < searchHistory.size();i++) {
+         sb.append(buildSearchHistoryLink(i,searchHistory.get(i).getDisplayedSearchTerm()) + ", ");
+      }
+      if (searchHistory.size() >= 1) sb.setLength(sb.length() - 2);
+      sb.append("</p>");
+      RootPanel.get(searchHistoryElementId).add(new HTML(sb.toString()));
+      buildSearchHistoryEventHandlers();
    }
    
    //Show the applied grade level on the page
@@ -968,30 +1093,30 @@ public class InteractiveSearchHandler extends SearchHandler {
       if (result.containsKey(ESBApi.ESBAPI_RETURN_OBJ) && result.get(ESBApi.ESBAPI_RETURN_OBJ) instanceof JSONArray && result.getArray(ESBApi.ESBAPI_RETURN_OBJ).size() > 0) {         
          if (ontologyHelper == null) {
             ontologyHelper = new OntologyHelper();
-            ontologyHelper.registerUsedWord(searchTerm.toLowerCase().trim());
+            ontologyHelper.registerUsedWord(searchQuery.toLowerCase().trim());
          }
          ontologyHelper.initFromDefineWordReturn(result.getArray(ESBApi.ESBAPI_RETURN_OBJ));
          if (ontologyHelper.getNumberOfDefinitions() == 0) {
-            performSolrSearch(searchTerm,RESULTS_PER_PAGE,0,currentSyncId);
+            performSolrSearch(searchQuery,RESULTS_PER_PAGE,0,currentSyncId);
             findAndHandleWikiInfo(word,currentSyncId,false);                
          } 
          else if (ontologyHelper.getNumberOfDefinitions() == 1) {
             lastNavAnswerIndex = -1;
             nymList = ontologyHelper.getRelatedSingleWordsForCurrentDefinition(MAX_NUM_DEF_TERMS);
-            if (nymList.size() > 0) searchTerm = word + " " + getStringFromList(nymList);       
-            performSolrSearch(searchTerm,RESULTS_PER_PAGE,0,currentSyncId);
+            if (nymList.size() > 0) searchQuery = word + " " + getStringFromList(nymList);       
+            performSolrSearch(searchQuery,RESULTS_PER_PAGE,0,currentSyncId);
             buildCurrentDefRelatedResultCountsAndPopulateNymNavigation(currentSyncId);
          } 
          else if (ontologyHelper.getNumberOfDefinitions() > 1) {
             lastNavAnswerIndex = -1;
             nymList = ontologyHelper.getRelatedSingleWordsForAllDefinitions(MAX_NUM_DEF_TERMS);
-            if (nymList.size() > 0) searchTerm = word + WORD_BOOST + " " + getStringFromList(nymList);       
-            performSolrSearch(searchTerm,RESULTS_PER_PAGE,0,currentSyncId);
+            if (nymList.size() > 0) searchQuery = word + WORD_BOOST + " " + getStringFromList(nymList);       
+            performSolrSearch(searchQuery,RESULTS_PER_PAGE,0,currentSyncId);
             addNextMultiDefinitionNavigation(word);
          }
       }
       else {
-         performSolrSearch(searchTerm,RESULTS_PER_PAGE,0,currentSyncId);
+         performSolrSearch(searchQuery,RESULTS_PER_PAGE,0,currentSyncId);
          findAndHandleWikiInfo(word,currentSyncId,false);
       }
    }
@@ -1305,9 +1430,9 @@ public class InteractiveSearchHandler extends SearchHandler {
       DsUtil.showLabel(filterNavContaierId);
       DsUtil.setLabelText(filterNavQuestionId,TEMP_NAV_QUESTION);      
       hideAllNavigationLineItems();
-      addAppliedGradeLevelDisplay();
-      findAndHandleWordOntology(searchTerm, currentSyncId);
-      setUpAdvancedOptions(searchTerm);
+      addAppliedGradeLevelDisplay();      
+      findAndHandleWordOntology(searchQuery, currentSyncId);
+      setUpAdvancedOptions(searchQuery);
    }   
   
    //Execute a new interactive search
@@ -1318,8 +1443,7 @@ public class InteractiveSearchHandler extends SearchHandler {
          setCounterContainerDisplay(false);
          setSearchBusyDisplay(true);
          DsUtil.hideLabel(filterNavContaierId);         
-         counterStatementDisplayTerm = searchTerm;
-         //performSolrSearch(searchTerm,RESULTS_PER_PAGE,0,currentSyncId);
+         displayedSearchTerm = searchQuery;
          setUpInitialNavigation(currentSyncId);
       }
       catch (Exception e) {if (currentSyncId == syncId) showSearchError("Interactive search failed: " + e.getMessage());}      
@@ -1342,7 +1466,7 @@ public class InteractiveSearchHandler extends SearchHandler {
     * @param filterNavAnswer2LiId The navigation answer 2 element ID
     * @param filterNavAnswer3LiId The navigation answer 3 element ID
     * @param filterNavLinksId The navigation links container element ID
-    * @param filterNavMoreAnswersLinkId The 'show more' hyperlink element ID
+    * @param filterNavMoreAnswersLinkId The more answers/choices hyperlink element ID
     * @param filterNavMoreOptionsLinkId The 'more options' hyperlink element ID
     * @param filterNavGrdLvlKgLiId The kindergarten line item element ID
     * @param filterNavGrdLvlEsLiId The elementary school line item element ID
@@ -1389,7 +1513,7 @@ public class InteractiveSearchHandler extends SearchHandler {
       this.counterElementId = counterElementId;
       this.counterContainerElementId = counterContainerElementId;
       this.searchBusyElementId = searchBusyElementId;
-      this.breadCrumbElementId = breadCrumbElementId;
+      this.searchHistoryElementId = breadCrumbElementId;
       this.wordDefContainerId = wordDefContainerId;
       this.filterNavContaierId = filterNavContaierId;
       this.filterNavQuestionId = filterNavQuestionId;
@@ -1431,9 +1555,9 @@ public class InteractiveSearchHandler extends SearchHandler {
       showMoreResultsButtonId = null;  
       showMoreResultsBusyId = null;      
       syncId++;      
-      this.searchTerm = DsUtil.cleanString(searchTerm.replace("+", " ")); 
+      this.searchQuery = DsUtil.cleanString(searchTerm.replace("+", " ")); 
       clearSearch();
-      //breadCrumbList.clear();
+      //searchHistory.clear();
       executeNewSearch();      
    }   
    

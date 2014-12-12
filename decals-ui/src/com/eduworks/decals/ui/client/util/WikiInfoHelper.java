@@ -16,6 +16,8 @@ import com.google.gwt.json.client.JSONObject;
  * Note:  Recently moved this class from a different project into DECALS.  
  * We should be able to clean up the initialization and have this class do the levr calls.  Will
  * 
+ * Note:  Combined topics and categories into topics (TB 12/10/2014)
+ * 
  * @author Tom Buskirk
  *
  */
@@ -93,6 +95,7 @@ public class WikiInfoHelper {
     */
    public long getNumberOfGoodCategories() {return relatedCategories.size();}
    
+   
    /**
     * Returns the list index of the given topic.  Returns -1 if topic is not found.
     * 
@@ -169,6 +172,15 @@ public class WikiInfoHelper {
       return buf.toString();
    }
    
+   //Combine topics and categories (ensure unique items)
+   private void combineTopicsAndCategories() {
+      HashMap <String,String> uniqueMap = new HashMap<String,String>();
+      for (WikiInfoItem wii: relatedTopics) uniqueMap.put(wii.getName(),wii.getName());      
+      for (WikiInfoItem wii: relatedCategories) {
+         if (uniqueMap.get(wii.getName()) == null) relatedTopics.add(wii);
+      }
+   }
+   
    //Parses the given decalsWikiInfo return data
    private void parseWikiInfoReturn(JSONObject jo, boolean encodeExtract) {
       checkForGoodInfo(jo);
@@ -177,7 +189,11 @@ public class WikiInfoHelper {
          if (encodeExtract) descriptionExtract = encodeSpecialCharacters(descriptionExtract);
          nonMarkedDescriptionExtract = descriptionExtract;
          relatedCategories = parseGoodValues(jo.get(WIKI_INFO_RETURN_CATEGORIES_KEY).isArray(),false);
-         relatedTopics = parseGoodValues(jo.get(WIKI_INFO_RETURN_TOPICS_KEY).isArray(),true);         
+         relatedTopics = parseGoodValues(jo.get(WIKI_INFO_RETURN_TOPICS_KEY).isArray(),true);
+         
+         //combine categories and topics
+         combineTopicsAndCategories();
+         relatedCategories.clear();
       }
    }
    

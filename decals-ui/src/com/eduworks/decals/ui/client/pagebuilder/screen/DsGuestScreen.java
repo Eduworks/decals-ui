@@ -280,7 +280,7 @@ public class DsGuestScreen extends DecalsScreen {
    private void performInteractiveSearch(String searchTerm) {
       haveInteractiveSearchResults = true;      
       DsUtil.hideLabel(IS_TYPING);
-      DsUtil.hideLabel(IS_BREADCRUMB_CONT);
+      //DsUtil.hideLabel(IS_BREADCRUMB_CONT);
       DsUtil.showLabel(IS_FILTER_TOOLS);
       DsUtil.showLabel(IS_FILTER_NAVIGATION);     
       DsUtil.showLabel(IS_RESULTS_SCREEN);

@@ -24,7 +24,7 @@ import com.google.gwt.user.client.ui.RootPanel;
  * @author Tom Buskirk
  *
  */
-public class BasicSearchHandler extends SearchHandler{
+public class BasicSearchHandler extends SearchHandler {
    
    public static final String BASIC_SEARCH_HOST = "72.243.185.28";   
    public static final String THUMBNAIL_HOST = "free.ed.gov";
@@ -60,7 +60,7 @@ public class BasicSearchHandler extends SearchHandler{
    //build the search counter statement
    private String getSearchCounterStatement(JSONObject ro) {
       long totalNumberOfResults = Long.parseLong(ro.get(TOTAL_RESULTS_KEY).toString());
-      return "\"" + searchTerm +  "\" - " + counterFormat.format(totalNumberOfResults) + " results found";
+      return "\"" + searchQuery +  "\" - " + counterFormat.format(totalNumberOfResults) + " results found";
    }
    
    
@@ -117,7 +117,7 @@ public class BasicSearchHandler extends SearchHandler{
    
    //builds the free.ed.gov search URL
    private String buildSearchUrl() {
-      return "http://" + BASIC_SEARCH_HOST + "/search?page=" + currentPage + "&terms=" + URL.encode(searchTerm);      
+      return "http://" + BASIC_SEARCH_HOST + "/search?page=" + currentPage + "&terms=" + URL.encode(searchQuery);      
    }
    
    /**
@@ -137,7 +137,7 @@ public class BasicSearchHandler extends SearchHandler{
       this.parentElementId = parentElementId;
       this.widgetText = widgetText;   
       this.counterElementId = counterElementId;
-      this.searchTerm = searchTerm;
+      this.searchQuery = searchTerm;
       this.counterContainerElementId = counterContainerElementId;
       this.searchBusyElementId = searchBusyElementId;
       this.currentPage = page;
