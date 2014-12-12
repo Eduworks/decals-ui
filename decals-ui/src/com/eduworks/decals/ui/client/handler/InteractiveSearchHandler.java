@@ -530,7 +530,6 @@ public class InteractiveSearchHandler extends SearchHandler {
    
    //Handle topic selection when passed the topic index   
    private void handleSearchHistorySelection(int idx, final long currentSyncId) {
-      //TODO this
       SearchHistoryItem shi = searchHistory.get(idx);
       searchHistory = getSearchHistorySubList(searchHistory,idx + 1);
       DsUtil.removeAllWidgetsFromRootPanel(RootPanel.get(parentElementId));
@@ -914,7 +913,6 @@ public class InteractiveSearchHandler extends SearchHandler {
    
    //Rebuild the search history display
    private void refreshSearchHistoryDisplay() {
-      //TODO this
       DsUtil.showLabel(searchHistoryElementId);      
       DsUtil.removeAllWidgetsFromRootPanel(RootPanel.get(searchHistoryElementId));
       StringBuffer sb = new StringBuffer();
