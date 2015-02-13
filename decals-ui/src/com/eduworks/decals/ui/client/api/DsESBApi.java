@@ -29,6 +29,26 @@ public class DsESBApi extends ESBApi {
    }
    
    /**
+    * Perform a basic search
+    * @param searchTerm The search term
+    * @param rows The number of rows to return
+    * @param page The page to start retrieval
+    * @return Returns the query result JSON string
+    */
+   public static String decalsBasicSearch(String searchTerm, int rows, int page, ESBCallback<ESBPacket> callback) {
+      MultipartPost mp = new MultipartPost();
+      ESBPacket jo = new ESBPacket();
+      jo.put("searchTerm", searchTerm);
+      jo.put("itemsPerPage", rows);
+      jo.put("page", page);
+      mp.appendMultipartFormData("decalsData", jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsBasicSearch"),
+                                 mp, 
+                                 false, 
+                                 callback);
+   }
+   
+   /**
     * Perform a SOLR search.
     * 
     * @param solrUrl The URL of the SOLR instance

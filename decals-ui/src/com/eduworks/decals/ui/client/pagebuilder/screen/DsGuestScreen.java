@@ -244,7 +244,7 @@ public class DsGuestScreen extends DecalsScreen {
       haveBasicSearchResults = true;
       DsUtil.showLabel(BS_RESULTS);
       DsUtil.hideLabel(BS_WHATIS);
-      basicSearchHandler.performBasicSearch(0, searchTerm, BS_RESULTS, getTemplates().getBasicSearchResultWidget().getText(), BS_COUNTER, BS_COUNTER_CONTAINER, BS_BUSY);
+      basicSearchHandler.performBasicSearch(1, searchTerm, BS_RESULTS, getTemplates().getBasicSearchResultWidget().getText(), BS_COUNTER, BS_COUNTER_CONTAINER, BS_BUSY);
    }
    
    //Basic search request listener

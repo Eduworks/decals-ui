@@ -17,7 +17,10 @@ public class BasicSearchResult implements SearchResult{
     * Basic search service URL...provided by ADL 
     */
    
-   private static final String THUMBNAIL_SOURCE_PATTERN = "http://" + BasicSearchHandler.THUMBNAIL_HOST + "/screenshot/";
+   //http://search.learningregistry.net/webcap/9c74b78be693f14a4288b411aac24dd1/145/screencap.jpg
+   
+   private static final String THUMBNAIL_SOURCE_PATTERN_PREFIX = "http://search.learningregistry.net/webcap/";
+   private static final String THUMBNAIL_SOURCE_PATTERN_SUFFIX = "/145/screencap.jpg";
    
    private static final int SHORT_DESC_LENGTH = 215;
    
@@ -34,6 +37,7 @@ public class BasicSearchResult implements SearchResult{
 	public static final String RESOURCE_URL_KEY = "url";
 	public static final String REPOSITORY_ID_KEY = "_id";
 	public static final String HAS_SCREENSHOT_KEY = "hasScreenshot";
+	public static final String SOURCE_KEY = "_source";
 	
 	/**
 	 * Empty BasicSearchResult constructor.
@@ -65,15 +69,17 @@ public class BasicSearchResult implements SearchResult{
 	 * @param sro JSONObject that contains a basic search result.
 	 */
 	public BasicSearchResult(JSONObject sro) {
-      title = sro.get(TITLE_KEY).isString().stringValue();
-      description = sro.get(DESCRIPTION_KEY).isString().stringValue();
-      publisher = sro.get(PUBLISHER_KEY).isString().stringValue();
-      resourceUrl = sro.get(RESOURCE_URL_KEY).isString().stringValue();
+	   JSONObject sroSource = sro.get(SOURCE_KEY).isObject();
+      title = sroSource.get(TITLE_KEY).isString().stringValue();
+      description = sroSource.get(DESCRIPTION_KEY).isString().stringValue();
+      publisher = sroSource.get(PUBLISHER_KEY).isString().stringValue();
+      resourceUrl = sroSource.get(RESOURCE_URL_KEY).isString().stringValue();
       repositoryId = sro.get(REPOSITORY_ID_KEY).isString().stringValue();
-      if (sro.get(HAS_SCREENSHOT_KEY) != null && (sro.get(HAS_SCREENSHOT_KEY) instanceof JSONBoolean)) {       
-         hasScreenshot = sro.get(HAS_SCREENSHOT_KEY).isBoolean().booleanValue();
-      }
-      else hasScreenshot = false;
+//      if (sro.get(HAS_SCREENSHOT_KEY) != null && (sro.get(HAS_SCREENSHOT_KEY) instanceof JSONBoolean)) {       
+//         hasScreenshot = sro.get(HAS_SCREENSHOT_KEY).isBoolean().booleanValue();
+//      }
+      this.hasScreenshot = true;
+      //else hasScreenshot = false;
    }
    
 	/**
@@ -138,8 +144,8 @@ public class BasicSearchResult implements SearchResult{
 	 */
 	@Override
 	public String getThumbnailImageUrl() {
-	   if (!hasScreenshot) return null;
-	   return THUMBNAIL_SOURCE_PATTERN + getRepositoryId();
+	   //if (!hasScreenshot) return null;
+	   return THUMBNAIL_SOURCE_PATTERN_PREFIX + getRepositoryId() + THUMBNAIL_SOURCE_PATTERN_SUFFIX;
 	}
 	
 	/**
