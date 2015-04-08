@@ -1,0 +1,238 @@
+<div id="content">
+	<div id="userLRSearch" class="userScreen">
+		<div id="userLRSearchInitialInput">
+			<div class="userHeader">
+				<div class="row">
+					<div class="medium-12 columns">
+						<h3>Find more content, material, &amp; resources</h3>
+					</div>				
+				</div>
+			</div>	
+			<br>
+			<br>			
+			<div class="row">
+				<div class="medium-12 columns">
+					<p class="searchTitle">Explore the Learning Registry</p>
+					<input id="userLRSearchInput" type="text" placeholder="Search">
+					<p class="searchBeta">Interactive Search <strong>Beta</strong></p>					
+				</div>			
+			</div>	
+			<div class="row">
+				<div class="medium-12 columns">
+					<p style="padding: 10px">
+						The <a href="http://learningregistry.org/" target="Learning Registry"><b>learning registry</b></a> is a new approach to capturing, connecting and sharing data about learning resources available online 
+						with the goal of making it easier for educators and students to access the rich content available in our ever-expanding digital universe.
+					</p>
+				</div>
+			</div>
+		</div>	
+	</div>
+</div>
+
+<!-- ********************************LR Search Typing******************************** -->
+<div id="userLRSearchTyping" class="userScreen" style="display:none">
+	<div class="row">
+		<div class="medium-12 columns" style="text-align:center">
+			<p class="searchTitle" style="background-color:white; margin:0; padding:10px">Learning Registry Search...</p>
+			<img src="images\splash-search.png" />											
+		</div>
+	</div>
+</div>
+
+<!-- ********************************LR Search Results******************************** -->
+<div id="userLRSearchResultsScreen" style="display:none">
+
+	<div id="userLRSearchResultsFilterTools" style="display:none">
+		<div class="row">
+			<div id="userLRSearchResultsWordDefinitionContainer" style="display:none" class="small-12 columns"></div>			
+		</div>
+		<div class="row"><div class="small-12 columns">&nbsp;&nbsp;</div></div>
+		<div class="row"><div id="userLRSearchAppliedGradeLevelsContainer" style="display:none" class="small-12 columns"></div></div>
+		<div class="row"><div id="userLRSearchBreadCrumbs" style="display:none" class="small-12 columns"></div></div>
+		<div class="row" style="display:none;"><div class="small-12 columns">&nbsp;&nbsp;</div></div>
+		<div class="row" style="display:none;">
+			<div id="realSearchQuery" class="small-12 columns"></div>			
+		</div>		
+		<hr/>
+	</div>
+
+	<div class="row">
+		<div class="medium-4 columns">
+			<div id="userLRSrchFilterNavigation" class="row" style="display:none;">
+				<div class="small-12 columns">
+					<h5 id="userLRSrchFilterNavQuestionLabel">Are you looking for:</h5>
+					<ul class="side-nav" role="navigation" title="Refine your search">
+						<li id="userLRSrchFilterNavAnswer1Li" role="menuitem"></li>
+						<li id="userLRSrchFilterNavAnswer2Li" role="menuitem"></li>
+						<li id="userLRSrchFilterNavAnswer3Li" role="menuitem"></li>						
+						<li id="userLRSrchFilterNavAnswerGlKgLi" role="menuitem">
+							<input type="checkbox" id="userLRSrchGlKgCb" checked="checked" style="margin:0px"/>
+							<span class="gradeLevelChoice"> Kindergarten</span>
+						</li>
+						<li id="userLRSrchFilterNavAnswerGlEsLi" role="menuitem">
+							<input type="checkbox" id="userLRSrchGlEsCb" checked="checked" style="margin:0px"/>
+							<span class="gradeLevelChoice"> Elementary School</span>
+						</li>
+						<li id="userLRSrchFilterNavAnswerGlMsLi" role="menuitem">
+							<input type="checkbox" id="userLRSrchGlMsCb" checked="checked" style="margin:0px"/>
+							<span class="gradeLevelChoice"> Middle School</span>
+						</li>
+						<li id="userLRSrchFilterNavAnswerGlHsLi" role="menuitem">
+							<input type="checkbox" id="userLRSrchGlHsCb" checked="checked" style="margin:0px"/>
+							<span class="gradeLevelChoice"> High School</span>
+						</li>
+						<li id="userLRSrchFilterNavAnswerGlCuLi" role="menuitem">
+							<input type="checkbox" id="userLRSrchGlCuCb" checked="checked" style="margin:0px"/>
+							<span class="gradeLevelChoice"> College / University</span>
+						</li>
+						<li id="userLRSrchFilterNavAnswerGlVtpLi" role="menuitem">
+							<input type="checkbox" id="userLRSrchGlVtpCb" checked="checked" style="margin:0px"/>
+							<span class="gradeLevelChoice"> Vocational / Technical / Professional</span>
+						</li>						
+						<li id="userLRSrchFilterNavAnswerToggleAllLi" role="menuitem"><a id="userLRSrchFilterNavAnswerToggleAll"><i class="fa fa-chevron-circle-right"></i> Select/Unselect All</a></li>						
+						<li id="userLRSrchFilterNavAnswerApplyGlLi" role="menuitem"><a id="userLRSrchFilterNavAnswerApplyGl"><i class="fa fa-chevron-circle-right"></i> <b>Apply</b></a></li>						
+						<li role="menuitem" class="divider"></li>
+						<li role="menuitem" id="userLRSrchFilterNavLinks">
+							<a id="userLRSrchFilterNavMoreAnswers" style="display:inline;"><strong>More choices</strong></a> | <a id="userLRSrchFilterNavMoreOptions" style="display:inline;"><strong><span id="userLRSrchFilterNavMoreOptionsTxt">Show options</span></strong></a> 
+						</li>
+					</ul>					
+				</div>
+				<div id="userLRSrchFilterNavigationMopContainer" style="display:none;">
+					<ul class="side-nav" role="navigation" title="Refine your search">
+						<li id="userLRSrchFilterNavigationMopDisambigLi" role="menuitem">
+							<a id="userLRSrchFilterNavigationMopDisambig" class="advancedOptionLink"><i class="fa fa-chevron-circle-right"></i> Disambiguate</a>
+						</li>
+						<li id="userLRSrchFilterNavigationMopRelCatLi" role="menuitem">
+							<a id="userLRSrchFilterNavigationMopRelCat" class="advancedOptionLink"><i class="fa fa-chevron-circle-right"></i> Related Categories</a>
+						</li>
+						<li id="userLRSrchFilterNavigationMopRelTopicLi" role="menuitem">
+							<a id="userLRSrchFilterNavigationMopRelTopic" class="advancedOptionLink"><i class="fa fa-chevron-circle-right"></i> Related Topics</a>
+						</li>
+						<li id="userLRSrchFilterNavigationMopGradeLevLi" role="menuitem">
+							<a id="userLRSrchFilterNavigationMopGradeLev" class="advancedOptionLink"><i class="fa fa-chevron-circle-right"></i> Grade Levels</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		<div class="medium-8 columns" style="padding-top:10px;">
+			<div id="userLRSearchBusy" class="row" style="display:none;text-align:center">
+		    	<div class="small-12 columns">
+		        	<img src="images/loading.gif"/>
+		            <p class="searchBusy">Searching...</p>
+		        </div>	
+		    </div>           				
+			<div id="numberOfUserLRSearchResults" class="row" style="display:none">
+			   	<div class="small-12 columns">
+			       	<p id="userLRSearchResultsCounter" class="resultCounter"></p>
+			       	<br/>
+			   	</div>	
+			</div>		
+			<div class="row">
+				<div class="medium-12 columns">
+					<div id="userLRSearchResults" style="display:none"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+    
+</div>
+
+<!-- ********************************MODAL DIALOGS******************************** -->
+
+<!-- Add to collection modal -->
+<div id="modalAddToCollection" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-briefcase"></i> Add to collection</h2>    
+    <div id="addToCollectionPickList">
+    	<p>Add <span id="addToCollectionResourceTitle" style="font-style:italic; font-weight:bold;"></span> to collection:</p>
+	    <div class="row">
+			<div class="small-12 columns">
+				<div id="addToCollectionListContainer"></div>
+			</div>
+		</div>
+		<div id="addToCollectionCancelButton" class="row">
+			<div class="large-12 columns">			
+				<button type="button" onclick="$('#modalAddToCollection').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>	
+	</div>       
+	<div id="addToCollectionConfirm" style="display:none">		
+		<form id="addToCollectionForm" data-abide="ajax">
+			<div class="row">
+				<p>
+            		Add <span id="addToCollectionConfirmResourceTitle" style="font-style:italic; font-weight:bold;"></span>&nbsp;
+            		(<span id="addToCollectionResourceUrl" style="font-style:italic; color:#666;"></span>) to
+            		&nbsp;<span id="addToCollectionConfirmCollectionName" style="font-style:italic; font-weight:bold;"> </span>?
+            	</p>            	
+  			</div>
+			<input type="hidden" id="addToCollectionCollectionId"/>
+	    	<input type="hidden" id="addToCollectionResourceTitleHidden"/>
+	    	<input type="hidden" id="addToCollectionResourceUrlHidden"/>
+	    	<input type="hidden" id="addToCollectionResourceDescriptionHidden"/>
+	    	<div id="addToCollectionConfirmButtons" class="row">
+				<div class="large-12 columns">			
+					<button type="submit" class="small">Add</button>
+					<button type="button" onclick="$('#modalAddToCollection').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+				</div>
+			</div>
+		</form>	
+		<div id="addToCollectionBusy" style="display:none" class="row">    	
+			<img src="images/status-busy.gif" style="display:inline"/>
+		</div>
+	</div>
+	<div class="row" id="addToCollectionExists" style="display:none">
+		<div data-alert="" class="alert-box alert radius">
+  			<div class="row">
+      			<div class="small-8 columns" style="padding-top:.75em">         
+  					This resource already exists in this collection.  Would you like to replace it?
+      			</div>          
+  				<div class="small-4 columns">			
+					<button style="margin:0px" id="addToCollectionReplace" type="button" class="tiny">Yes</button>
+					<button style="margin:0px" type="button" onclick="$('#modalAddToCollection').foundation('reveal', 'close');" class="tiny secondary">No</button>
+          		</div>
+  			</div>			
+		</div>
+	</div>
+	<div class="row" id="addToCollectionSuccess" style="display:none">
+		<div class="large-10 columns">
+			<div class="alert-box info">
+				The resource has been added to your collection.
+			</div>				
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalAddToCollection').foundation('reveal', 'close');" class="small secondary">OK</button></div>
+	</div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
+
+<!-- Comments Modal -->
+<div id="modalResourceComments" class="reveal-modal small" data-reveal>
+	<div class="row">
+		<div class="large-12 columns">
+			<h5>
+				<i class="fa fa-comments"></i> Comments on <i>"<span id="resourceCommentsTitle"></span>"</i>
+			</h5>
+		</div>
+	</div>
+	<div class="row">
+		<div class="large-12 columns">
+			<div id="resourceCommentsContainer">No comments available</div>
+		</div>
+	</div>
+	<br>
+	<br>
+	<form id="resourceCommentsForm" data-abide="ajax">
+		<input type="hidden" id="resourceCommentsUrl"/>
+		<textarea id="resourceCommentsInput" rows="4" placeholder="Add your comment."></textarea>
+		<div class="row">
+			<div class="large-12 columns">	
+				<button type="submit" class="small" style="margin-bottom: 0px;">Submit</button>		
+				<button type="button" style="margin-bottom: 0px;" onclick="$('#modalResourceComments').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>	
+	</form>
+	<div class="row">    	
+		<div id="resourceCommentsBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+	</div>
+	<a class="close-reveal-modal">&#215;</a>
+</div>

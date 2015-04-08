@@ -1,0 +1,350 @@
+<div id="content">
+	<div id="decalsUserManagement" class="userScreen">
+		<div class="userHeader">
+			<div class="row">
+				<div class="medium-12 columns">
+					<h3>User Management</h3>
+				</div>				
+			</div>
+		</div>
+		<br>
+		<br>
+		<div class="row">
+			<div class="large-4 columns" style="padding-top: 10px;">
+				<div id="decalsUserManagerNavigation" class="row">
+					<div class="small-12 columns">												
+						<h5>User Manager Tools:</h5>
+						<ul class="side-nav" role="navigation" title="User Manager Tools">
+							<li role="menuitem"><a id="umUsersLink"><i class="fa fa-chevron-circle-right"></i> Users</a></li>
+							<li role="menuitem"><a id="umUserMgrLink"><i class="fa fa-chevron-circle-right"></i> User Managers</a></li>		
+						</ul>								
+					</div>
+				</div>				
+			</div>			
+			<div class="large-8 columns" id="umDetails" style="padding-top: 10px;">
+				<div id="umUsersOuterContainer" class="row">
+			    	<div class="small-12 columns">
+			    		<div class="row">
+			    			<div class="small-6 columns">
+								<h5 style="font-size:20px">Application Users</h5>
+							</div>
+							<div class="small-6 columns">
+								<button id="umAddNewUser" type="button" style="display:none;" title="Add a new user" class="small">
+									<i class="fa fa-user"></i> Add User
+								</button>
+							</div>
+						</div>
+						<div id="umBusy" class="row" style="display:block;text-align:center">
+                			<div class="small-12 columns">
+                    			<img src="images/loading.gif"/>
+                    			<p class="searchBusy">Loading...</p>
+                			</div>	
+           				</div>
+			        	<div class="row">
+			    			<div class="small-12 columns">
+			    				<div id="umUsersInnerContainer"></div>
+			    			</div>
+			    		</div>
+			        </div>	
+			    </div>								
+			    <div id="umUserMgrOuterContainer" class="row" style="display: none;">
+			    	<div class="small-12 columns">		
+			    		<div class="row">
+			    			<div class="small-6 columns">
+								<h5 style="font-size:20px">User Managers</h5>
+							</div>
+							<div class="small-6 columns">
+								<button id="umAddNewUserManager" type="button" style="display:none;" title="Add a new user manager" class="small">
+									<i class="fa fa-users"></i> Add User Manager
+								</button>
+							</div>
+						</div>	
+						<div class="row">
+			    			<div class="small-12 columns">
+			    				<div id="umUserMgrInnerContainer"></div>
+			    			</div>
+			    		</div>			    
+			        </div>	
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>	
+
+<!-- ********************************End Content DIV******************************** -->
+
+<!-- ********************************MODAL DIALOGS******************************** -->
+
+<!-- Delete User Modal -->
+<div id="modalDeleteUser" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-user"></i> Delete User?</h2>
+    <div id="deleteUserInitial">
+	    <p>Delete <span id="deleteUserUserName" style="font-style:italic; font-weight:bold;"></span>?</p>
+	    <div id="deleteUserSelfMessage" style="display:none" data-alert class="alert-box info">
+	  		You cannot delete yourself... 	
+	  		<img src="images/smallBuddha.png" style="display:inline"/>
+		</div>
+	    <div id="deleteUserResourceMessage" style="display:none" data-alert class="alert-box warning">
+	  		<b>Warning:</b> This user has <span id="deleteUserResourceMessageNum" style="font-weight:bold;"></span> resource(s) in the repository.
+	  		<br>
+			<br>
+			Do you wish to delete them or transfer them to another user?	  	
+		</div>
+	    <div class="row" id="deleteUserSubmitButtons">
+			<div class="large-12 columns">			
+				<button type="button" id="deleteUserDeleteButton" class="small" style="display:none">Delete</button>
+				<button type="button" id="deleteUserDeleteUserAndResourcesButton" class="small" style="display:none">Delete User and Resources</button>
+				<button type="button" id="deleteUserDeleteUserTransferResourcesButton" class="small" style="display:none">Delete User / Transfer Resources</button>
+				<button type="button" onclick="$('#modalDeleteUser').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>	
+	</div>
+	<div id="deleteUserAndResConfirm" style="display:none">
+		<p>Are you sure you wish to delete <span id="duarConfirmName" style="font-style: italic;"></span> and all associated resources?</p>
+		<form id="duarConfirmForm" data-abide="ajax">
+	    	<input type="hidden" id="duarConfirmUserId"/>    
+		   	<div class="row">
+				<div id="duarConfirmSubmitButtons" class="large-12 columns">			
+					<button type="submit" class="small">Delete All</button>				
+					<button type="button" onclick="$('#modalDeleteUser').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+				</div>
+			</div>	
+		</form>
+	</div>
+	<div id="deleteUserTransferPicklist" style="display:none">
+		<p>Pick transfer user:<p/>
+	    <div class="row">
+			<div class="small-12 columns">
+				<div id="duatUserListContainer"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-12 columns">			
+				<button type="button" onclick="$('#modalDeleteUser').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>		
+	</div>
+	<div id="deleteUserTransferConfirm" style="display:none">
+		<p>Are you sure you wish to delete <span id="duatConfirmName" style="font-style: italic;"></span> and transfer all associated 
+		resources to <span id="duatConfirmTransferName" style="font-style: italic;"></span>?</p>
+		<form id="duatConfirmForm" data-abide="ajax">
+	    	<input type="hidden" id="duatConfirmUserId"/>    
+	    	<input type="hidden" id="duatConfirmToUserId"/>
+		   	<div class="row">
+				<div id="duatConfirmSubmitButtons" class="large-12 columns">			
+					<button type="submit" class="small">Delete and Transfer</button>				
+					<button type="button" onclick="$('#modalDeleteUser').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+				</div>
+			</div>	
+		</form>		
+	</div>
+	<div class="row">    		
+		<div id="deleteUserBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+	</div>
+	<div  class="row" id="deleteUserErrorContainer" style="display:none">
+		<div class="large-10 columns">
+			<div id="deleteUserErrorMsg"></div>				
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalDeleteUser').foundation('reveal', 'close');" class="small secondary">OK</button></div>				
+	</div>
+	<div class="row" id="deleteUserSuccessContainer" style="display:none">
+		<div class="large-10 columns">
+			<div id="deleteUserSuccess" style="display:none" class="alert-box info">User has been deleted.</div>				
+			<div id="deleteUserAllSuccess" style="display:none" class="alert-box info">User and resources have been deleted.</div>
+			<div id="deleteUserTransferSuccess" style="display:none" class="alert-box info">User has been deleted and resources have been transfered.</div>
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalDeleteUser').foundation('reveal', 'close');" class="small secondary">OK</button></div>
+	</div>	
+	<a class="close-reveal-modal">&#215;</a>
+</div>
+
+<!-- Reset Password Modal -->
+<div id="modalResetPassword" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-refresh"></i> Reset user password?</h2>
+    <p>Reset the password for <span id="resetPasswordUserName" style="font-style:italic; font-weight:bold;"></span>?</p>
+    <form id="resetPasswordForm" data-abide="ajax">
+    	<input type="hidden" id="resetPasswordUserId"/>
+   		<div class="row">
+			<div class="password-field">
+				<label><i class="fa fa-lock"></i> Password <input type="password" id="resetPasswordPassword" name="resetPasswordPassword" required></label> 
+				<small class="error">Passwords require at least 8 characters with 1 upper-case character, 1 lower-case character, and 1 numeric or special character.</small>
+			</div>
+		</div>
+		<div class="row">
+			<div class="password-field">
+				<label><i class="fa fa-lock"></i> Confirm Password <input type="password" id="resetPasswordConfirmPassword" name="resetPasswordConfirmPassword" required data-equalto="resetPasswordPassword" data-invalid=""> </label> 
+				<small class="error">Passwords don't match.</small>
+			</div>
+		</div>		
+    	<div class="row" id="resetPasswordSubmitButtons">
+			<div class="large-12 columns">			
+				<button type="submit" class="small">Reset</button>
+				<button type="button" onclick="$('#modalResetPassword').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+	</form>
+	<div class="row">    		
+		<div id="resetPasswordBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+	</div>
+	<div  class="row" id="resetPasswordErrorContainer" style="display:none">
+		<div class="large-10 columns">
+			<div id="resetPasswordErrorMsg"></div>				
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalResetPassword').foundation('reveal', 'close');" class="small secondary">OK</button></div>				
+	</div>
+	<div class="row" id="resetPasswordSuccessContainer" style="display:none">
+		<div class="large-10 columns">
+			<div class="alert-box info">Password has been reset.</div>				
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalResetPassword').foundation('reveal', 'close');" class="small secondary">OK</button></div>
+	</div>	
+	<a class="close-reveal-modal">&#215;</a>
+</div>
+
+<!-- Add User Manager Modal -->    
+<div id="modalAddUserMgr" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-users"></i> Add new user managers?</h2>
+    <div id=addUserMgrPickList>
+	    <p>Add new user manager:<p/>
+	    <div class="row">
+			<div class="small-12 columns">
+				<div id="addUserMgrUserListContainer"></div>
+			</div>
+		</div>
+		<div id="addUserMgrFinishedButton" class="row">
+			<div class="large-12 columns">			
+				<button type="button" onclick="$('#modalAddUserMgr').foundation('reveal', 'close');" class="small secondary">Finished</button>
+			</div>
+		</div>	
+	</div>	
+	<div id="addUserMgrConfirm" style="display:none">
+		<p>Add <span id="addUserMgrConfirmName" style="font-style: italic;"></span> as a user manager?</p>
+		<form id="addUserMgrConfirmForm" data-abide="ajax">
+	    	<input type="hidden" id="addUserMgrConfirmUserId"/>
+	    	<input type="hidden" id="addUserMgrConfirmNameHidden"/>
+	    	<div class="row">
+				<div class="large-12 columns">			
+					<button type="submit" class="small">Add</button>
+					<button type="button" onclick="$('#modalAddUserMgr').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+				</div>
+			</div>
+		</form>	
+	</div>    	
+	<div class="row">    		
+		<div id="addUserMgrBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+	</div>
+	<div class="row" id="addUserMgrSuccess" style="display:none">
+		<div class="large-10 columns">
+			<div class="alert-box info">
+				<b><span id="addUserMgrSuccessName"></span></b> has been added as a user manager.  Add another?			
+			</div>				
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalAddUserMgr').foundation('reveal', 'close');" class="small secondary">Finished</button></div>
+	</div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
+
+<!-- Revoke User Manager Modal -->    
+<div id="modalRevokeUserMgrConfirm" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-eye-slash"></i> Revoke user manager privileges?</h2>
+    <p>Revoke user manager privileges from <span id="revokeUserMgrName" style="font-style:italic; font-weight:bold;"></span>?</p>
+    <p>User manager privileges will be removed from the user.<p/>
+    <form id="revokeUserMgrForm" data-abide="ajax">
+    	<input type="hidden" id="revokeUserMgrUserId"/>
+    	<div id="revokeUserMgrSubmitButtons" class="row">
+			<div class="large-12 columns">			
+				<button type="submit" class="small alert">Revoke</button>
+				<button type="button" onclick="$('#modalRevokeUserMgrConfirm').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+	</form>
+	<div class="row">    		
+		<div id="revokeUserMgrBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+	</div>
+	<div class="row" id="revokeUserMgrSuccess" style="display:none">
+		<div class="large-10 columns">
+			<div class="alert-box info">
+				User manager privileges have been revoked.				
+			</div>				
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalRevokeUserMgrConfirm').foundation('reveal', 'close');" class="small secondary">OK</button></div>
+	</div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
+
+<!-- Add New User Modal -->
+<div id="modalAddNewUser" class="reveal-modal small" data-reveal>
+	<div class="row">
+		<div class="small-12 columns">
+			<h2><i class="fa fa-user"></i> Add a new user</h2>			
+		</div>
+	</div>
+	<form id="addNewUserForm" data-abide="ajax">
+		<div class="row">
+			<div class="large-6 columns">
+				<div class="name-field">
+					<label><i class="fa fa-user"></i> First Name <input type="text" id="newUserFirstName" name="newUserFirstName" required> </label>
+					<small class="error">First name is required</small>					
+				</div>
+			</div>
+			<div class="large-6 columns">
+				<div class="name-field">
+					<label><i class="fa fa-user"></i> Last Name <input type="text" id="newUserLastName" name="newUserLastName" required> </label> 
+					<small class="error">Last name is required</small>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-6 columns">
+				<div class="email-field">
+					<label><i class="fa fa-envelope"></i> Email <input type="email" id="newUserEmail" name="newUserEmail" required> </label> 
+					<small class="error">A valid email address is required.</small>
+				</div>
+			</div>
+			<div class="large-6 columns">
+				<div class="email-field">
+					<label><i class="fa fa-envelope"></i> Confirm Email <input type="email" id="newUserConfirmEmail" name="newUserConfirmEmail" required data-equalto="newUserEmail" data-invalid=""> </label> 
+					<small class="error">Emails don't match.</small>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="large-6 columns">
+				<div class="password-field">
+					<label><i class="fa fa-lock"></i> Password <input type="password" id="newUserPassword" name="newUserPassword" required></label> 
+					<small class="error">Passwords require at least 8 characters with 1 upper-case character, 1 lower-case character, and 1 numeric or special character.</small>
+				</div>
+			</div>
+			<div class="large-6 columns">
+				<div class="password-field">
+					<label><i class="fa fa-lock"></i> Confirm Password <input type="password" id="newUserConfirmPassword" name="newUserConfirmPassword" required data-equalto="newUserPassword" data-invalid=""> </label> 
+					<small class="error">Passwords don't match.</small>
+				</div>
+			</div>
+		</div>
+		<div class="row" id="newUserSubmitButtons">
+			<div class="large-12 columns">
+				<label>All fields are required</label>
+				<button type="submit" class="small">Add</button>
+				<button type="button" onclick="$('#modalAddNewUser').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>			
+	</form>	
+	<div class="row">    		
+		<div id="newUserBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+	</div>
+	<div  class="row" id="newUserErrorContainer" style="display:none">
+		<div class="large-10 columns">
+			<div id="newUserErrorMsg"></div>				
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalAddNewUser').foundation('reveal', 'close');" class="small secondary">OK</button></div>				
+	</div>
+	<div class="row" id="newUserSuccessContainer" style="display:none">
+		<div class="large-10 columns">
+			<div class="alert-box info"><b><span id="newUserSuccessUserId"></span></b> has been added.</div>				
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalAddNewUser').foundation('reveal', 'close');" class="small secondary">OK</button></div>
+	</div>	
+	<a class="close-reveal-modal">&#215;</a>
+</div>
+
