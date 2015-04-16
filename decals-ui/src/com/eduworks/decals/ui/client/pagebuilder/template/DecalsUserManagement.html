@@ -1,38 +1,42 @@
 <div id="content">
 	<div id="decalsUserManagement" class="userScreen">
-		<div class="userHeader">
+	
+		<!-- ********************************Header/Navigation******************************** -->	
+		<div class="pageHeader">
 			<div class="row">
-				<div class="medium-12 columns">
+				<div class="medium-5 columns" style="text-align:left;padding-top:.5em;">
+					<dl class="sub-nav">
+    					<dd id="umUsersLinkText" class="active"><a id="umUsersLink">Users</a></dd>
+    					<dd id="umUserMgrLinkText"><a id="umUserMgrLink">User Managers</a></dd>    					
+    					<dd id="umGroupsLinkText"><a id="umGroupsLink">Public Groups</a></dd>
+  					</dl>					
+				</div>
+				<div class="medium-7 columns" style="text-align:right;">
 					<h3>User Management</h3>
-				</div>				
-			</div>
+				</div>							
+			</div>			
 		</div>
-		<br>
-		<br>
-		<div class="row">
+		
+		<!-- ********************************Users******************************** -->
+		<div id="umUsersContainer" class="row">
 			<div class="large-4 columns" style="padding-top: 10px;">
-				<div id="decalsUserManagerNavigation" class="row">
+				<div class="row">
 					<div class="small-12 columns">												
-						<h5>User Manager Tools:</h5>
-						<ul class="side-nav" role="navigation" title="User Manager Tools">
-							<li role="menuitem"><a id="umUsersLink"><i class="fa fa-chevron-circle-right"></i> Users</a></li>
-							<li role="menuitem"><a id="umUserMgrLink"><i class="fa fa-chevron-circle-right"></i> User Managers</a></li>		
-						</ul>								
+						<h5>Users:</h5>
+						<br>
+						<button style="padding:12px" id="umAddNewUser" type="button" title="Add a new user" class="small">
+							<i class="fa fa-plus"></i> Add User
+						</button>								
 					</div>
 				</div>				
 			</div>			
-			<div class="large-8 columns" id="umDetails" style="padding-top: 10px;">
-				<div id="umUsersOuterContainer" class="row">
+			<div class="large-8 columns" style="padding-top: 10px;">
+				<div class="row">
 			    	<div class="small-12 columns">
 			    		<div class="row">
-			    			<div class="small-6 columns">
-								<h5 style="font-size:20px">Application Users</h5>
-							</div>
-							<div class="small-6 columns">
-								<button id="umAddNewUser" type="button" style="display:none;" title="Add a new user" class="small">
-									<i class="fa fa-user"></i> Add User
-								</button>
-							</div>
+			    			<div class="small-12 columns">
+								<h5 style="font-size:20px">Application User Details</h5>
+							</div>							
 						</div>
 						<div id="umBusy" class="row" style="display:block;text-align:center">
                 			<div class="small-12 columns">
@@ -42,38 +46,117 @@
            				</div>
 			        	<div class="row">
 			    			<div class="small-12 columns">
-			    				<div id="umUsersInnerContainer"></div>
+			    				<div id="umUsersDetails"></div>
 			    			</div>
 			    		</div>
 			        </div>	
-			    </div>								
-			    <div id="umUserMgrOuterContainer" class="row" style="display: none;">
-			    	<div class="small-12 columns">		
-			    		<div class="row">
-			    			<div class="small-6 columns">
-								<h5 style="font-size:20px">User Managers</h5>
-							</div>
-							<div class="small-6 columns">
-								<button id="umAddNewUserManager" type="button" style="display:none;" title="Add a new user manager" class="small">
-									<i class="fa fa-users"></i> Add User Manager
-								</button>
-							</div>
-						</div>	
-						<div class="row">
-			    			<div class="small-12 columns">
-			    				<div id="umUserMgrInnerContainer"></div>
-			    			</div>
-			    		</div>			    
-			        </div>	
-			    </div>
+			    </div>	
 			</div>
 		</div>
+			    
+		<!-- ********************************User Managers******************************** -->			    
+		<div id="umUserMgrContainer" style="display:none;" class="row">
+			<div class="large-4 columns" style="padding-top: 10px;">
+				<div class="row">
+					<div class="small-12 columns">												
+						<h5>User Managers:</h5>
+						<br>
+						<button style="padding:12px" id="umAddNewUserManager" type="button" title="Add a new user manager" class="small">
+							<i class="fa fa-plus"></i> Add User Manager
+						</button>								
+					</div>
+				</div>				
+			</div>			
+			<div class="large-8 columns" style="padding-top: 10px;">
+				<div class="row">
+			    	<div class="small-12 columns">
+			    		<div class="row">
+			    			<div class="small-12 columns">
+								<h5 style="font-size:20px">User Manager Details</h5>
+							</div>							
+						</div>
+						<div class="row">
+			    			<div class="small-12 columns">
+			    				<div id="umUserMgrDetails"></div>
+			    			</div>
+			    		</div>	
+			        </div>	
+			    </div>	
+			</div>
+		</div>
+		
+		<!-- ********************************Groups******************************** -->
+		<div id="umGroupsContainer" style="display:none;" class="row">
+			<div class="large-4 columns" style="padding-top: 10px;">
+				<div class="row">
+					<div class="small-12 columns">												
+						<h5>Public Groups:</h5>
+						<br>
+						<button style="padding:12px" id="umAddNewUserManager" type="button" title="Create a new public group" class="small">
+							<i class="fa fa-plus"></i> Create a New Group
+						</button>								
+					</div>
+				</div>				
+			</div>			
+			<div class="large-8 columns" style="padding-top: 10px;">
+				<div class="row">
+			    	<div class="small-12 columns">
+			    		<div class="row">
+			    			<div class="small-12 columns">
+								<h5 style="font-size:20px">Public Group Details</h5>
+							</div>							
+						</div>
+						<div class="row">
+			    			<div class="small-12 columns">
+			    				TODO GROUP DETAILS
+			    			</div>
+			    		</div>	
+			        </div>	
+			    </div>	
+			</div>
+		</div>
+		
 	</div>
 </div>	
 
 <!-- ********************************End Content DIV******************************** -->
 
 <!-- ********************************MODAL DIALOGS******************************** -->
+
+<!-- Add Group Modal -->    
+<div id="modalAddGroup" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-users"></i> Create a group</h2>
+    <p>Start creating your new group</p>
+    <form id="addGroupForm" data-abide="ajax">
+    	<div class="row">
+			<div class="large-12 columns">
+				<div class="name-field">
+					<label><i class="fa fa-info"></i> Name <input type="text" id="addGroupName" name="name" required></label> 
+					<small class="error">Enter the group name</small>
+				</div>
+			</div>
+		</div>
+		<!-- USER PICKLIST HERE -->
+		<div id="addGroupSubmitButtons" class="row">
+			<div class="large-12 columns">			
+				<button type="submit" class="small">Create</button>
+				<button type="button" onclick="$('#modalAddGroup').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+    </form>
+    <div class="row">    		
+		<div id="addGroupBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+	</div>
+	<div class="row" id="addGroupSuccess" style="display:none">
+		<div class="large-10 columns">
+			<div class="alert-box info">
+				Group has been created.
+			</div>				
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalAddGroup').foundation('reveal', 'close');" class="small secondary">OK</button></div>
+	</div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
 
 <!-- Delete User Modal -->
 <div id="modalDeleteUser" class="reveal-modal small" data-reveal>

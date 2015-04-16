@@ -386,7 +386,7 @@ public class CollectionsViewBuilder {
    }
       
    /**
-    * Builds the add new collection view HTML and attaches it to the given parent panel
+    * Builds the add new collection user view HTML and attaches it to the given parent panel
     * 
     * @param parentPanelId The ID of the parent panel on which to attach the HTML
     * @param addCollectionUserList The list of potential new collection users

@@ -2,6 +2,28 @@ html, body {
    height: inherit; /* <-- add this to decals.css to override foundation.css */
 }
 
+.sub-nav {
+  margin: 0 0 0 0;
+}
+
+.sub-nav dd a {
+  color: white;
+}
+
+.sub-nav dd a:hover {
+  color: black;
+}
+
+.sub-nav dd.active a {
+  color: #008cba;
+  background: white;
+}
+
+.sub-nav dd.active a:hover {
+  color: #008cba;
+  background: white;
+}
+
 #curColUsersLink,
 #curColItemsLink{
 	font-size: 1.125rem;
@@ -25,6 +47,7 @@ html, body {
 	font-style: italic;
 }
 
+.curGrpButton,
 .curColButton {
 	padding: 8px 10px;	
 	font-size: 0.6875rem;
@@ -46,12 +69,13 @@ html, body {
 	overflow-x:hidden;
 	max-height: 483px;
 }
- 
+
 .curColNonEmpty,
 .curColEmpty {
 	margin-bottom:0px;
 }
 
+.curGrpEmpty,
 .curColEmpty {
 	color: #666;
 }
@@ -81,7 +105,9 @@ html, body {
 	margin-bottom: 0px;
 }
 
+#cgrpUsers ul,
 #addToCollectionList ul,
+#addGroupUserList ul,
 #addCollectionUserList ul,
 #curColItemContainer ul,
 #curColUserContainer ul,
@@ -95,7 +121,9 @@ html, body {
 	list-style-type: none;
 }
 
+#cgrpUsers li:hover,
 #addToCollectionList li:hover,
+#addGroupUserList li:hover,
 #addCollectionUserList li:hover,
 #curColUserList li:hover,
 #addAdminUserList li:hover,
@@ -108,6 +136,7 @@ html, body {
 	background:#CEE3F6;
 }
 
+.cgrpUserName,
 .daaAdminName,
 .daaPpubTitle,
 .umUserName,
@@ -122,6 +151,7 @@ html, body {
 .daaPpubId,
 .daaPpubDate,
 .daaPpubUrl,
+.cgrpUserEmail,
 .daaAdminEmail,
 .daaLastLogin,
 .umUserEmail,
@@ -144,8 +174,10 @@ html, body {
 .daaPpubUrl,
 .artcColName,
 .acuUserName,
+.aguUserName,
 .addAdminUserName,
 .acuUserId,
+.aguUserId,
 .addAdminUserId,
 .addUserMgrUserName,
 .duatUserName,
@@ -173,6 +205,7 @@ html, body {
 	padding-bottom: 7px;	
 }
 
+.cgrpUserRemove,
 .daaAdminRevoke,
 .daaPPubPublish,
 .umUserTools,
@@ -180,7 +213,9 @@ html, body {
 	padding-top: 8px;
 }
 
+.cgrpUserRemove .button,
 .artcAddBtn .button,
+.aguAddBtn .button,
 .acuAddBtn .button,
 .addAdminAddBtn .button,
 .addUserMgrAddBtn .button,
@@ -197,6 +232,7 @@ html, body {
 
 .artcColName,
 .acuUserName,
+.aguUserName,
 .addAdminUserName,
 .addUserMgrUserName,
 .duatUserName {
@@ -206,6 +242,7 @@ html, body {
 }
 
 .acuUserId,
+.aguUserId,
 .addAdminUserId,
 .addUserMgrUserId,
 .duatUserId {
@@ -216,6 +253,7 @@ html, body {
 
 .artcAddBtn,
 .acuAddBtn,
+.aguAddBtn,
 .addAdminAddBtn,
 .addUserMgrAddBtn,
 .duatAddBtn {
@@ -229,8 +267,7 @@ html, body {
 	max-height:88px;
 }
 
-.noContributions,
-.noCollections {
+.noEntries {
     color: #999;
     padding: 0;
     margin: 4rem 0 0 0;
@@ -248,19 +285,21 @@ html, body {
 	margin-right: 30px;
 }
 
+#currentGroupDetailsContainer .list,
 #basicSearchResults, 
 #interactiveSearchResults, 
 #userLRSearchResults,
 #myContributionsSearchResults,
-#umUsersInnerContainer .list,
-#umUserMgrInnerContainer .list,
-#daaAdministratorsInnerContainer .list,
-#daaParadataPublishInnerContainer .list {
+#umUsersDetails .list,
+#umUserMgrDetails .list,
+#daaAdministratorsDetails .list,
+#daaParadataPublishDetails .list {
 	overflow-y:auto;
 	overflow-x:hidden;
 	height:550px;
 }
 
+#addGroupUserList .list,
 #addToCollectionList .list,
 #addCollectionUserList .list,
 #addAdminUserList .list,
@@ -538,7 +577,7 @@ body {
     margin: 0;
 }
 
-.userHeader
+.pageHeader
 {
 	margin: 0;
     padding: .3rem;
@@ -551,7 +590,7 @@ body {
     background-size: cover;
     color: white;
 }
-.userHeader h3
+.pageHeader h3
 {
     font-family: georgia, serif;
     font-style: italic;

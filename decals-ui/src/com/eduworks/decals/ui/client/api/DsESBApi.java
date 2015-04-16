@@ -9,6 +9,7 @@ import com.eduworks.gwt.client.net.MultipartPost;
 import com.eduworks.gwt.client.net.api.ESBApi;
 import com.eduworks.gwt.client.net.callback.ESBCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
+import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 
 /**
@@ -69,6 +70,10 @@ public class DsESBApi extends ESBApi {
    private static final String RESOURCE_DESC_KEY = "resourceDescription";
    private static final String ITEM_IDX_KEY = "itemIndex";  
    private static final String COLLECTION_DATA_KEY = "collectionData";
+   private static final String GROUP_ID_KEY = "groupId";
+   private static final String USERS_KEY = "users";
+   private static final String GROUP_NAME_KEY = "groupName";
+   private static final String GROUP_TYPE_KEY = "groupType";
             
    public static final String DECALS_FORM_DATA_NAME = "decalsData";
    public static final String FILE_METADATA_FORM_DATA_NAME = "fileMetadata";
@@ -91,6 +96,120 @@ public class DsESBApi extends ESBApi {
       }
       sb.append("]");
       return sb.toString();
+   }
+   
+   /**
+    * Creates a group with the given information
+    * 
+    * @param groupName The name of the group
+    * @param groupType The type of the group (public|private)
+    * @param callback The event callback
+    * @return Returns JSON result string
+    */
+   public static String decalsCreateGroup(String groupName, String groupType, ESBCallback<ESBPacket> callback) {
+      MultipartPost mp = new MultipartPost();
+      ESBPacket jo = new ESBPacket();      
+      jo.put(SESSION_ID_KEY, sessionId);
+      jo.put(GROUP_NAME_KEY, groupName);
+      jo.put(GROUP_TYPE_KEY, groupType);
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsCreateGroup"),mp,false,callback);
+   }   
+   
+   /**
+    * Deletes the given group
+    * 
+    * @param groupId The ID of the group
+    * @param callback The event callback
+    * @return Returns JSON result string
+    */
+   public static String decalsDeleteGroup(String groupId, ESBCallback<ESBPacket> callback) {
+      MultipartPost mp = new MultipartPost();
+      ESBPacket jo = new ESBPacket();      
+      jo.put(SESSION_ID_KEY, sessionId);
+      jo.put(GROUP_ID_KEY, groupId);
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsDeleteGroup"),mp,false,callback);
+   }   
+   
+   /**
+    * Adds the given users to the given group
+    * 
+    * @param groupId The ID of the group
+    * @param users The array of users
+    * @param callback The event callback
+    * @return Returns JSON result string
+    */
+   public static String decalsAddGroupUsers(String groupId, JSONArray users, ESBCallback<ESBPacket> callback) {
+      MultipartPost mp = new MultipartPost();
+      ESBPacket jo = new ESBPacket();      
+      jo.put(SESSION_ID_KEY, sessionId);
+      jo.put(GROUP_ID_KEY, groupId);
+      jo.put(USERS_KEY, users);
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsAddGroupUsers"),mp,false,callback);
+   }
+   
+   /**
+    * Removes the given user from the given group
+    * 
+    * @param groupId The ID of the group
+    * @param userId The ID of the user
+    * @param callback The event callback
+    * @return Returns JSON result string
+    */
+   public static String decalsRemoveGroupUser(String groupId, String userId, ESBCallback<ESBPacket> callback) {
+      MultipartPost mp = new MultipartPost();
+      ESBPacket jo = new ESBPacket();      
+      jo.put(SESSION_ID_KEY, sessionId);
+      jo.put(GROUP_ID_KEY, groupId);
+      jo.put(USER_ID_KEY, userId);
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsRemoveGroupUser"),mp,false,callback);
+   }
+   
+   /**
+    * Returns the list of public groups
+    * 
+    * @param callback The event callback
+    * @return Returns JSON result string
+    */
+   public static String decalsGetPublicGroups(ESBCallback<ESBPacket> callback) {
+      MultipartPost mp = new MultipartPost();
+      ESBPacket jo = new ESBPacket();      
+      jo.put(SESSION_ID_KEY, sessionId);
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsGetPublicGroups"),mp,false,callback);
+   }
+   
+   /**
+    * Returns the list of the session user's private groups
+    * 
+    * @param callback The event callback
+    * @return Returns JSON result string
+    */
+   public static String decalsGetUserPrivateGroups(ESBCallback<ESBPacket> callback) {
+      MultipartPost mp = new MultipartPost();
+      ESBPacket jo = new ESBPacket();      
+      jo.put(SESSION_ID_KEY, sessionId);
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsGetUserPrivateGroups"),mp,false,callback);
+   }
+   
+   /**
+    * Returns the list of groups the given user belongs to
+    * 
+    * @param userId The user ID
+    * @param callback The event callback
+    * @return Returns JSON result string
+    */
+   public static String decalsGetMemberGroupsForUser(String userId, ESBCallback<ESBPacket> callback) {
+      MultipartPost mp = new MultipartPost();
+      ESBPacket jo = new ESBPacket();      
+      jo.put(SESSION_ID_KEY, sessionId);
+      jo.put(USER_ID_KEY, userId);      
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsGetUserMemberGroups"),mp,false,callback);
    }
    
    /**

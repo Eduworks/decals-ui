@@ -44,6 +44,8 @@ public class DsUtil {
    
    private static final int MAX_FILENAME_MESSAGE_LENGTH = 20;
    
+   public static final String BOLD_STYLE = "font-weight:bold;";
+   
    /**
     * Common English stop words.
     */

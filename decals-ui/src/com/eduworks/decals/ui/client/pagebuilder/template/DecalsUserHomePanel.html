@@ -1,8 +1,17 @@
 <div id="content">
 	<div id="userHome" class="userScreen">
-		<div class="userHeader">
+	
+		<!-- ********************************Header/Navigation******************************** -->
+		<div class="pageHeader">
 			<div class="row">
-				<div class="medium-12 columns">
+				<div class="medium-5 columns" style="text-align:left;padding-top:.5em;">
+					<dl class="sub-nav">
+    					<dd id="goToMyContributionsText" class="active"><a id="goToMyContributions">Contributions</a></dd>
+    					<dd id="goToMyCollectionsText"><a id="goToMyCollections">Collections</a></dd>
+    					<dd id="goToMyGroupsText"><a  id="goToMyGroups">Groups</a></dd>
+  					</dl>					
+				</div>
+				<div class="medium-7 columns" style="text-align:right;">
 					<h3>Welcome back, <span id="headerUsername" class="username"></span>!</h3>
 				</div>				
 			</div>
@@ -15,19 +24,15 @@
 				<div id="myContributionsNavigation" class="row">
 					<div class="small-12 columns">												
 						<h5>My Contributions:</h5>
-						<ul class="side-nav" role="navigation" title="My Contributions">
-							<li role="menuitem"><a data-reveal-id="modalAddContent" data-reveal><i class="fa fa-plus"></i> Add a Contribution</a></li>
-						</ul>														
+						<br>
+						<button style="padding:12px" title="Add a contribution" class="small" data-reveal-id="modalAddContent" data-reveal>
+							<i class="fa fa-plus"></i> Add a Contribution
+						</button>																				
 					</div>
 				</div>
 				<div class="row">
 					<div id="contributionAlertMessages" class="small-11 columns"></div>
-				</div>
-				<div class="row" style="padding-top:10px;">
-					<div class="small-12 columns">
-						<button id="gotoMyCollections" class="small" style="padding:10px;"><i class="fa fa-suitcase"></i> My Collections</button>
-					</div>
-				</div>
+				</div>				
 			</div>			
 			<div class="large-8 columns" style="padding-top: 10px;">
 				<div id="myContributionsSearchBusy" class="row" style="display:none;text-align:center">
@@ -44,13 +49,13 @@
 				</div>		
 				<div id="emptyMyContributions" class="row" style="display:none">
 					<div class="small-3 columns">
-						<img src="images/splash-mastery.png" class="noContributions" style="display:inline">
+						<img src="images/splash-mastery.png" class="noEntries" style="display:inline">
 					</div>
 					<div class="small-9 columns">
-						<p class="noContributions">                          	
+						<p class="noEntries">                          	
 							If you would like to contribute to the resource repository and 
 							<a href="http://learningregistry.org/" target="Learning Registry">Learning Registry</a>, you can easily contribute 
-							resources by clicking the 'Add a Contribution' link to the left.
+							resources by clicking the 'Add a Contribution' button to the left.
 						</p>				       	
 					</div>	
 				</div>	
@@ -85,20 +90,12 @@
 				</div>
 				<div class="row">
 					<div class="small-12 columns">
-						<ul class="side-nav" role="navigation" title="My Collections">
-							<li role="menuitem">
-								<a onclick="document.getElementById('addCollectionForm').reset();" data-reveal-id="modalAddCollection" data-reveal>
-									<i class="fa fa-plus"></i> Build a New Collection
-								</a>
-							</li>
-						</ul>
+						<br>
+						<button onclick="document.getElementById('addCollectionForm').reset();" style="padding:12px" title="Build a new collection" class="small" data-reveal-id="modalAddCollection" data-reveal>
+							<i class="fa fa-plus"></i> Build a New Collection
+						</button>						
 					</div>
-				</div>
-				<div class="row" style="padding-top:10px;">
-					<div class="small-12 columns">
-						<button id="goToMyContributions" class="small" style="padding:10px;"><i class="fa fa-bank"></i> My Contributions</button>
-					</div>
-				</div>
+				</div>				
 			</div>			
 			<div class="large-8 columns">
 				<br>
@@ -107,11 +104,11 @@
 			    </div>           				
 				<div id="emptyMyCollections" class="row" style="display:none">
 					<div class="small-3 columns">
-						<img src="images/splash-mastery.png" class="noCollections" style="display:inline">
+						<img src="images/splash-mastery.png" class="noEntries" style="display:inline">
 					</div>
 					<div class="small-9 columns">
-						<p class="noCollections">                          	
-							If you would like to build a collection of resources, you can easily begin by clicking the 'Build a Collection' link to the left.
+						<p class="noEntries">                          	
+							If you would like to build a collection of resources, you can easily begin by clicking the 'Build a New Collection' button to the left.
 							Once a collection is built, you can add <a href="http://learningregistry.org/" target="Learning Registry">Learning Registry</a>
 							resources to it from the 'Search' tab above.
 						</p>				       	
@@ -221,12 +218,206 @@
 				</div>			
 			</div>
 		</div>
+		
+		<!-- ********************************Groups******************************** -->
+		<div id="userMyGroups" style="display:none" class="row">
+			<div class="large-4 columns" style="padding-top:10px;">
+				<div class="row">
+					<div class="small-12 columns">												
+						<h5>My Groups:</h5>
+						<div id="myGroupsNavigation" style="display:none;">						
+							<div id="myGroupsSelections"></div>
+							<div id="myGroupsMoreSelections">	
+								<ul class="side-nav" role="navigation" title="More Groups" style="padding:0px">
+									<li role="menuitem"><a id="myGroupsMoreSelectionsLink"><i class="fa fa-arrow-circle-down"></i> More...</a></li>
+								</ul>
+							</div>	
+							<div id="myGroupsLessSelections" style="display: none">	
+								<ul class="side-nav" role="navigation" title="Less Groups" style="padding:0px">
+									<li role="menuitem"><a id="myGroupsLessSelectionsLink"><i class="fa fa-arrow-circle-up"></i> Less...</a></li>
+								</ul>
+							</div>
+						</div>												
+					</div>
+				</div>
+				<div class="row">
+					<div class="small-12 columns">
+						<br>
+						<button onclick="document.getElementById('addGroupForm').reset();" style="padding:12px" title="Create a new group" class="small" data-reveal-id="modalAddGroup" data-reveal>
+							<i class="fa fa-plus"></i> Create a New Group
+						</button>						
+					</div>
+				</div>				
+			</div>			
+			<div class="large-8 columns">
+				<br>
+				<div id="myGroupsSearchBusy" class="row" style="display:block;">
+			    	<div class="small-12 columns" style="display:inline;text-align:center"><img src="images/loading.gif"/><p class="searchBusy">Searching...</p></div>	
+			    </div>  
+				<div id="emptyMyGroups" class="row" style="display:none">
+					<div class="small-3 columns">
+						<img src="images/app-users-front.png" class="noEntries" style="display:inline">
+					</div>
+					<div class="small-9 columns">
+						<p class="noEntries">                          	
+							If you would like to build a group of users, you can easily begin by clicking the 'Create a New Group' button to the left.
+							Once a group is built, you can use it to add collection permissions to multiple users at the same time.
+						</p>				       	
+					</div>	
+				</div>
+				<div id="currentGroupContainer" class="row" style="display:none;">
+					<div class="row">
+						<div class="small-8 columns">
+							<h3><i class="fa fa-users"></i> <span id="curGroupName" style="font-size: 20px;"></span></h3>
+						</div>
+						<div class="small-4 columns" style="margin-top:1em;padding: 0px;">							
+							<ul id="curGrpModifyButtons" class="button-group radius">
+   								<li style="padding-right:2px">
+   									<button id="curGrpAddUserLink" title="Add a user" type="button" class="curGrpButton secondary">
+										<i class="fa fa-plus-square-o"></i> <b>Add Users</b>
+									</button>
+   								</li>   	
+   								<li>
+   									<button id="curGrpDeleteLink" title="Delete group" type="button" class="curGrpButton alert">
+										<i class="fa fa-trash-o"></i> <b>Delete</b>
+									</button>
+								</li> 							    							
+ 							</ul>
+						</div>						
+					</div>
+					<div class="row">
+						<div class="small-12 columns"><h5>Group Users <span id="currentGroupUserCount" style="font-size: .75em;font-style: italic;color: #666;"></span></h5></div>
+					</div>
+					<div class="row">
+						<div id="currentGroupDetailsContainer"  class="small-12 columns">
+						</div>
+					</div>		
+				</div>
+			</div>
+		</div>
+		
 	</div>
 </div>
 
 <!-- ********************************End Content DIV******************************** -->
 
 <!-- ********************************MODAL DIALOGS******************************** -->
+
+<!-- Add Group User Modal -->    
+<div id="modalAddGroupUser" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-user"></i> Add group users?</h2>
+    <p>Add users to <span id="addUserGroupName" style="font-style:italic; font-weight:bold;"></span></p>
+    <div id="addGroupUserPickList">
+	    <div class="row">
+			<div class="small-12 columns">
+				<div id="addGroupUserListContainer"></div>
+			</div>
+		</div>
+		<div id="addGroupUserListButtons" class="row">
+			<div class="large-12 columns">			
+				<button id="addGroupUserOkBtn" type="button" class="small">Ok</button>
+				<button type="button" onclick="$('#modalAddGroupUser').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>	
+	</div>	
+	<div id="addGroupUserConfirm" style="display:none">		
+		<div class="row">
+           	<p>Add the <b><i><span id="addGroupUserCount"></span></i></b> chosen user(s) to the group?</p>            	
+ 		</div>
+		<div id="addGroupUserSubmitBtns" class="row">
+			<div class="large-12 columns">			
+				<button id="addGroupUserAddBtn" type="submit" class="small">Add</button>
+				<button type="button" onclick="$('#modalAddGroupUser').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+		<div class="row">    		
+			<div id="addGroupUserBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+		</div>			
+	</div>    	
+	<a class="close-reveal-modal">&#215;</a>
+</div>
+
+<!-- Delete Group User Confirm Modal -->    
+<div id="modalDeleteGroupUserConfirm" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-user"></i> Remove group user?</h2>
+    <p>Are you sure you wish to remove <span id="delGroupUserUserName" style="font-style:italic; font-weight:bold;"></span> from <span id="delGroupUserGroupName" style="font-style:italic; font-weight:bold;">?</p> 
+    <form id="delGroupUserForm" data-abide="ajax"> 
+    	<input type="hidden" id="delGroupUserUserId"/>   	
+    	<input type="hidden" id="delGroupUserGroupId"/>
+		<div id="delGroupUserSubmitButtons" class="row">
+			<div class="large-12 columns">			
+				<button type="submit" class="small alert">Remove</button>
+				<button type="button" onclick="$('#modalDeleteGroupUserConfirm').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+    </form>
+    <div class="row">    		
+		<div id="delGroupUserBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+	</div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
+
+<!-- Add Group Modal -->    
+<div id="modalAddGroup" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-users"></i> Create a group</h2>
+    <p>Start creating your new group</p>
+    <form id="addGroupForm" data-abide="ajax">
+    	<div class="row">
+			<div class="large-12 columns">
+				<div class="name-field">
+					<label><i class="fa fa-info"></i> Name <input type="text" id="addGroupName" name="name" required></label> 
+					<small class="error">Enter the group name</small>
+				</div>
+			</div>
+		</div>
+		<!-- USER PICKLIST HERE -->
+		<div id="addGroupSubmitButtons" class="row">
+			<div class="large-12 columns">			
+				<button type="submit" class="small">Create</button>
+				<button type="button" onclick="$('#modalAddGroup').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+    </form>
+    <div class="row">    		
+		<div id="addGroupBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+	</div>
+	<div class="row" id="addGroupSuccess" style="display:none">
+		<div class="large-10 columns">
+			<div class="alert-box info">
+				Group has been created.
+			</div>				
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalAddGroup').foundation('reveal', 'close');" class="small secondary">OK</button></div>
+	</div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
+
+<!-- Delete Group Confirm Modal -->    
+<div id="modalDeleteGroupConfirm" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-users"></i> Delete group?</h2>
+    <p>Are you sure you wish to delete the group <span id="deleteGroupName" style="font-style:italic; font-weight:bold;"></span>?</p>    
+    <form id="deleteGroupForm" data-abide="ajax"> 
+    	<input type="hidden" id="deleteGroupId"/>   	
+		<div id="deleteGroupSubmitButtons" class="row">
+			<div class="large-12 columns">			
+				<button type="submit" class="small alert">Delete</button>
+				<button type="button" onclick="$('#modalDeleteGroupConfirm').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+    </form>
+    <div class="row">    		
+		<div id="deleteGroupBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+	</div>
+	<div class="row" id="deleteGroupSuccess" style="display:none">
+		<div class="large-10 columns">
+			<div class="alert-box info">
+				Group has been deleted.
+			</div>				
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalDeleteGroupConfirm').foundation('reveal', 'close');" class="small secondary">OK</button></div>
+	</div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
 
 <!-- Add to collection modal -->
 <div id="modalAddToCollection" class="reveal-modal small" data-reveal>
@@ -314,7 +505,7 @@
 
 <!-- Delete Collection User Confirm Modal -->    
 <div id="modalDeleteCollectionUserConfirm" class="reveal-modal small" data-reveal>
-    <h2><i class="fa fa-file"></i> Remove collection user?</h2>
+    <h2><i class="fa fa-user"></i> Remove collection user?</h2>
     <p>Are you sure you wish to remove <span id="delColUserUserName" style="font-style:italic; font-weight:bold;"></span> from <span id="delColUserColName" style="font-style:italic; font-weight:bold;">?</p> 
     <div data-alert class="alert-box info radius" style="background-color:#FFFFA6;border-color:red">
   		<b>Note:</b> The collection must still be <b>saved</b> before any changes become permanent!  
@@ -389,7 +580,7 @@
 
 <!-- Add Collection User Modal -->    
 <div id="modalAddCollectionUser" class="reveal-modal small" data-reveal>
-    <h2><i class="fa fa-eye"></i> Add new collection user?</h2>
+    <h2><i class="fa fa-user"></i> Add new collection user?</h2>
     <p>Add a user to <span id="addUserCollectionName" style="font-style:italic; font-weight:bold;"></span>:</p>
     <div data-alert class="alert-box info radius"  style="background-color:#FFFFA6;border-color:red">
   		<b>Note:</b> The collection must still be <b>saved</b> before any changes become permanent!  
@@ -463,7 +654,7 @@
 
 <!-- Delete Collection Confirm Modal -->    
 <div id="modalDeleteCollectionConfirm" class="reveal-modal small" data-reveal>
-    <h2><i class="fa fa-User"></i> Delete collection?</h2>
+    <h2><i class="fa fa-suitcase"></i> Delete collection?</h2>
     <p>Are you sure you wish to delete the collection <span id="deleteCollectionName" style="font-style:italic; font-weight:bold;"></span>?</p>    
     <form id="deleteCollectionForm" data-abide="ajax"> 
     	<input type="hidden" id="deleteCollectionId"/>   	
@@ -490,7 +681,7 @@
 
 <!-- Add Collection Modal -->    
 <div id="modalAddCollection" class="reveal-modal small" data-reveal>
-    <h2><i class="fa fa-suitcase"></i> Add a collection</h2>
+    <h2><i class="fa fa-suitcase"></i> Build a collection</h2>
     <p>Start building your new collection</p>
     <form id="addCollectionForm" data-abide="ajax">
     	<div class="row">
@@ -511,7 +702,7 @@
 		</div>
 		<div id="addCollectionSubmitButtons" class="row">
 			<div class="large-12 columns">			
-				<button type="submit" class="small">Add</button>
+				<button type="submit" class="small">Build</button>
 				<button type="button" onclick="$('#modalAddCollection').foundation('reveal', 'close');" class="small secondary">Cancel</button>
 			</div>
 		</div>
@@ -522,7 +713,7 @@
 	<div class="row" id="addCollectionSuccess" style="display:none">
 		<div class="large-10 columns">
 			<div class="alert-box info">
-				Collection has been created.
+				Collection has been built.
 			</div>				
 		</div>
 		<div class="large-2 columns"><button type="button" onclick="$('#modalAddCollection').foundation('reveal', 'close');" class="small secondary">OK</button></div>

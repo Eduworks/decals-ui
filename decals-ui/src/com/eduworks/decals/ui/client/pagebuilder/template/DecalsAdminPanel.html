@@ -1,38 +1,41 @@
 <div id="content">
 	<div id="decalsApplicationAdmin" class="userScreen">
-		<div class="userHeader">
+	
+		<!-- ********************************Header/Navigation******************************** -->
+		<div class="pageHeader">
 			<div class="row">
-				<div class="medium-12 columns">
+				<div class="medium-5 columns" style="text-align:left;padding-top:.5em;">
+					<dl class="sub-nav">
+    					<dd id="daaAdministratorsLinkText" class="active"><a id="daaAdministratorsLink">Administrators</a></dd>
+    					<dd id="daaParaPubLinkText"><a id="daaParaPubLink">Paradata Publishing</a></dd>    					
+  					</dl>					
+				</div>
+				<div class="medium-7 columns" style="text-align:right;">
 					<h3>Application Administration</h3>
-				</div>				
+				</div>							
 			</div>
 		</div>
-		<br>
-		<br>
-		<div class="row">
+		
+		<!-- ********************************Administrators******************************** -->		
+		<div id="daaAdministratorsContainer" class="row">
 			<div class="large-4 columns" style="padding-top: 10px;">
-				<div id="decalsApplicationAdminNavigation" class="row">
+				<div class="row">
 					<div class="small-12 columns">												
-						<h5>Administrator Tools:</h5>
-						<ul class="side-nav" role="navigation" title="Administrator Tools">
-							<li role="menuitem"><a id="daaAdministratorsLink"><i class="fa fa-chevron-circle-right"></i> Administrators</a></li>
-							<li role="menuitem"><a id="daaParaPubLink"><i class="fa fa-chevron-circle-right"></i> Paradata Publishing</a></li>		
-						</ul>								
+						<h5>Administrators:</h5>
+						<br>
+						<button style="padding:12px" id="daaAddNewAdmin" type="button" title="Add a new administrator" class="small">
+							<i class="fa fa-plus"></i> Add Administrator
+						</button>								
 					</div>
 				</div>				
 			</div>			
-			<div class="large-8 columns" id="daaDetails" style="padding-top: 10px;">
-				<div id="daaAdministratorsOuterContainer" class="row">
+			<div class="large-8 columns" style="padding-top: 10px;">
+				<div class="row">
 			    	<div class="small-12 columns">
 			    		<div class="row">
-			    			<div class="small-6 columns">
-								<h5 style="font-size:20px">Application Administrators</h5>
-							</div>
-							<div class="small-6 columns">
-								<button id="daaAddNewAdmin" type="button" style="display:none;" title="Add a new administrator" class="small">
-									<i class="fa fa-user"></i> Add Administrator
-								</button>
-							</div>
+			    			<div class="small-12 columns">
+								<h5 style="font-size:20px">Application Administrator Details</h5>
+							</div>							
 						</div>
 						<div id="daaBusy" class="row" style="display:block;text-align:center">
                 			<div class="small-12 columns">
@@ -42,31 +45,43 @@
            				</div>
 			        	<div class="row">
 			    			<div class="small-12 columns">
-			    				<div id="daaAdministratorsInnerContainer"></div>
+			    				<div id="daaAdministratorsDetails"></div>
 			    			</div>
 			    		</div>
 			        </div>	
-			    </div>								
-			    <div id="daaParadataPublishOuterContainer" class="row" style="display: none;">
+			    </div>
+			</div>
+		</div>
+			    
+		<!-- ********************************Paradata Publishing******************************** -->			    
+		<div id="daaParadataPublishContainer"  style="display:none;" class="row">
+			<div class="large-4 columns" style="padding-top: 10px;">
+				<div class="row">
+					<div class="small-12 columns">												
+						<h5>Paradata Publishing:</h5>
+						<br>
+						<button style="padding:12px" id="daaPPubAll" type="button" title="Publish paradata for all updated resources" class="small">
+							<i class="fa fa-globe"></i> Publish All Resource Paradata
+						</button>														
+					</div>
+				</div>				
+			</div>		
+		    <div class="large-8 columns" style="padding-top: 10px;">					
+			    <div class="row">
 			    	<div class="small-12 columns">		
 			    		<div class="row">
-			    			<div class="small-6 columns">
+			    			<div class="small-12 columns">
 								<h5 style="font-size:20px">Paradata Publishing Details</h5>
-							</div>
-							<div class="small-6 columns">
-								<button id="daaPPubAll" type="button" style="display:none;" title="Publish paradata for all updated resources" class="small">
-									<i class="fa fa-globe"></i> Publish All Resource Paradata
-								</button>
-							</div>
+							</div>							
 						</div>	
 						<div class="row">
 			    			<div class="small-12 columns">
-			    				<div id="daaParadataPublishInnerContainer"></div>
+			    				<div id="daaParadataPublishDetails"></div>
 			    			</div>
 			    		</div>			    
 			        </div>	
 			    </div>
-			</div>
+			</div>		
 		</div>			
 	</div>
 </div>	

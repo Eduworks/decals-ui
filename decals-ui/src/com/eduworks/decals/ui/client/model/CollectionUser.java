@@ -11,7 +11,6 @@ import com.google.gwt.json.client.JSONString;
  */
 public class CollectionUser extends AppUser {
    
-   public static final String USERID_KEY = "userId";
    public static final String ACCESS_KEY = "access";
    
    private String access;

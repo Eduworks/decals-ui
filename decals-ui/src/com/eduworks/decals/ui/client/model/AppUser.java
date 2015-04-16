@@ -20,6 +20,7 @@ public class AppUser implements Comparable<AppUser>{
    public static final String EMAIL_KEY = "email";
    public static final String LAST_LOGIN_KEY = "lastLogin";
    public static final String CREATE_DATE_KEY = "dateCreated";
+   public static final String USERID_KEY = "userId";
    
    public static final String NEVER_LOGGED_IN_STRING = "never";
    
@@ -46,10 +47,13 @@ public class AppUser implements Comparable<AppUser>{
          userId = userInfo.get(EMAIL_KEY).isString().stringValue();
          emailAddress = userInfo.get(EMAIL_KEY).isString().stringValue();
       }
+      if (userInfo.containsKey(USERID_KEY)) {
+         userId = userInfo.get(USERID_KEY).isString().stringValue();
+         emailAddress = userInfo.get(USERID_KEY).isString().stringValue();
+      }
       if (userInfo.containsKey(CREATE_DATE_KEY)) createDateStr = DsUtil.getDateFormatLongDate(Long.parseLong(userInfo.get(CREATE_DATE_KEY).isString().stringValue()));
       if (userInfo.containsKey(ROLES_KEY)) parseRoles(userInfo.get(ROLES_KEY).isArray());
-      parseLastLoginDate(userInfo);
-      
+      parseLastLoginDate(userInfo);      
    }
    
    

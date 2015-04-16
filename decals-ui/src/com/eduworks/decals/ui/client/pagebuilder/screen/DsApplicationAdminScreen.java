@@ -34,12 +34,15 @@ import com.google.gwt.user.client.ui.HTML;
 public class DsApplicationAdminScreen extends DecalsScreen implements ViewHandler {
    
    private static final String ADMINISTRATORS_LINK = "daaAdministratorsLink";
-   private static final String PARA_PUB_LINK = "daaParaPubLink";        
-   private static final String ADMIN_OUTER_CONTAINER = "daaAdministratorsOuterContainer";
-   private static final String PARA_PUB_OUTER_CONTAINER = "daaParadataPublishOuterContainer";
+   private static final String PARA_PUB_LINK = "daaParaPubLink";
+   private static final String ADMINISTRATORS_LINK_TEXT = "daaAdministratorsLinkText";
+   private static final String PARA_PUB_LINK_TEXT = "daaParaPubLinkText";
    
-   private static final String ADMIN_INNER_CONTAINER = "daaAdministratorsInnerContainer";
-   private static final String PARA_PUB_INNER_CONTAINER = "daaParadataPublishInnerContainer";
+   private static final String ADMINISTRATORS_CONTAINER = "daaAdministratorsContainer";
+   private static final String PARA_PUB_CONTAINER = "daaParadataPublishContainer";
+   
+   private static final String ADMIN_DETAILS_CONTAINER = "daaAdministratorsDetails";
+   private static final String PARA_PUB_DETAILS_CONTAINER = "daaParadataPublishDetails";
    
    private static final String DAA_ADMIN_NAME = "daaAdminName";
    private static final String DAA_ADMIN_EMAIL = "daaAdminEmail";
@@ -285,8 +288,7 @@ public class DsApplicationAdminScreen extends DecalsScreen implements ViewHandle
    protected EventCallback showAdministratorsListener = new EventCallback() {
       @Override
       public void onEvent(Event event) {
-         DsUtil.hideLabel(PARA_PUB_OUTER_CONTAINER);
-         DsUtil.showLabel(ADMIN_OUTER_CONTAINER);         
+         toggleView(ADMINISTRATORS_LINK_TEXT,ADMINISTRATORS_CONTAINER);                  
       }
    };
    
@@ -294,10 +296,19 @@ public class DsApplicationAdminScreen extends DecalsScreen implements ViewHandle
    protected EventCallback showParaPubListener = new EventCallback() {
       @Override
       public void onEvent(Event event) {
-         DsUtil.hideLabel(ADMIN_OUTER_CONTAINER);
-         DsUtil.showLabel(PARA_PUB_OUTER_CONTAINER);
+         toggleView(PARA_PUB_LINK_TEXT,PARA_PUB_CONTAINER);         
       }
    };
+   
+   //toggles the view
+   private void toggleView(String navTextId, String contentContainerId) {
+      DsUtil.setLabelAttribute(ADMINISTRATORS_LINK_TEXT, "class", "");
+      DsUtil.setLabelAttribute(PARA_PUB_LINK_TEXT, "class", "");      
+      DsUtil.setLabelAttribute(navTextId, "class", "active");
+      DsUtil.hideLabel(ADMINISTRATORS_CONTAINER);
+      DsUtil.hideLabel(PARA_PUB_CONTAINER);      
+      DsUtil.showLabel(contentContainerId);
+   }
    
    //publishes all paradata to the learning registry
    private void publishAllParadata() {
@@ -368,7 +379,7 @@ public class DsApplicationAdminScreen extends DecalsScreen implements ViewHandle
    //sets up the administrator list
    private void buildAdministratorsDisplay() {
       revokeWidgets.clear();
-      AdminUserMgmtViewBuilder.buildAdministratorList(ADMIN_INNER_CONTAINER,aaHelper.getAdminList(),revokeWidgets);
+      AdminUserMgmtViewBuilder.buildAdministratorList(ADMIN_DETAILS_CONTAINER,aaHelper.getAdminList(),revokeWidgets);
       initAdminListFiltering(DAA_ADMIN_LIST_CONTAINER,DAA_ADMIN_NAME,DAA_ADMIN_EMAIL,LIST_ITEMS_PER_PAGE);
       registerRevokeWidgets();
    }
@@ -383,7 +394,7 @@ public class DsApplicationAdminScreen extends DecalsScreen implements ViewHandle
    //sets up the paradata publishing info list 
    private void buildParadataPublishingInfoDisplay() {
       publishWidgets.clear();
-      AdminUserMgmtViewBuilder.buildParadataPublishingInfoList(PARA_PUB_INNER_CONTAINER,aaHelper.getParaPubInfoList(),publishWidgets);
+      AdminUserMgmtViewBuilder.buildParadataPublishingInfoList(PARA_PUB_DETAILS_CONTAINER,aaHelper.getParaPubInfoList(),publishWidgets);
       initPPubListFiltering(DAA_PPUB_LIST_CONTAINER,DAA_PPUB_TITLE,DAA_PPUB_URL,LIST_ITEMS_PER_PAGE);
       registerPublishWidgets();
    }
@@ -449,9 +460,7 @@ public class DsApplicationAdminScreen extends DecalsScreen implements ViewHandle
 
    @Override
    public void showContents() {
-      DsUtil.hideLabel(DAA_BUSY);
-      DsUtil.showButton(DAA_NEW_ADMIN);
-      DsUtil.showButton(DAA_PUBLISH_ALL);
+      DsUtil.hideLabel(DAA_BUSY);      
       buildAdministratorsDisplay();
       buildParadataPublishingInfoDisplay();
    }

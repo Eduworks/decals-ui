@@ -33,11 +33,18 @@ public class DsUserManagementScreen extends DecalsScreen implements ViewHandler 
    
    private static final String USERS_LINK = "umUsersLink";
    private static final String USER_MGR_LINK = "umUserMgrLink";
-   private static final String USERS_OUTER_CONTAINER = "umUsersOuterContainer";
-   private static final String USER_MGR_OUTER_CONTAINER = "umUserMgrOuterContainer";
+   private static final String GROUPS_LINK = "umGroupsLink";
+      
+   private static final String USERS_LINK_TEXT = "umUsersLinkText";
+   private static final String USER_MGR_LINK_TEXT = "umUserMgrLinkText";
+   private static final String GROUPS_LINK_TEXT = "umGroupsLinkText";
    
-   private static final String USERS_INNER_CONTAINER = "umUsersInnerContainer";
-   private static final String USER_MGR_INNER_CONTAINER = "umUserMgrInnerContainer";
+   private static final String USERS_CONTAINER = "umUsersContainer";
+   private static final String USER_MGRS_CONTAINER = "umUserMgrContainer";
+   private static final String GROUPS_CONTAINER = "umGroupsContainer";
+   
+   private static final String USERS_DETAILS_CONTAINER = "umUsersDetails";
+   private static final String USER_MGR_DETAILS_CONTAINER = "umUserMgrDetails";
    
    private static final String UM_USER_NAME = "umUserName";
    private static final String UM_USER_EMAIL = "umUserEmail";
@@ -566,8 +573,7 @@ public class DsUserManagementScreen extends DecalsScreen implements ViewHandler 
    protected EventCallback showUsersListener = new EventCallback() {
       @Override
       public void onEvent(Event event) {
-         DsUtil.hideLabel(USER_MGR_OUTER_CONTAINER);
-         DsUtil.showLabel(USERS_OUTER_CONTAINER);         
+         toggleView(USERS_LINK_TEXT,USERS_CONTAINER);                  
       }
    };
    
@@ -575,10 +581,29 @@ public class DsUserManagementScreen extends DecalsScreen implements ViewHandler 
    protected EventCallback showUserManagersListener = new EventCallback() {
       @Override
       public void onEvent(Event event) {
-         DsUtil.hideLabel(USERS_OUTER_CONTAINER);
-         DsUtil.showLabel(USER_MGR_OUTER_CONTAINER);
+         toggleView(USER_MGR_LINK_TEXT,USER_MGRS_CONTAINER);         
       }
    };
+   
+   //show groups listener
+   protected EventCallback showGroupsListener = new EventCallback() {
+      @Override
+      public void onEvent(Event event) {
+         toggleView(GROUPS_LINK_TEXT,GROUPS_CONTAINER);         
+      }
+   };
+   
+   //toggles the view
+   private void toggleView(String navTextId, String contentContainerId) {
+      DsUtil.setLabelAttribute(USERS_LINK_TEXT, "class", "");
+      DsUtil.setLabelAttribute(USER_MGR_LINK_TEXT, "class", "");      
+      DsUtil.setLabelAttribute(GROUPS_LINK_TEXT, "class", "");
+      DsUtil.setLabelAttribute(navTextId, "class", "active");
+      DsUtil.hideLabel(USERS_CONTAINER);
+      DsUtil.hideLabel(USER_MGRS_CONTAINER);      
+      DsUtil.hideLabel(GROUPS_CONTAINER);
+      DsUtil.showLabel(contentContainerId);
+   }
    
    //reset password click event listener
    private class ResetPasswordClickListener extends EventCallback {      
@@ -640,7 +665,7 @@ public class DsUserManagementScreen extends DecalsScreen implements ViewHandler 
    private void buildUsersDisplay() {
       resetPasswordWidgets.clear();
       deleteUserWidgets.clear();
-      AdminUserMgmtViewBuilder.buildUserList(USERS_INNER_CONTAINER,umHelper.getUserList(),resetPasswordWidgets,deleteUserWidgets);
+      AdminUserMgmtViewBuilder.buildUserList(USERS_DETAILS_CONTAINER,umHelper.getUserList(),resetPasswordWidgets,deleteUserWidgets);
       initUserListFiltering(UM_USER_LIST_CONTAINER,UM_USER_NAME,UM_USER_EMAIL,USERS_PER_PAGE);
       registerUserWidgets();
    }
@@ -648,7 +673,7 @@ public class DsUserManagementScreen extends DecalsScreen implements ViewHandler 
    //sets up the user manager list
    private void buildUserManagersDisplay() {
       revokeWidgets.clear();
-      AdminUserMgmtViewBuilder.buildUserManagerList(USER_MGR_INNER_CONTAINER,umHelper.getUserManagerList(),revokeWidgets);
+      AdminUserMgmtViewBuilder.buildUserManagerList(USER_MGR_DETAILS_CONTAINER,umHelper.getUserManagerList(),revokeWidgets);
       initUserListFiltering(UM_USER_MGR_LIST_CONTAINER,UM_USER_MGR_NAME,UM_USER_MGR_EMAIL,LIST_ITEMS_PER_PAGE);
       registerRevokeWidgets();
    }
@@ -712,6 +737,7 @@ public class DsUserManagementScreen extends DecalsScreen implements ViewHandler 
       dhh.setUpHeader(DsSession.getUser().getFirstName());
       PageAssembler.attachHandler(USERS_LINK,Event.ONCLICK,showUsersListener);
       PageAssembler.attachHandler(USER_MGR_LINK,Event.ONCLICK,showUserManagersListener);
+      PageAssembler.attachHandler(GROUPS_LINK,Event.ONCLICK,showGroupsListener);
       PageAssembler.attachHandler(UM_NEW_USER,Event.ONCLICK,addNewUserListener);
       PageAssembler.attachHandler(ANU_FORM,DecalsScreen.VALID_EVENT,addNewUserSubmitListener);      
       PageAssembler.attachHandler(UM_NEW_USER_MGR,Event.ONCLICK,addNewUserManagerListener); 
@@ -732,8 +758,6 @@ public class DsUserManagementScreen extends DecalsScreen implements ViewHandler 
    @Override
    public void showContents() {
       DsUtil.hideLabel(UM_BUSY);
-      DsUtil.showButton(UM_NEW_USER);
-      DsUtil.showButton(UM_NEW_USER_MGR);
       buildUsersDisplay();
       buildUserManagersDisplay();      
    }

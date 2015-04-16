@@ -45,7 +45,8 @@ private static final String DEFAULT_WIDGET_ID_TOKEN = "x";
    private static final String FILESIZE_DIV_SUFFIX = "-srDetailsFileSizeDiv";
    private static final String FILENAME_DIV_SUFFIX = "-srDetailsFileNameDiv";
    private static final String UPLOAD_DATE_DIV_SUFFIX = "-srDetailsUploadDateDiv";
-   private static final String UPDATE_DATE_DIV_SUFFIX = "-srDetailsUpdateDateDiv";   
+   private static final String UPDATE_DATE_DIV_SUFFIX = "-srDetailsUpdateDateDiv";
+   private static final String ADD_TO_COLLECTION_SUFFIX = "-srAddToCollection";
    private static final String EDIT_SUFFIX = "-srDetailsEdit";
    private static final String PUBLISH_SUFFIX = "-srDetailsPublish";
    private static final String DELETE_SUFFIX = "-srDetailsDelete";
@@ -58,7 +59,7 @@ private static final String DEFAULT_WIDGET_ID_TOKEN = "x";
    private static final String LR_ANCHOR_SUFFIX = "-srDetailsLrAnchor";
    private static final String LR_PUBLISH_DATE_DIV_SUFFIX = "-srDetailsLrPublishDateDiv";   
    private static final String LR_PUBLISH_DATE_SUFFIX = "-srDetailsLrPublishDate";
-   private static final String LR_ADD_TO_COLLECTION_LINK_SUFFIX = "-srAddToCollectionLink";
+   
       
    private static final String DEFAULT_THUMBNAIL = "images/mimeTypes/default-icon.png";
    private static final String WEBPAGE_THUMBNAIL = "images/mimeTypes/webpage-icon.png";
@@ -167,11 +168,6 @@ private static final String DEFAULT_WIDGET_ID_TOKEN = "x";
       sb.append("document.getElementById('" + token + UPLOAD_DATE_DIV_SUFFIX + "').style.display='block';");
       sb.append("document.getElementById('" + token + UPDATE_DATE_DIV_SUFFIX + "').style.display='block';");
       sb.append("document.getElementById('" + token + MIMETYPE_DIV_SUFFIX + "').style.display='block';");
-      if (DsSession.userHasModifiableCollections()) {
-         sb.append("document.getElementById('" + token + LR_ADD_TO_COLLECTION_LINK_SUFFIX + "').style.display='block';");  
-         DOM.getElementById(token + LR_ADD_TO_COLLECTION_LINK_SUFFIX).setAttribute(TITLE_ATTR,"Add '" + sr.getTitle() + "' to a collection");
-         actionHandler.addAddToCollectionClickListener(token + LR_ADD_TO_COLLECTION_LINK_SUFFIX, sr);
-      }
       if (sr.isFileType()) {         
          sb.append("document.getElementById('" + token + FILESIZE_DIV_SUFFIX + "').style.display='block';");
          sb.append("document.getElementById('" + token + FILENAME_DIV_SUFFIX + "').style.display='block';");
@@ -196,8 +192,7 @@ private static final String DEFAULT_WIDGET_ID_TOKEN = "x";
       sb.append("document.getElementById('" + token + FILESIZE_DIV_SUFFIX + "').style.display='none';");
       sb.append("document.getElementById('" + token + FILENAME_DIV_SUFFIX + "').style.display='none';");
       sb.append("document.getElementById('" + token + LR_ID_DIV_SUFFIX + "').style.display='none';");
-      sb.append("document.getElementById('" + token + LR_PUBLISH_DATE_DIV_SUFFIX + "').style.display='none';");
-      sb.append("document.getElementById('" + token + LR_ADD_TO_COLLECTION_LINK_SUFFIX + "').style.display='none';");
+      sb.append("document.getElementById('" + token + LR_PUBLISH_DATE_DIV_SUFFIX + "').style.display='none';");      
       return sb.toString();
    }
    
@@ -260,13 +255,22 @@ private static final String DEFAULT_WIDGET_ID_TOKEN = "x";
       DsUtil.setAnchorTarget(token + LR_ANCHOR_SUFFIX,sr.getTitle() + " at the Learning Registry");      
    }
    
+   private void setupResutTools(String token, DecalsApplicationRepositoryRecord sr) {
+      actionHandler.addEditClickHandler(token + EDIT_SUFFIX, sr.getId());            
+      actionHandler.addDeleteClickHandler(token + DELETE_SUFFIX, sr.getId());
+      if (sr.canPublishToLr()) actionHandler.addPublishClickHandler(token + PUBLISH_SUFFIX, sr.getId());
+      else DsUtil.hideAnchor(token + PUBLISH_SUFFIX);
+      if (sr.canAutoGenerateMetadata()) actionHandler.addGenerateMetadataClickHandler(token + GEN_MD_SUFFIX, sr.getId());
+      else DsUtil.hideAnchor(token + GEN_MD_SUFFIX);      
+      if (DsSession.userHasModifiableCollections()) actionHandler.addAddToCollectionClickListener(token + ADD_TO_COLLECTION_SUFFIX, sr);
+      else DsUtil.hideAnchor(token + ADD_TO_COLLECTION_SUFFIX); 
+   }
+   
    //Populates all widget elements with the given token with the appropriate values from the given search result.
    private void assignDarSearchResultWidgetValues(String token, DecalsApplicationRepositoryRecord sr) {
       setUpResultAnchors(token,sr);
       DsUtil.setImageUrl(token + THUMBNAIL_IMAGE_SUFFIX,getThumbnailForSearchResult(sr));
       DsUtil.setLabelText(token + TITLE_SUFFIX, sr.getTitle());
-      //if (sr.isUrlType()) DsUtil.showLabel(token + LINK_DIV_SUFFIX); 
-      //else DsUtil.hideLabel(token + LINK_DIV_SUFFIX);
       DsUtil.setLabelText(token + LINK_SUFFIX, sr.getTruncatedUrl());
       setUpDescriptionFields(token,sr);      
       DsUtil.setLabelText(token + TYPE_SUFFIX, sr.getType().toString());
@@ -275,13 +279,8 @@ private static final String DEFAULT_WIDGET_ID_TOKEN = "x";
       DsUtil.setLabelText(token + FILESIZE_SUFFIX,DsUtil.getNiceFileSizeString(sr.getFileSizeBytes())); 
       DsUtil.setLabelText(token + UPLOAD_DATE_SUFFIX,sr.getUploadDateStr());
       DsUtil.setLabelText(token + UPDATE_DATE_SUFFIX,sr.getUpdateDateStr());
-      setUpLearningRegistryData(token,sr);
-      actionHandler.addEditClickHandler(token + EDIT_SUFFIX, sr.getId());            
-      actionHandler.addDeleteClickHandler(token + DELETE_SUFFIX, sr.getId());
-      if (sr.canPublishToLr()) actionHandler.addPublishClickHandler(token + PUBLISH_SUFFIX, sr.getId());
-      else DsUtil.hideAnchor(token + PUBLISH_SUFFIX);
-      if (sr.canAutoGenerateMetadata()) actionHandler.addGenerateMetadataClickHandler(token + GEN_MD_SUFFIX, sr.getId());
-      else DsUtil.hideAnchor(token + GEN_MD_SUFFIX);
+      setUpLearningRegistryData(token,sr);      
+      setupResutTools(token,sr);
       addResultHoverActions(token + ROW_RESULT_SUFFIX,sr);      
    }
    
