@@ -46,6 +46,8 @@ public class DsUtil {
    
    public static final String BOLD_STYLE = "font-weight:bold;";
    
+   public enum NavMode{MORE,LESS}
+   
    /**
     * Common English stop words.
     */
