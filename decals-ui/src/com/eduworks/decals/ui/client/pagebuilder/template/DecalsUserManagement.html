@@ -86,35 +86,81 @@
 		</div>
 		
 		<!-- ********************************Groups******************************** -->
-		<div id="umGroupsContainer" style="display:none;" class="row">
-			<div class="large-4 columns" style="padding-top: 10px;">
+		<div id="umGroupsContainer" style="display:none" class="row">
+			<div class="large-4 columns" style="padding-top:10px;">
 				<div class="row">
 					<div class="small-12 columns">												
 						<h5>Public Groups:</h5>
+						<div id="umGroupsNavigation" style="display:none;">						
+							<div id="umGroupsSelections"></div>
+							<div id="umGroupsMoreSelections">	
+								<ul class="side-nav" role="navigation" title="More Groups" style="padding:0px">
+									<li role="menuitem"><a id="umGroupsMoreSelectionsLink"><i class="fa fa-arrow-circle-down"></i> More...</a></li>
+								</ul>
+							</div>	
+							<div id="umGroupsLessSelections" style="display: none">	
+								<ul class="side-nav" role="navigation" title="Less Groups" style="padding:0px">
+									<li role="menuitem"><a id="umGroupsLessSelectionsLink"><i class="fa fa-arrow-circle-up"></i> Less...</a></li>
+								</ul>
+							</div>
+						</div>												
+					</div>
+				</div>
+				<div class="row">
+					<div class="small-12 columns">
 						<br>
-						<button style="padding:12px" id="umAddNewUserManager" type="button" title="Create a new public group" class="small">
+						<button onclick="document.getElementById('addGroupForm').reset();" style="padding:12px" title="Create a new public group" class="small" data-reveal-id="modalAddGroup" data-reveal>
 							<i class="fa fa-plus"></i> Create a New Group
-						</button>								
+						</button>						
 					</div>
 				</div>				
 			</div>			
-			<div class="large-8 columns" style="padding-top: 10px;">
-				<div class="row">
-			    	<div class="small-12 columns">
-			    		<div class="row">
-			    			<div class="small-12 columns">
-								<h5 style="font-size:20px">Public Group Details</h5>
-							</div>							
+			<div class="large-8 columns">
+				<br>
+				<div id="umGroupsSearchBusy" class="row" style="display:block;">
+			    	<div class="small-12 columns" style="display:inline;text-align:center"><img src="images/loading.gif"/><p class="searchBusy">Searching...</p></div>	
+			    </div>  
+				<div id="emptyUmGroups" class="row" style="display:none">
+					<div class="small-3 columns">
+						<img src="images/app-users-front.png" class="noEntries" style="display:inline">
+					</div>
+					<div class="small-9 columns">
+						<p class="noEntries">                          	
+							If you would like to build a group of users, you can easily begin by clicking the 'Create a New Group' button to the left.
+							Once a group is built, application users can use it to add collection permissions to multiple users at the same time.
+						</p>				       	
+					</div>	
+				</div>
+				<div id="currentGroupContainer" class="row" style="display:none;">
+					<div class="row">
+						<div class="small-8 columns">
+							<h3><i class="fa fa-users"></i> <span id="curGroupName" style="font-size: 20px;"></span></h3>
 						</div>
-						<div class="row">
-			    			<div class="small-12 columns">
-			    				TODO GROUP DETAILS
-			    			</div>
-			    		</div>	
-			        </div>	
-			    </div>	
+						<div class="small-4 columns" style="margin-top:1em;padding: 0px;">							
+							<ul id="curGrpModifyButtons" class="button-group radius">
+   								<li style="padding-right:2px">
+   									<button id="curGrpAddUserLink" title="Add a user" type="button" class="curGrpButton secondary">
+										<i class="fa fa-plus-square-o"></i> <b>Add Users</b>
+									</button>
+   								</li>   	
+   								<li>
+   									<button id="curGrpDeleteLink" title="Delete group" type="button" class="curGrpButton alert">
+										<i class="fa fa-trash-o"></i> <b>Delete</b>
+									</button>
+								</li> 							    							
+ 							</ul>
+						</div>						
+					</div>
+					<div class="row">
+						<div class="small-12 columns"><h5>Group Users <span id="currentGroupUserCount" style="font-size: .75em;font-style: italic;color: #666;"></span></h5></div>
+					</div>
+					<div class="row">
+						<div id="currentGroupDetailsContainer"  class="small-12 columns">
+						</div>
+					</div>		
+				</div>
 			</div>
-		</div>
+		</div>	
 		
 	</div>
 </div>	
@@ -122,6 +168,59 @@
 <!-- ********************************End Content DIV******************************** -->
 
 <!-- ********************************MODAL DIALOGS******************************** -->
+<!-- Add Group User Modal -->    
+<div id="modalAddGroupUser" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-user"></i> Add group users?</h2>
+    <p>Add users to <span id="addUserGroupName" style="font-style:italic; font-weight:bold;"></span></p>
+    <div id="addGroupUserPickList">
+	    <div class="row">
+			<div class="small-12 columns">
+				<div id="addGroupUserListContainer"></div>
+			</div>
+		</div>
+		<div id="addGroupUserListButtons" class="row">
+			<div class="large-12 columns">			
+				<button id="addGroupUserOkBtn" type="button" class="small">Ok</button>
+				<button type="button" onclick="$('#modalAddGroupUser').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>	
+	</div>	
+	<div id="addGroupUserConfirm" style="display:none">		
+		<div class="row">
+           	<p>Add the <b><i><span id="addGroupUserCount"></span></i></b> chosen user(s) to the group?</p>            	
+ 		</div>
+		<div id="addGroupUserSubmitBtns" class="row">
+			<div class="large-12 columns">			
+				<button id="addGroupUserAddBtn" type="submit" class="small">Add</button>
+				<button type="button" onclick="$('#modalAddGroupUser').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+		<div class="row">    		
+			<div id="addGroupUserBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+		</div>			
+	</div>    	
+	<a class="close-reveal-modal">&#215;</a>
+</div>
+
+<!-- Delete Group User Confirm Modal -->    
+<div id="modalDeleteGroupUserConfirm" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-user"></i> Remove group user?</h2>
+    <p>Are you sure you wish to remove <span id="delGroupUserUserName" style="font-style:italic; font-weight:bold;"></span> from <span id="delGroupUserGroupName" style="font-style:italic; font-weight:bold;">?</p> 
+    <form id="delGroupUserForm" data-abide="ajax"> 
+    	<input type="hidden" id="delGroupUserUserId"/>   	
+    	<input type="hidden" id="delGroupUserGroupId"/>
+		<div id="delGroupUserSubmitButtons" class="row">
+			<div class="large-12 columns">			
+				<button type="submit" class="small alert">Remove</button>
+				<button type="button" onclick="$('#modalDeleteGroupUserConfirm').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+    </form>
+    <div class="row">    		
+		<div id="delGroupUserBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+	</div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
 
 <!-- Add Group Modal -->    
 <div id="modalAddGroup" class="reveal-modal small" data-reveal>
@@ -154,6 +253,33 @@
 			</div>				
 		</div>
 		<div class="large-2 columns"><button type="button" onclick="$('#modalAddGroup').foundation('reveal', 'close');" class="small secondary">OK</button></div>
+	</div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
+
+<!-- Delete Group Confirm Modal -->    
+<div id="modalDeleteGroupConfirm" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-users"></i> Delete group?</h2>
+    <p>Are you sure you wish to delete the group <span id="deleteGroupName" style="font-style:italic; font-weight:bold;"></span>?</p>    
+    <form id="deleteGroupForm" data-abide="ajax"> 
+    	<input type="hidden" id="deleteGroupId"/>   	
+		<div id="deleteGroupSubmitButtons" class="row">
+			<div class="large-12 columns">			
+				<button type="submit" class="small alert">Delete</button>
+				<button type="button" onclick="$('#modalDeleteGroupConfirm').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+    </form>
+    <div class="row">    		
+		<div id="deleteGroupBusy" style="display:none"><img src="images/status-busy.gif" style="display:inline"/></div>
+	</div>
+	<div class="row" id="deleteGroupSuccess" style="display:none">
+		<div class="large-10 columns">
+			<div class="alert-box info">
+				Group has been deleted.
+			</div>				
+		</div>
+		<div class="large-2 columns"><button type="button" onclick="$('#modalDeleteGroupConfirm').foundation('reveal', 'close');" class="small secondary">OK</button></div>
 	</div>
     <a class="close-reveal-modal">&#215;</a>
 </div>

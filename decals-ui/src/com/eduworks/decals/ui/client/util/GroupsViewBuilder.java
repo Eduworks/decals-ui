@@ -23,8 +23,6 @@ public class GroupsViewBuilder {
    
    private static final String TOOLS_CLASS = "tools";
    
-   private static final String GRP_NAV_CONTAINER = "myGroupsNavigation";
-   
    private static final String GRP_UL_NAV_CLASS = "side-nav";
    private static final String GRP_UL_NAV_ROLE = "navigation";
    private static final String GRP_UL_NAV_TITLE = "Group Selection";
@@ -156,6 +154,7 @@ public class GroupsViewBuilder {
     * If {@link GroupsViewBuilder#UNLIMITED} is passed as the number of entries, navigation pointers
     * for all groups will be added.
     * 
+    * @param navContainer The ID of the main navigation container
     * @param parentPanelId The ID of the parent panel on which to attach the HTML
     * @param showMorePanelId The ID of the 'show more' panel
     * @param showLessPanelId The ID of the 'show less' panel
@@ -163,12 +162,12 @@ public class GroupsViewBuilder {
     * @param numberOfEntries The number groups to show navigation pointers
     * @param selectWidgets The select group widget register
     */
-   public static void buildGroupNavigation(String parentPanelId, String showMorePanelId, String showLessPanelId, ArrayList<Group> groupList, int numberOfEntries, 
+   public static void buildGroupNavigation(String navContainer, String parentPanelId, String showMorePanelId, String showLessPanelId, ArrayList<Group> groupList, int numberOfEntries, 
          HashMap<String,Group> selectWidgets) {
       DsUtil.removeAllChildrenFromElement(parentPanelId);
-      if (groupList.size() <= 0) DsUtil.hideLabel(GRP_NAV_CONTAINER);
+      if (groupList.size() <= 0) DsUtil.hideLabel(navContainer);
       else {
-         DsUtil.showLabel(GRP_NAV_CONTAINER);
+         DsUtil.showLabel(navContainer);
          int toNum = numberOfEntries;
          if (numberOfEntries == UNLIMITED || numberOfEntries >= groupList.size()) toNum = groupList.size();
          StringBuffer sb = new StringBuffer();      

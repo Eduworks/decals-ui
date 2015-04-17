@@ -34,7 +34,6 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
@@ -155,8 +154,8 @@ public class DsUserHomeScreen extends DecalsScreen {
    private static final String MY_COLLECTIONS_LINK_TEXT = "goToMyCollectionsText";
    private static final String MY_CONTRIBUTIONS_LINK_TEXT = "goToMyContributionsText";
    private static final String MY_GROUPS_LINK_TEXT = "goToMyGroupsText";   
-   
-   //TODO
+  
+   private static final String MGRP_NAV_CONTAINER = "myGroupsNavigation";
    private static final String MGRP_NONE = "emptyMyGroups";
    private static final String MGRP_BUSY = "myGroupsSearchBusy";
    private static final String MGRP_CURRENT_CONTAINER = "currentGroupContainer";
@@ -578,7 +577,7 @@ public class DsUserHomeScreen extends DecalsScreen {
       int numToShow = NUMBER_OF_INITIAL_SELECTIONS_SHOWN;
       if (NavMode.MORE.equals(currentGroupNavMode)) numToShow = GroupsViewBuilder.UNLIMITED;
       groupSelectionWidgets.clear();      
-      GroupsViewBuilder.buildGroupNavigation(MGRP_SELECTIONS,MGRP_MORE_SELECTIONS_CONTAINER,MGRP_LESS_SELECTIONS_CONTAINER,
+      GroupsViewBuilder.buildGroupNavigation(MGRP_NAV_CONTAINER,MGRP_SELECTIONS,MGRP_MORE_SELECTIONS_CONTAINER,MGRP_LESS_SELECTIONS_CONTAINER,
             groupManager.getGroupList(),numToShow,groupSelectionWidgets);
       registerGroupSelectionWidgets();
    }
@@ -715,7 +714,6 @@ public class DsUserHomeScreen extends DecalsScreen {
    
    //builds the current group view
    private void buildCurrentGroupView() {
-      //TODO
       DsUtil.setLabelText(CGRP_CUR_GRP_NAME, currentGroup.getName());
       DsUtil.setLabelText(CGRP_USER_COUNT, "(" + String.valueOf(currentGroup.getNumberofUsers()) + ")");
       groupUserDeleteWidgets.clear();
@@ -1417,11 +1415,8 @@ public class DsUserHomeScreen extends DecalsScreen {
       PageAssembler.attachHandler(ADD_FILE_BUTTON,Event.ONCLICK,addFileListener);
       PageAssembler.attachHandler(MY_COLLECTIONS_LINK,Event.ONCLICK,gotoMyCollectionsListener);
       PageAssembler.attachHandler(MY_CONTRIBUTIONS_LINK,Event.ONCLICK,gotoMyContributionsListener);
-      PageAssembler.attachHandler(MY_GROUPS_LINK,Event.ONCLICK,gotoMyGroupsListener);
       PageAssembler.attachHandler(MCOL_MORE_SELECTIONS_LINK,Event.ONCLICK,showAllCollectionsNavListener);      
       PageAssembler.attachHandler(MCOL_LESS_SELECTIONS_LINK,Event.ONCLICK,showLessCollectionsNavListener);
-      PageAssembler.attachHandler(MGRP_MORE_SELECTIONS_LINK,Event.ONCLICK,showAllGroupsNavListener);      
-      PageAssembler.attachHandler(MGRP_LESS_SELECTIONS_LINK,Event.ONCLICK,showLessGroupsNavListener);
       PageAssembler.attachHandler(CCOL_EDIT_DESC,Event.ONCLICK,editCollectionDescriptionListener);
       PageAssembler.attachHandler(CCOL_FORM,VALID_EVENT,currentCollectionSaveHandler);
       PageAssembler.attachHandler(AC_FORM,VALID_EVENT,addCollectionHandler);
@@ -1436,6 +1431,11 @@ public class DsUserHomeScreen extends DecalsScreen {
       PageAssembler.attachHandler(DCU_FORM,VALID_EVENT,deleteCollectionUserSubmitHandler);
       PageAssembler.attachHandler(DCI_FORM,VALID_EVENT,deleteCollectionItemSubmitHandler);
       
+      PageAssembler.attachHandler(MY_GROUPS_LINK,Event.ONCLICK,gotoMyGroupsListener);
+      
+      PageAssembler.attachHandler(MGRP_MORE_SELECTIONS_LINK,Event.ONCLICK,showAllGroupsNavListener);      
+      PageAssembler.attachHandler(MGRP_LESS_SELECTIONS_LINK,Event.ONCLICK,showLessGroupsNavListener);
+      
       PageAssembler.attachHandler(AG_FORM,VALID_EVENT,addGroupHandler);
       PageAssembler.attachHandler(CGRP_DELETE_LINK,Event.ONCLICK,deleteGroupClickHandler);
       PageAssembler.attachHandler(DG_FORM,VALID_EVENT,deleteGroupHandler);
@@ -1443,8 +1443,6 @@ public class DsUserHomeScreen extends DecalsScreen {
       PageAssembler.attachHandler(CGRP_ADD_USER_LINK,Event.ONCLICK,addGroupUserClickHandler);
       PageAssembler.attachHandler(AGU_OK_BTN,Event.ONCLICK,addGroupUserOkClickHandler);
       PageAssembler.attachHandler(AGU_ADD_BTN,Event.ONCLICK,addGroupUserAddClickHandler);
-      
-      
       
       refreshMyContributionSearchResults();
       
