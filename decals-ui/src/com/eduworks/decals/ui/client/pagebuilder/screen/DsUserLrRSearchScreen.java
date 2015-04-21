@@ -12,7 +12,6 @@ import com.eduworks.gwt.client.net.callback.EventCallback;
 import com.eduworks.gwt.client.pagebuilder.PageAssembler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 

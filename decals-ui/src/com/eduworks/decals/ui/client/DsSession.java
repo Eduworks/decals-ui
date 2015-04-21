@@ -184,17 +184,7 @@ public class DsSession {
     * @param userId The user ID
     */
    public static void removeUserFromAllCollections(String userId) {getInstance().getCollectionManager().removeUserFromAllCollections(userId);}
-   
-   /**
-    * Returns a list of collections the given user can modify.
-    * 
-    * @return  Returns a list of collections the given user can modify.
-    */
-   public static ArrayList<Collection> getCanModifyCollectionList() {
-      if (getInstance().getCollectionManager() == null) return null;
-      return getInstance().getCollectionManager().getCanModifyCollectionList(getUser().getUserId());
-   }
-   
+  
    /**
     * Returns the collection manager for the session user.
     * 

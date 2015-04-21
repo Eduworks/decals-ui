@@ -96,7 +96,7 @@ private static final String DEFAULT_WIDGET_ID_TOKEN = "x";
    private static final String SHOW_MORE_DESC = "More...";
    private static final String SHOW_LESS_DESC = "Less...";
    
-   private static final String TITLE_ATTR = "title";
+   //private static final String TITLE_ATTR = "title";
    
    private HashMap<String,String> shortDescMap = new HashMap<String,String>();
    private HashMap<String,String> fullDescMap = new HashMap<String,String>();

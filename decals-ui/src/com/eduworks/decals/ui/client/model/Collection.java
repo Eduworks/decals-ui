@@ -24,10 +24,12 @@ public class Collection implements Comparable<Collection>{
    private static final String CREATE_DATE_KEY = "createdDate";
    private static final String UPDATE_DATE_KEY = "updatedDate";
    private static final String USERS_KEY = "users";
-   private static final String ITEMS_KEY = "items";   
+   private static final String ITEMS_KEY = "items";
+   private static final String GROUPS_KEY = "groups";   
    
    public static final String ITEM_LOCATOR_KEY_PREFIX = "colItem-";
    public static final String USER_LOCATOR_KEY_PREFIX = "colUser-";
+   public static final String GROUP_LOCATOR_KEY_PREFIX = "colGroup-";
    
    private String collectionId;
    private String description;
@@ -43,7 +45,9 @@ public class Collection implements Comparable<Collection>{
    
    private ArrayList<CollectionUser> collectionUsers = new ArrayList<CollectionUser>();
    private ArrayList<CollectionItem> collectionItems = new ArrayList<CollectionItem>();
-   private HashMap<String,String> accessMap = new HashMap<String,String>();
+   private ArrayList<CollectionGroup> collectionGroups = new ArrayList<CollectionGroup>();
+   private HashMap<String,String> userAccessMap = new HashMap<String,String>();
+   private HashMap<String,String> groupAccessMap = new HashMap<String,String>();
    
    public Collection() {}
    
@@ -67,6 +71,7 @@ public class Collection implements Comparable<Collection>{
       }
       if (collectionInfo.containsKey(USERS_KEY)) parseCollectionUsers(collectionInfo.get(USERS_KEY).isArray());
       if (collectionInfo.containsKey(ITEMS_KEY)) parseCollectionItems(collectionInfo.get(ITEMS_KEY).isArray());
+      if (collectionInfo.containsKey(GROUPS_KEY)) parseCollectionGroups(collectionInfo.get(GROUPS_KEY).isArray());
    }
    
    /**
@@ -84,13 +89,20 @@ public class Collection implements Comparable<Collection>{
    public long getNumberofUsers() {return collectionUsers.size();}
    
    /**
+    * Returns the number of groups in the collection.
+    * 
+    * @return  Returns the number of groups in the collection.
+    */
+   public long getNumberofGroups() {return collectionGroups.size();}
+   
+   /**
     * Returns true if the given user can modify the collection.  Returns false otherwise.
     * 
     * @param userId The user id to check for modify.
     * @return  Returns true if the given user can modify the collection.  Returns false otherwise.
     */
    public boolean userCanModifyCollection(String userId) {
-      if (CollectionAccess.MODIFY_ACCESS.equalsIgnoreCase(accessMap.get(userId))) return true;
+      if (CollectionAccess.MODIFY_ACCESS.equalsIgnoreCase(userAccessMap.get(userId))) return true;
       return false;
    }
    
@@ -107,9 +119,16 @@ public class Collection implements Comparable<Collection>{
    
    //Updates the access map based on the collection users
    //This is just a faster way of determining user access
-   private void updateAccessMap() {
-      accessMap.clear();
-      for (CollectionUser cu: collectionUsers) accessMap.put(cu.getUserId(),cu.getAccess());
+   private void updateUserAccessMap() {
+      userAccessMap.clear();
+      for (CollectionUser cu: collectionUsers) userAccessMap.put(cu.getUserId(),cu.getAccess());
+   }
+   
+   //Updates the access map based on the collection groups
+   //This is just a faster way of determining group access
+   private void updateGroupAccessMap() {
+      groupAccessMap.clear();
+      for (CollectionGroup cg: collectionGroups) groupAccessMap.put(cg.getGroupId(),cg.getAccess());
    }
    
    //parses the collection's users
@@ -123,7 +142,21 @@ public class Collection implements Comparable<Collection>{
          collectionUsers.add(cu);      
       }
       Collections.sort(collectionUsers);
-      updateAccessMap();
+      updateUserAccessMap();
+   }
+   
+   //parses the collection's groups
+   private void parseCollectionGroups(JSONArray groups) {
+      collectionGroups.clear();
+      String locatorKey;
+      CollectionGroup cg;
+      for(int i=0;i<groups.size();i++) {
+         locatorKey = DsUtil.generateId(GROUP_LOCATOR_KEY_PREFIX);
+         cg = new CollectionGroup(groups.get(i).isObject(),collectionId,locatorKey);
+         collectionGroups.add(cg);      
+      }
+      Collections.sort(collectionGroups);
+      updateGroupAccessMap();
    }
    
    //return the collection user with the given ID
@@ -134,8 +167,16 @@ public class Collection implements Comparable<Collection>{
       return null;
    }
    
+   //return the collection group with the given ID
+   private CollectionGroup getCollectionGroup(String colGroupId) {
+      for (CollectionGroup cg: collectionGroups) {
+         if (colGroupId.equalsIgnoreCase(cg.getGroupId())) return cg;         
+      }
+      return null;
+   }
+   
    /**
-    * Adds the given collection user to the collection user list and accessMap.
+    * Adds the given collection user to the collection user list and user access map.
     * 
     * @param cu The collection user to add
     */
@@ -145,7 +186,21 @@ public class Collection implements Comparable<Collection>{
       if (u == null) collectionUsers.add(cu);
       else u.setAccess(cu.getAccess());      
       Collections.sort(collectionUsers);
-      updateAccessMap();
+      updateUserAccessMap();
+   }
+   
+   /**
+    * Adds the given collection group to the collection group list and group access map.
+    * 
+    * @param cg The collection group to add
+    */
+   public void addCollectionGroup(CollectionGroup cg) {
+      if (cg == null) return;
+      CollectionGroup g = getCollectionGroup(cg.getGroupId());
+      if (g == null) collectionGroups.add(cg);
+      else g.setAccess(cg.getAccess());      
+      Collections.sort(collectionGroups);
+      updateGroupAccessMap();
    }
    
    /**
@@ -223,7 +278,22 @@ public class Collection implements Comparable<Collection>{
             break;
          }
       }      
-      updateAccessMap();
+      updateUserAccessMap();
+   }
+   
+   /**
+    * Removes the group with the given group ID.
+    * 
+    * @param group The ID of the group to remove.
+    */
+   public void removeGroup(String groupId) {
+      for (CollectionGroup cg:collectionGroups) {
+         if (groupId.equalsIgnoreCase(cg.getGroupId())) {
+            collectionGroups.remove(cg);            
+            break;
+         }
+      }      
+      updateGroupAccessMap();
    }
    
    /**
@@ -246,7 +316,19 @@ public class Collection implements Comparable<Collection>{
       for (CollectionUser cu:collectionUsers) {
          cu.setAccess(userAccessMap.get(cu.getLocatorKey()));
       }
-      updateAccessMap();
+      updateUserAccessMap();
+   }
+   
+   /**
+    * Updates the accesses of collection groups based on the values in the given map.
+    * 
+    * @param groupAccessMap The map containing group accesses
+    */
+   public void updateGroupAccesses(HashMap<String,String> groupAccessMap) {
+      for (CollectionGroup cg:collectionGroups) {
+         cg.setAccess(groupAccessMap.get(cg.getLocatorKey()));
+      }
+      updateGroupAccessMap();
    }
    
    //builds the collection item JSON array
@@ -271,6 +353,17 @@ public class Collection implements Comparable<Collection>{
       return ja;
    }
    
+   //builds the collection group JSON array
+   private JSONArray buildGroupArray() {
+      JSONArray ja = new JSONArray();
+      int idx = 0;
+      for (CollectionGroup cg: collectionGroups) {
+         ja.set(idx,cg.toJson());
+         idx++;
+      }
+      return ja;
+   }
+   
    /**
     * Builds and returns a JSON representation of the collection
     * 
@@ -288,6 +381,7 @@ public class Collection implements Comparable<Collection>{
       jo.put(NAME_KEY, new JSONString(name.trim()));
       jo.put(ITEMS_KEY, buildItemArray());
       jo.put(USERS_KEY,buildUserArray());
+      jo.put(GROUPS_KEY, buildGroupArray());
       return jo;
    }
 
@@ -326,6 +420,12 @@ public class Collection implements Comparable<Collection>{
     */
    public String getCreateDateStr() {return createDateStr;}
    public void setCreateDateStr(String createDateStr) {this.createDateStr = createDateStr;}
+   
+   /**
+    * {@link Collection#collectionGroups}
+    */
+   public ArrayList<CollectionGroup> getCollectionGroups() {return collectionGroups;}
+   public void setCollectionGroups(ArrayList<CollectionGroup> collectionGroups) {this.collectionGroups = collectionGroups;}
 
    /**
     * {@link Collection#collectionUsers}
@@ -352,10 +452,16 @@ public class Collection implements Comparable<Collection>{
    public void setCreateDateRaw(long createDateRaw) {this.createDateRaw = createDateRaw;}
    
    /**
-    * {@link Collection#accessMap}
+    * {@link Collection#userAccessMap}
     */
-   public HashMap<String, String> getAccessMap() {return accessMap;}
-   public void setAccessMap(HashMap<String, String> accessMap) {this.accessMap = accessMap;}
+   public HashMap<String, String> getUserAccessMap() {return userAccessMap;}
+   public void setUserAccessMap(HashMap<String, String> accessMap) {this.userAccessMap = accessMap;}
+   
+   /**
+    * {@link Collection#groupAccessMap}
+    */
+   public HashMap<String, String> getGroupAccessMap() {return groupAccessMap;}
+   public void setGroupAccessMap(HashMap<String, String> groupAccessMap) {this.groupAccessMap = groupAccessMap;}
    
    /**
     * {@link Collection#hasChanged}
@@ -375,6 +481,5 @@ public class Collection implements Comparable<Collection>{
       else if (this.updatedDateRaw < o.getUpdatedDateRaw()) return 1;
       else return -1;
    }
-
    
 }

@@ -1,6 +1,8 @@
 package com.eduworks.decals.ui.client.pagebuilder.screen;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import com.eduworks.decals.ui.client.DsSession;
@@ -11,9 +13,12 @@ import com.eduworks.decals.ui.client.handler.DsUserTabsHandler;
 import com.eduworks.decals.ui.client.handler.DsUserTabsHandler.UserTabs;
 import com.eduworks.decals.ui.client.model.AppUser;
 import com.eduworks.decals.ui.client.model.Collection;
+import com.eduworks.decals.ui.client.model.CollectionGroup;
 import com.eduworks.decals.ui.client.model.CollectionItem;
 import com.eduworks.decals.ui.client.model.CollectionManager;
 import com.eduworks.decals.ui.client.model.CollectionUser;
+import com.eduworks.decals.ui.client.model.Group;
+import com.eduworks.decals.ui.client.model.GroupManager;
 import com.eduworks.decals.ui.client.model.SearchHandlerParamPacket;
 import com.eduworks.decals.ui.client.util.CollectionsViewBuilder;
 import com.eduworks.decals.ui.client.util.DsUtil;
@@ -168,16 +173,26 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
    private static final String MCOL_LESS_SELECTIONS_CONTAINER = "myCollectionsLessSelections";
    private static final String MCOL_LESS_SELECTIONS_LINK = "myCollectionsLessSelectionsLink";
    
+   private static final String CCOL_ITEMS_LINK = "curColItemsLink";
+   private static final String CCOL_USERS_LINK = "curColUsersLink";
+   private static final String CCOL_GROUPS_LINK = "curColGroupsLink";   
+   private static final String CCOL_ITEMS_LINK_TEXT = "curColItemsText";
+   private static final String CCOL_USERS_LINK_TEXT = "curColUsersText";
+   private static final String CCOL_GROUPS_LINK_TEXT = "curColGroupsText";
+   
+   private static final String CCOL_ADD_USER_LINK = "curColAddUserLink";
+   private static final String CCOL_ADD_ITEM_LINK = "curColAddItemLink";
+   private static final String CCOL_ADD_GROUP_LINK = "curColAddGroupLink";
+   
    private static final String CCOL_CHANGED_MESSAGE = "curColChangedMessage";   
    private static final String CCOL_ITEMS_CONTAINER = "curColItems";
-   private static final String CCOL_USERS_CONTAINER = "curColUsers";    
+   private static final String CCOL_USERS_CONTAINER = "curColUsers";
+   private static final String CCOL_GROUPS_CONTAINER = "curColGroups";
    private static final String CCOL_DESC_EDIT_CONTAINER = "curColDescEditContainer";
    private static final String CCOL_DESC_CONTAINER = "curColDescContainer";
    private static final String CCOL_DESC_TEXT_AREA_CONTAINER = "curColDescTextAreaContainer";   
    private static final String CCOL_EDIT_DESC = "curColDescEdit";   
    private static final String CCOL_DESC_TEXT_AREA = "curColDescTextArea";   
-   private static final String CCOL_ADD_USER_LINK = "curColAddUserLink";
-   //private static final String CCOL_ADD_ITEM_LINK = "curColAddItemLink";
    private static final String CCOL_SAVE_LINK = "curColSaveLink";
    private static final String CCOL_DELETE_LINK = "curColDeleteLink";
    private static final String CCOL_RESET_LINK = "curColResetLink";   
@@ -234,6 +249,22 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
    private static final String ACU_CONFIRM_USER_FIRST_NAME = "addCollectionUserFirstName";
    private static final String ACU_CONFIRM_USER_LAST_NAME = "addCollectionUserLastNameName";
    
+   private static final String ACG_COL_NAME = "addGroupCollectionName";
+   private static final String ACG_MODAL = "modalAddCollectionGroup";
+   private static final String ACG_PICKLIST = "addCollectionGroupPickList";
+   private static final String ACG_INNER_CONTAINER = "addCollectionGroupListContainer";
+   private static final String ACG_GROUP_LIST_CONTAINER = "addCollectionGroupList";
+   private static final String ACG_CANCEL_BTN = "addCollectionGroupCancelButton";
+   private static final String ACG_CONFIRM = "addCollectionGroupConfirm";
+   private static final String ACG_FORM = "addCollectionGroupForm";
+   private static final String ACG_GROUP_NAME = "acgGroupName";
+   private static final String ACG_GROUP_TYPE = "acgGroupType";
+   private static final String ACG_CONFIRM_GROUP_NAME = "addCollectionGroupName";
+   private static final String ACG_CONFIRM_ACCESS = "addCollectionGroupAccess";
+   private static final String ACG_CONFIRM_GROUP_ID = "addCollectionGroupId";
+   private static final String ACG_CONFIRM_GROUPH_NAME = "addCollectionGroupHName";
+   private static final String ACG_CONFIRM_GROUP_TYPE = "addCollectionGroupType";
+   
    private static final String DCI_MODAL = "modalDeleteCollectionItemConfirm";
    private static final String DCI_ITEM_NAME = "delColItemItemName";
    private static final String DCI_COL_NAME = "delColItemColName";
@@ -247,6 +278,13 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
    private static final String DCU_FORM = "delColUserForm";
    private static final String DCU_USER_ID = "delColUserUserId";
    private static final String DCU_COL_ID = "delColUserColId";
+   
+   private static final String DCG_MODAL = "modalDeleteCollectionGroupConfirm";
+   private static final String DCG_GROUP_NAME = "delColGroupGroupName";
+   private static final String DCG_COL_NAME = "delColGroupColName";
+   private static final String DCG_FORM = "delColGroupForm";
+   private static final String DCG_GROUP_ID = "delColGroupGroupId";
+   private static final String DCG_COL_ID = "delColGroupColId";
    
    private static final int NUMBER_OF_INITIAL_SELECTIONS_SHOWN = 3;
    private static final int LIST_ITEMS_PER_PAGE = 5;
@@ -264,7 +302,17 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
    private HashMap<String,Collection> collectionSelectionWidgets = new HashMap<String,Collection>();
    private HashMap<String,CollectionItem> collectionItemDeleteWidgets = new HashMap<String,CollectionItem>();
    private HashMap<String,CollectionUser> collectionUserDeleteWidgets = new HashMap<String,CollectionUser>();
+   private HashMap<String,CollectionGroup> collectionGroupDeleteWidgets = new HashMap<String,CollectionGroup>();
    private HashMap<String,AppUser> newCollectionUserWidgets = new HashMap<String,AppUser>();
+   private HashMap<String,Group> newCollectionGroupWidgets = new HashMap<String,Group>();
+   
+   //Group Name Comparator
+   private class GroupNameComparator implements Comparator<Group> {
+      @Override
+      public int compare(Group a, Group b) {      
+         return a.getName().compareTo(b.getName());
+      }
+   }
             
    //Generates a SearchHandlerParamPacket with the needed element IDs for an DAR search...so many :(
    private SearchHandlerParamPacket generateDarSearchParamPacket() {
@@ -554,15 +602,57 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       }
    } 
    
+   //delete collection group submit handler
+   protected EventCallback deleteCollectionGroupSubmitHandler = new EventCallback() {
+      @Override
+      public void onEvent(Event event) {    
+         String groupId = DsUtil.getLabelText(DCG_GROUP_ID);
+         String collectionId = DsUtil.getLabelText(DCG_COL_ID);
+         collectionManager.removeCollectionGroup(collectionId,groupId);
+         setCollectionAsChanged();
+         buildCurrentCollectionView();         
+         PageAssembler.closePopup(DCG_MODAL);  
+      }
+   };
+   
+   //handle delete collection group
+   private void handleDeleteCollectionGroup(CollectionGroup cg) {      
+      DsUtil.setLabelText(DCG_COL_NAME,currentCollection.getName());
+      DsUtil.setLabelText(DCG_GROUP_NAME,cg.getName());
+      DsUtil.setLabelText(DCG_GROUP_ID,cg.getGroupId());      
+      DsUtil.setLabelText(DCG_COL_ID,currentCollection.getCollectionId());
+      PageAssembler.openPopup(DCG_MODAL); 
+   }
+   
+   //delete collection group click event listener
+   private class DeleteCollectionGroupClickListener extends EventCallback {      
+      private CollectionGroup cg;    
+      public DeleteCollectionGroupClickListener(CollectionGroup cg) {
+         this.cg = cg;
+      }      
+      @Override
+      public void onEvent(Event event) {handleDeleteCollectionGroup(cg);}
+   }
+   
+   //register collection group delete widget event handlers
+   private void registerCollectionGroupDeleteWidgets() {
+      for (String key:collectionGroupDeleteWidgets.keySet()) {
+         PageAssembler.attachHandler(key,Event.ONCLICK,new DeleteCollectionGroupClickListener(collectionGroupDeleteWidgets.get(key)));
+      }
+   } 
+   
    //builds the current collection view
-   private void buildCurrentCollectionView() {      
+   private void buildCurrentCollectionView() { 
       DsUtil.setLabelText(ACU_COL_NAME,currentCollection.getName());
       DsUtil.setLabelText(ACI_COL_NAME,currentCollection.getName());      
+      DsUtil.setLabelText(ACG_COL_NAME,currentCollection.getName());
       collectionItemDeleteWidgets.clear();
       collectionUserDeleteWidgets.clear();
-      CollectionsViewBuilder.populateCollectionData(currentCollection,collectionItemDeleteWidgets,collectionUserDeleteWidgets);
+      collectionGroupDeleteWidgets.clear();
+      CollectionsViewBuilder.populateCollectionData(currentCollection,collectionItemDeleteWidgets,collectionUserDeleteWidgets,collectionGroupDeleteWidgets);
       registerCollectionItemDeleteWidgets();
       registerCollectionUserDeleteWidgets();
+      registerCollectionGroupDeleteWidgets();
       if (currentCollection.getNumberofItems() > 0 && currentCollection.userCanModifyCollection(DsSession.getUser().getUserId())) {
          initCollectionsSortable(CCOL_LIST_NAME);
       }
@@ -628,6 +718,47 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       DsUtil.hideLabel(MY_CONTRIBUTIONS_CONTAINER);
       DsUtil.showLabel(contentContainerId);
    }
+   
+   
+   //show collection items listener
+   protected EventCallback showCollectionItemsListener = new EventCallback() {
+      @Override
+      public void onEvent(Event event) {
+         toggleCollectionView(CCOL_ITEMS_LINK_TEXT,CCOL_ITEMS_CONTAINER,CCOL_ADD_ITEM_LINK);         
+      }
+   };
+   
+   //show collection users listener
+   protected EventCallback showCollectionUsersListener = new EventCallback() {
+      @Override
+      public void onEvent(Event event) {
+         toggleCollectionView(CCOL_USERS_LINK_TEXT,CCOL_USERS_CONTAINER,CCOL_ADD_USER_LINK);         
+      }
+   };
+   
+   //show collection groups listener
+   protected EventCallback showCollectionGroupsListener = new EventCallback() {
+      @Override
+      public void onEvent(Event event) {
+         toggleCollectionView(CCOL_GROUPS_LINK_TEXT,CCOL_GROUPS_CONTAINER,CCOL_ADD_GROUP_LINK);         
+      }
+   };
+   
+   //toggles the collection view
+   private void toggleCollectionView(String navTextId, String contentContainerId, String addButtonId) {
+      DsUtil.setLabelAttribute(CCOL_ITEMS_LINK_TEXT, "class", "");
+      DsUtil.setLabelAttribute(CCOL_USERS_LINK_TEXT, "class", "");
+      DsUtil.setLabelAttribute(CCOL_GROUPS_LINK_TEXT, "class", "");
+      DsUtil.setLabelAttribute(navTextId, "class", "active");
+      DsUtil.hideLabel(CCOL_ITEMS_CONTAINER);
+      DsUtil.hideLabel(CCOL_USERS_CONTAINER);
+      DsUtil.hideLabel(CCOL_GROUPS_CONTAINER);      
+      DsUtil.showLabel(contentContainerId);
+      DsUtil.hideLabel(CCOL_ADD_USER_LINK);
+      DsUtil.hideLabel(CCOL_ADD_ITEM_LINK);
+      DsUtil.hideLabel(CCOL_ADD_GROUP_LINK);
+      DsUtil.showLabel(addButtonId);
+   }
 
    //initializes collections list sorting
    private final native String initCollectionsSortable(String listId) /*-{
@@ -665,23 +796,15 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       return accessMap;      
    }
    
-   //show collection items listener
-   protected EventCallback showCollectionItemsListener = new EventCallback() {
-      @Override
-      public void onEvent(Event event) {
-         DsUtil.hideLabel(CCOL_USERS_CONTAINER);
-         DsUtil.showLabel(CCOL_ITEMS_CONTAINER);
+   //Builds an group access map for the current collection based on the values
+   //of the access drop downs on the page
+   private HashMap<String,String> buildCollectionGroupAccessMap() {
+      HashMap<String,String> accessMap = new HashMap<String,String>();
+      for (CollectionGroup cg:currentCollection.getCollectionGroups()) {
+         accessMap.put(cg.getLocatorKey(),DsUtil.getDropDownSelectedText(cg.getLocatorKey() + CollectionsViewBuilder.CCOL_ACCESS_DD_SUFFIX));                           
       }
-   };
-   
-   //show collection users listener
-   protected EventCallback showCollectionUsersListener = new EventCallback() {
-      @Override
-      public void onEvent(Event event) {
-         DsUtil.hideLabel(CCOL_ITEMS_CONTAINER);
-         DsUtil.showLabel(CCOL_USERS_CONTAINER);
-      }
-   };
+      return accessMap;      
+   }
    
    //show collection users listener
    protected EventCallback editCollectionDescriptionListener = new EventCallback() {
@@ -708,8 +831,9 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       public void onEvent(Event event) {   
          HashMap<String,Integer> itemOrderMap = buildCollectionItemOrderMap();
          HashMap<String,String> userAccessMap = buildCollectionUserAccessMap();
+         HashMap<String,String> groupAccessMap = buildCollectionGroupAccessMap();
          String description = DsUtil.getTextAreaText(CCOL_DESC_TEXT_AREA);
-         collectionManager.updateCollection(currentCollection.getCollectionId(),description,itemOrderMap,userAccessMap);
+         collectionManager.updateCollection(currentCollection.getCollectionId(),description,itemOrderMap,userAccessMap,groupAccessMap);
          DsESBApi.decalsUpdateCollection(currentCollection.getCollectionId(), currentCollection.toJson(), new ESBCallback<ESBPacket>() {
             @Override
             public void onSuccess(ESBPacket result) {handlePostCollectionSave(result.get(ESBApi.ESBAPI_RETURN_OBJ).isObject());}
@@ -876,6 +1000,18 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       }
    };
    
+   //initializes new collection group list filtering
+   private final native String initNewCollectionGroupListFiltering(String listContainer, String searchField1, String searchField2, int itemsPerPage) /*-{
+      var newCollectionGroupOptions = {
+         valueNames: [searchField1,searchField2],
+            //page:itemsPerPage,
+            plugins: [
+                //$wnd.ListPagination({outerWindow: 5})
+            ]
+    }; 
+    var newCollectionGroupList = new $wnd.List(listContainer, newCollectionGroupOptions);      
+   }-*/;
+   
    //initializes new collection user list filtering
    private final native String initNewCollectionUserListFiltering(String listContainer, String searchField1, String searchField2, int itemsPerPage) /*-{
       var newCollectionUserOptions = {
@@ -944,6 +1080,17 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       }
    };
    
+   //add collection item click handler
+   protected EventCallback addCollectionItemClickHandler = new EventCallback() {
+      @Override
+      public void onEvent(Event event) {    
+         DsUtil.resetForm(ACI_FORM);
+         DsUtil.hideLabel(ACI_EXISTS);
+         DsUtil.showLabelInline(ACI_SUBMIT_BTNS);
+         PageAssembler.openPopup(ACI_MODAL);
+      }
+   };
+   
    //add collection user submit handler
    protected EventCallback addCollectionUserSubmitHandler = new EventCallback() {
       @Override
@@ -984,7 +1131,101 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
          PageAssembler.closePopup(DCI_MODAL);  
       }
    };
-      
+   
+   //add collection group submit handler
+   protected EventCallback addCollectionGroupSubmitHandler = new EventCallback() {
+      @Override
+      public void onEvent(Event event) {    
+         String groupId = DsUtil.getLabelText(ACG_CONFIRM_GROUP_ID);   
+         String groupName = DsUtil.getLabelText(ACG_CONFIRM_GROUPH_NAME);
+         String groupType = DsUtil.getLabelText(ACG_CONFIRM_GROUP_TYPE);
+         String access = DsUtil.getDropDownSelectedText(ACG_CONFIRM_ACCESS);
+         collectionManager.overwriteCollectionGroup(currentCollection.getCollectionId(),groupId,groupName,groupType,access);
+         setCollectionAsChanged();
+         buildCurrentCollectionView();         
+         PageAssembler.closePopup(ACG_MODAL);  
+      }
+   };
+   
+   //handle add new collection group
+   private void handleAddNewCollectionGroup(Group cg) {
+      DsUtil.setLabelText(ACG_CONFIRM_GROUP_NAME,cg.getName());
+      DsUtil.setLabelText(ACG_CONFIRM_GROUPH_NAME,cg.getName());      
+      DsUtil.setLabelText(ACG_CONFIRM_GROUP_ID,cg.getGroupId());
+      DsUtil.setLabelText(ACG_CONFIRM_GROUP_TYPE,cg.getGroupType());
+      DsUtil.hideLabel(ACG_PICKLIST);      
+      DsUtil.showLabel(ACG_CONFIRM); 
+   }
+   
+   //add new collection group event listener
+   private class AddCollectionGroupClickListener extends EventCallback {      
+      private Group cg;    
+      public AddCollectionGroupClickListener(Group cg) {
+         this.cg = cg;
+      }      
+      @Override
+      public void onEvent(Event event) {handleAddNewCollectionGroup(cg);}
+   }
+   
+   //register new collection group widget event handlers
+   private void registerNewCollectionGroupWidgets() {
+      for (String key:newCollectionGroupWidgets.keySet()) {
+         PageAssembler.attachHandler(key,Event.ONCLICK,new AddCollectionGroupClickListener(newCollectionGroupWidgets.get(key)));
+      }
+   }
+   
+   //sets up the add collection group modal
+   private void setUpAddCollectionGroupModal(ArrayList<Group> groupList) {
+      DsUtil.hideLabel(ACG_CONFIRM);
+      DsUtil.showLabel(ACG_PICKLIST);         
+      DsUtil.showLabel(ACG_CANCEL_BTN);
+      newCollectionGroupWidgets.clear();
+      ArrayList<Group> selectList = collectionManager.removeCollectionGroupsFromGroupList(currentCollection.getCollectionId(),groupList);
+      CollectionsViewBuilder.buildNewCollectionGroupList(ACG_INNER_CONTAINER,selectList,newCollectionGroupWidgets);
+      registerNewCollectionGroupWidgets();
+      initNewCollectionGroupListFiltering(ACG_GROUP_LIST_CONTAINER,ACG_GROUP_NAME,ACG_GROUP_TYPE,LIST_ITEMS_PER_PAGE);
+      PageAssembler.openPopup(ACG_MODAL);      
+   }
+   
+   //combines and sorts two group lists
+   private ArrayList<Group> combineAndSortGroups(ArrayList<Group> list1, ArrayList<Group> list2) {
+      ArrayList<Group> retList = new ArrayList<Group>();
+      retList.addAll(list1);
+      retList.addAll(list2);            
+      Comparator<Group> gnc = new GroupNameComparator();
+      Collections.sort(retList, gnc);
+      return retList;
+   }
+   
+   //add collection group click handler
+   protected EventCallback addCollectionGroupClickHandler = new EventCallback() {
+      @Override
+      public void onEvent(Event event) {
+         DsESBApi.decalsGetPublicGroups(new ESBCallback<ESBPacket>() {
+            @Override
+            public void onSuccess(ESBPacket result) {               
+               final GroupManager pgm = new GroupManager();
+               pgm.initGroupList(result.get(ESBApi.ESBAPI_RETURN_OBJ).isObject());
+               if (groupsInitialized) setUpAddCollectionGroupModal(combineAndSortGroups(pgm.getGroupList(),groupManager.getGroupList()));
+               else {
+                  DsESBApi.decalsGetUserPrivateGroups(new ESBCallback<ESBPacket>() {
+                     @Override
+                     public void onSuccess(ESBPacket result) {               
+                        GroupManager pgm2 = new GroupManager();
+                        pgm2.initGroupList(result.get(ESBApi.ESBAPI_RETURN_OBJ).isObject());
+                        setUpAddCollectionGroupModal(combineAndSortGroups(pgm.getGroupList(),pgm2.getGroupList()));                        
+                     }
+                     @Override
+                     public void onFailure(Throwable caught) {DsUtil.handleFailedApiCall(caught);}
+                  });
+               }
+            }
+            @Override
+            public void onFailure(Throwable caught) {DsUtil.handleFailedApiCall(caught);}
+         });   
+      }
+   };
+   
    //initializes the group elements
    private void initGroupElements() {
       grpNavContainer = MGRP_NAV_CONTAINER;
@@ -1026,10 +1267,17 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       PageAssembler.attachHandler(ACI_FORM,VALID_EVENT,addCollectionItemHandler);
       PageAssembler.attachHandler(ACI_REPLACE,Event.ONCLICK,addCollectionItemReplaceHandler);
       PageAssembler.attachHandler(CCOL_ADD_USER_LINK,Event.ONCLICK,addCollectionUserClickHandler);      
+      PageAssembler.attachHandler(CCOL_ADD_ITEM_LINK,Event.ONCLICK,addCollectionItemClickHandler);
+      PageAssembler.attachHandler(CCOL_ADD_GROUP_LINK,Event.ONCLICK,addCollectionGroupClickHandler);
       PageAssembler.attachHandler(ACU_FORM,VALID_EVENT,addCollectionUserSubmitHandler);
       PageAssembler.attachHandler(DCU_FORM,VALID_EVENT,deleteCollectionUserSubmitHandler);
+      PageAssembler.attachHandler(DCG_FORM,VALID_EVENT,deleteCollectionGroupSubmitHandler);
       PageAssembler.attachHandler(DCI_FORM,VALID_EVENT,deleteCollectionItemSubmitHandler);      
       PageAssembler.attachHandler(MY_GROUPS_LINK,Event.ONCLICK,gotoMyGroupsListener);  
+      PageAssembler.attachHandler(CCOL_ITEMS_LINK,Event.ONCLICK,showCollectionItemsListener);
+      PageAssembler.attachHandler(CCOL_USERS_LINK,Event.ONCLICK,showCollectionUsersListener);
+      PageAssembler.attachHandler(CCOL_GROUPS_LINK,Event.ONCLICK,showCollectionGroupsListener);
+      PageAssembler.attachHandler(ACG_FORM,VALID_EVENT,addCollectionGroupSubmitHandler);
       attachGroupHandlers();
       refreshMyContributionSearchResults();      
    }

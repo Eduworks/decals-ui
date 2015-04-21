@@ -47,28 +47,6 @@ public class CollectionManager {
    public long getNumberOfCollections() {return collectionList.size();}
    
    /**
-    * Returns the number of modifiable collections for the given user.
-    * 
-    * @param The user ID
-    * @return Returns the number of modifiable collections for the given user.
-    */
-   public long getNumberOfModifiableCollections(String userId) {return getListOfModifiableCollections(userId).size();}
-   
-   /**
-    * Returns a list of modifiable collections for the user.
-    * 
-    * @param userId The user ID
-    * @return  Returns a list of modifiable collections for the user.
-    */
-   public ArrayList<Collection> getListOfModifiableCollections(String userId) {
-      ArrayList<Collection> ret = new ArrayList<Collection>();
-      for (Collection c :collectionList) {
-         if (c.userCanModifyCollection(userId)) ret.add(c);
-      }
-      return ret;
-   }
-   
-   /**
     * Adds the given collection to the collection list as the first element.
     * 
     * @param col The collection to add;
@@ -186,6 +164,35 @@ public class CollectionManager {
       c.addCollectionUser(createCollectionUser(collectionId,userId,firstName,lastName,access));
    }
    
+   //creates a new collection group with the given information
+   private CollectionGroup createCollectionGroup(String collectionId, String groupId, String groupName, String groupType, String access) {
+      CollectionGroup cg = new CollectionGroup();
+      cg.setCollectionId(collectionId);
+      cg.setLocatorKey(DsUtil.generateId(Collection.GROUP_LOCATOR_KEY_PREFIX));
+      cg.setGroupId(groupId);
+      cg.setName(groupName);
+      cg.setGroupType(groupType);
+      cg.setAccess(access);
+      return cg;
+   }
+   
+   /**
+    * Adds a new group with the given information to a collection with the given ID.
+    * 
+    * Overwrites an group with the same user ID if it exists.
+    * 
+    * @param collectionId The ID of the collection to add the user
+    * @param groupId The ID of the group
+    * @param groupName The name of the group
+    * @param groupType The type of the group
+    * @param access  The collection access of the group
+    */
+   public void overwriteCollectionGroup(String collectionId, String groupId, String groupName, String groupType, String access) {
+      Collection c = getCollection(collectionId);
+      c.removeGroup(groupId); 
+      c.addCollectionGroup(createCollectionGroup(collectionId,groupId,groupName,groupType,access));
+   }
+   
    /**
     * Returns a list of users that is given user list - collection users.
     * 
@@ -198,7 +205,25 @@ public class CollectionManager {
       Collection c = getCollection(collectionId);     
       ArrayList<AppUser> tempList = new ArrayList<AppUser>();
       for (AppUser u: userList) {
-         if (!c.getAccessMap().containsKey(u.getUserId())) tempList.add(u);
+         if (!c.getUserAccessMap().containsKey(u.getUserId())) tempList.add(u);
+      }
+      return tempList;
+   }
+
+   //TODO
+   /**
+    * Returns a list of groups that is given group list - collection group.
+    * 
+    * @param collectionId The ID of the collection to use.
+    * @param groupList The super set group list
+    * 
+    * @return Returns a list of groups that is given group list - collection group.
+    */
+   public ArrayList<Group> removeCollectionGroupsFromGroupList(String collectionId, ArrayList<Group> groupList) {
+      Collection c = getCollection(collectionId);     
+      ArrayList<Group> tempList = new ArrayList<Group>();
+      for (Group g: groupList) {
+         if (!c.getGroupAccessMap().containsKey(g.getGroupId())) tempList.add(g);
       }
       return tempList;
    }
@@ -223,6 +248,16 @@ public class CollectionManager {
     */
    public void removeCollectionUser(String collectionId, String userId) {
       getCollection(collectionId).removeUser(userId);
+   }
+   
+   /**
+    * Removes the given group from the given collection.
+    * 
+    * @param collectionId The collection ID
+    * @param groupId The group ID
+    */
+   public void removeCollectionGroup(String collectionId, String groupId) {
+      getCollection(collectionId).removeGroup(groupId);
    }
    
    /**
@@ -257,28 +292,44 @@ public class CollectionManager {
     * @param description The collection description
     * @param itemOrderMap The map containing collection item ordering
     * @param userAccessMap The map containing user access
+    * @param groupAccessMap The map containing group access
     */
-   public void updateCollection(String collectionId, String description, HashMap<String,Integer> itemOrderMap, HashMap<String,String> userAccessMap) {
+   public void updateCollection(String collectionId, String description, HashMap<String,Integer> itemOrderMap, HashMap<String,String> userAccessMap, 
+         HashMap<String,String> groupAccessMap) {
       Collection c = getCollection(collectionId);
       c.setDescription(description);
       c.updateItemIndices(itemOrderMap);
       c.updateUserAccesses(userAccessMap);      
+      c.updateGroupAccesses(groupAccessMap);
    }
    
    /**
-    * Returns a list of collections the given user can modify.
+    * Returns a list of modifiable collections for the user.
+    * 
+    * BE SURE TO SET THE USER'S GROUPS AS WELL BEFORE CALLING THIS
     * 
     * @param userId The user ID
-    * @return  Returns a list of collections the given user can modify.
+    * @return  Returns a list of modifiable collections for the user.
     */
-   public ArrayList<Collection> getCanModifyCollectionList(String userId) {
-      ArrayList<Collection> modList = new ArrayList<Collection>();
-      for (Collection c: collectionList) {
-         if (c.userCanModifyCollection(userId)) modList.add(c);
+   public ArrayList<Collection> getListOfModifiableCollections(String userId) {
+      ArrayList<Collection> ret = new ArrayList<Collection>();
+      for (Collection c :collectionList) {
+         if (c.userCanModifyCollection(userId)) ret.add(c);
       }
-      Collections.sort(modList);
-      return modList;
+      Collections.sort(ret);
+      return ret;
    }
+   
+   /**
+    * Returns the number of modifiable collections for the given user.
+    * 
+    * BE SURE TO SET THE USER'S GROUPS AS WELL BEFORE CALLING THIS
+    * 
+    * @param The user ID
+    * @return Returns the number of modifiable collections for the given user.
+    */
+   public long getNumberOfModifiableCollections(String userId) {return getListOfModifiableCollections(userId).size();}
+   
    
    /**
     * Generates and returns a unique collection name if the given name is already in use.

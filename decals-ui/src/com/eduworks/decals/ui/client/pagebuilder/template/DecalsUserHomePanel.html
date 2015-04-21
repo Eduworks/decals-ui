@@ -152,62 +152,58 @@
 					 		</div>					 		
 					 	</div>	
 					 	<hr>
-						<div class="row">						
+						<div class="row">	
+							<div id="colSubNav" class="small-8 columns" style="text-align:left;">
+								<dl class="sub-nav">
+    								<dd id="curColItemsText" class="active">
+    									<a id="curColItemsLink">Items <span id="curColItemCount"></span></a>
+    								</dd>
+    								<dd id="curColUsersText">
+    									<a id="curColUsersLink">Users <span id="curColUserCount"></span></a>
+    								</dd>
+    								<dd id="curColGroupsText">
+    									<a id="curColGroupsLink">Groups <span id="curColGroupCount"></span></a>
+    								</dd>
+  								</dl>					
+							</div>				
+							<div id="colAddBtns" class="small-4 columns">
+								<button id="curColAddItemLink" title="Add collection item" type="button" class="curColButton secondary radius">
+									<i class="fa fa-plus-square"></i> <b>Add Item</b>
+								</button>	
+								<button id="curColAddUserLink" title="Add collection user" type="button" class="curColButton secondary radius" style="display:none">
+									<i class="fa fa-plus-square"></i> <b>Add User</b>
+								</button>
+								<button id="curColAddGroupLink" title="Add collection group" type="button" class="curColButton secondary radius" style="display:none">
+									<i class="fa fa-plus-square"></i> <b>Add Group</b>
+								</button>
+							</div>				
+						</div>
+						<div class="row">	
 							<div class="small-12 columns" id="curColItems">
-								<div class="row">								
-									<div class="small-4 columns">
-										<h5 style="font-style:italic; margin:0px; margin-bottom:10px;"><i class="fa fa-file-o"></i>&nbsp;Items
-											<span id="curColItemCount" style="font-size:.75em;font-style:italic;color:#666"></span>&nbsp;
-											<span id="curColAddItem">
-												<a id="curColAddItemLink" onclick="resetAddCollectionItemModal();" title="Add collection item" data-reveal-id="modalAddCollectionItem" data-reveal>
-													<i class="fa fa-plus-circle" style="color:#008cba;"></i>
-												</a>												
-											</span>
-										</h5>								
-									</div>
-									<div class="small-8 columns" style="padding-top: 2px;">
-										<a id="curColUsersLink" title="Show collection users" onclick="hideDiv('curColItems');toggleDivSlow('curColUsers');">
-											<i class="fa fa-user"></i>&nbsp;Users
-											<span id="curColUserCount2" style="font-size:.75em;"></span>
-										</a>								
-									</div>																
-								</div>								
-  								<div class="row">
-  									<div id="curColItemContainer" class="small-12 columns"></div>
+								<div class="row">
+									<div id="curColItemContainer" class="small-12 columns"></div>
 								</div>
-							</div>							
+							</div>
+						</div>
+						<div class="row">	
 							<div class="small-12 columns" id="curColUsers" style="display:none">
-								<div class="row">								
-									<div class="small-4 columns" style="padding-top: 2px;">
-										<a id="curColItemsLink" title="Show collection items"  onclick="hideDiv('curColUsers');toggleDivSlow('curColItems');">
-											<i class="fa fa-file-o"></i>&nbsp;Items
-											<span id="curColItemCount2" style="font-size:.75em;"></span>
-										</a>								
-									</div>
-									<div class="small-8 columns">
-										<h5 style="font-style:italic; margin:0px; margin-bottom:10px;"><i class="fa fa-user"></i>&nbsp;Users
-											<span id="curColUserCount" style="font-size:.75em;font-style:italic;color:#666"></span>&nbsp;
-											<span id="curColAddUser">
-												<a id="curColAddUserLink" title="Add collection user">
-													<i class="fa fa-plus-circle" style="color:#008cba;"></i>
-												</a>
-											</span>
-										</h5>								
-									</div>								
-								</div>
 								<div class="row">
 									<div id="curColUserContainer" class="small-12 columns"></div>
 								</div>
-							</div>	
+							</div>
+						</div>
+						<div class="row">	
+							<div class="small-12 columns" id="curColGroups" style="display:none">
+								<div class="row">
+									<div id="curColGroupContainer" class="small-12 columns"></div>
+								</div>
+							</div>
 						</div>
 						<div id="curColChangedMessage" class="row" style="display:none;">
 					 		<div data-alert class="alert-box warning round" style="padding:10px 20px; margin: 20px;">
 								Changes have been made to this collection. Don't forget to save them!
 							</div>
-					 	</div>
-					 	<!-- <div id="tomTest">
-							<span id="tomTestOutput">Test Output</span>
-						</div>  -->
+					 	</div>					 	
 					</form>
 					<div id="curColSaveSuccess" class="row" style="display:none;">
 				 		<div data-alert class="alert-box success round" style="padding:10px 20px; margin: 20px;">
@@ -302,6 +298,70 @@
 <!-- ********************************End Content DIV******************************** -->
 
 <!-- ********************************MODAL DIALOGS******************************** -->
+<!-- Delete Collection Group Confirm Modal -->    
+<div id="modalDeleteCollectionGroupConfirm" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-users"></i> Remove collection group?</h2>
+    <p>Are you sure you wish to remove <span id="delColGroupGroupName" style="font-style:italic; font-weight:bold;"></span> from <span id="delColGroupColName" style="font-style:italic; font-weight:bold;"></span>?</p> 
+    <div data-alert class="alert-box info radius" style="background-color:#FFFFA6;border-color:red">
+  		<b>Note:</b> The collection must still be <b>saved</b> before any changes become permanent!  
+	</div>   
+    <form id="delColGroupForm" data-abide="ajax"> 
+    	<input type="hidden" id="delColGroupGroupId"/>   	
+    	<input type="hidden" id="delColGroupColId"/>
+		<div id="delColGroupSubmitButtons" class="row">
+			<div class="large-12 columns">			
+				<button type="submit" class="small alert">Remove</button>
+				<button type="button" onclick="$('#modalDeleteCollectionGroupConfirm').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+    </form>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
+
+<!-- Add Collection Group Modal -->    
+<div id="modalAddCollectionGroup" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-users"></i> Add new collection group?</h2>
+    <p>Add a group to <span id="addGroupCollectionName" style="font-style:italic; font-weight:bold;"></span>:</p>
+    <div data-alert class="alert-box info radius"  style="background-color:#FFFFA6;border-color:red">
+  		<b>Note:</b> The collection must still be <b>saved</b> before any changes become permanent!  
+	</div>
+    <div id="addCollectionGroupPickList">
+	    <p>Add new collection group:<p/>
+	    <div class="row">
+			<div class="small-12 columns">
+				<div id="addCollectionGroupListContainer"></div>
+			</div>
+		</div>
+		<div id="addCollectionGroupCancelButton" class="row">
+			<div class="large-12 columns">			
+				<button type="button" onclick="$('#modalAddCollectionGroup').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>	
+	</div>	
+	<div id="addCollectionGroupConfirm" style="display:none">		
+		<form id="addCollectionGroupForm" data-abide="ajax">
+			<div class="row">
+            	<div class="small-12 columns" style="padding:0px; margin-top:.75em;">
+              		Grant members of <span id="addCollectionGroupName" style="font-style: italic;"></span> the following collection access:&nbsp;&nbsp;
+              		<select id="addCollectionGroupAccess" style="width:70px;">
+                    	<option value="view" selected="selected">view</option>
+                    	<option value="modify">modify</option>  
+                	</select>
+              	</div>
+  			</div>
+			<input type="hidden" id="addCollectionGroupId"/>
+	    	<input type="hidden" id="addCollectionGroupHName"/>
+	    	<input type="hidden" id="addCollectionGroupType"/>	    	
+	    	<div class="row">
+				<div class="large-12 columns">			
+					<button type="submit" class="small">Add</button>
+					<button type="button" onclick="$('#modalAddCollectionGroup').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+				</div>
+			</div>
+		</form>	
+	</div>    	
+	<a class="close-reveal-modal">&#215;</a>
+</div>
 
 <!-- Add Group User Modal -->    
 <div id="modalAddGroupUser" class="reveal-modal small" data-reveal>
@@ -340,7 +400,7 @@
 <!-- Delete Group User Confirm Modal -->    
 <div id="modalDeleteGroupUserConfirm" class="reveal-modal small" data-reveal>
     <h2><i class="fa fa-user"></i> Remove group user?</h2>
-    <p>Are you sure you wish to remove <span id="delGroupUserUserName" style="font-style:italic; font-weight:bold;"></span> from <span id="delGroupUserGroupName" style="font-style:italic; font-weight:bold;">?</p> 
+    <p>Are you sure you wish to remove <span id="delGroupUserUserName" style="font-style:italic; font-weight:bold;"></span> from <span id="delGroupUserGroupName" style="font-style:italic; font-weight:bold;"></span>?</p> 
     <form id="delGroupUserForm" data-abide="ajax"> 
     	<input type="hidden" id="delGroupUserUserId"/>   	
     	<input type="hidden" id="delGroupUserGroupId"/>
@@ -486,7 +546,7 @@
 <!-- Delete Collection Item Confirm Modal -->    
 <div id="modalDeleteCollectionItemConfirm" class="reveal-modal small" data-reveal>
     <h2><i class="fa fa-file"></i> Remove collection item?</h2>
-    <p>Are you sure you wish to remove <span id="delColItemItemName" style="font-style:italic; font-weight:bold;"></span> from <span id="delColItemColName" style="font-style:italic; font-weight:bold;">?</p> 
+    <p>Are you sure you wish to remove <span id="delColItemItemName" style="font-style:italic; font-weight:bold;"></span> from <span id="delColItemColName" style="font-style:italic; font-weight:bold;"></span>?</p> 
     <div data-alert class="alert-box info radius" style="background-color:#FFFFA6;border-color:red">
   		<b>Note:</b> The collection must still be <b>saved</b> before any changes become permanent!  
 	</div>   
@@ -506,7 +566,7 @@
 <!-- Delete Collection User Confirm Modal -->    
 <div id="modalDeleteCollectionUserConfirm" class="reveal-modal small" data-reveal>
     <h2><i class="fa fa-user"></i> Remove collection user?</h2>
-    <p>Are you sure you wish to remove <span id="delColUserUserName" style="font-style:italic; font-weight:bold;"></span> from <span id="delColUserColName" style="font-style:italic; font-weight:bold;">?</p> 
+    <p>Are you sure you wish to remove <span id="delColUserUserName" style="font-style:italic; font-weight:bold;"></span> from <span id="delColUserColName" style="font-style:italic; font-weight:bold;"></span>?</p> 
     <div data-alert class="alert-box info radius" style="background-color:#FFFFA6;border-color:red">
   		<b>Note:</b> The collection must still be <b>saved</b> before any changes become permanent!  
 	</div>   
@@ -601,11 +661,9 @@
 	<div id="addCollectionUserConfirm" style="display:none">		
 		<form id="addCollectionUserForm" data-abide="ajax">
 			<div class="row">
-            	<div class="small-7 columns" style="text-align:right; padding:0px; margin-top:.75em;">
-              		Grant <span id="addCollectionUserName" style="font-style: italic;"></span> the following collection access:
-              	</div>
-            	<div class="small-5 columns" style="padding:0px; width:100px; margin-right:150px;">
-                	<select id="addCollectionUserAccess">
+            	<div class="small-12 columns" style="padding:0px; margin-top:.75em;">
+              		Grant <span id="addCollectionUserName" style="font-style: italic;"></span> the following collection access:&nbsp;&nbsp;             	
+                	<select id="addCollectionUserAccess" style="width:70px">
                     	<option value="view" selected="selected">view</option>
                     	<option value="modify">modify</option>  
                 	</select>

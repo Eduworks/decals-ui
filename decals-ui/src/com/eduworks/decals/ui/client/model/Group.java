@@ -15,20 +15,22 @@ import com.google.gwt.json.client.JSONObject;
  */
 public class Group implements Comparable<Group> {
    
-   private static final String GROUP_ID_KEY = "groupId";
-   private static final String NAME_KEY = "name";
-   private static final String CREATOR_KEY = "creator";   
-   private static final String CREATE_DATE_KEY = "createdDate";
-   private static final String UPDATE_DATE_KEY = "updatedDate";
-   private static final String USERS_KEY = "users";
+   protected static final String GROUP_ID_KEY = "groupId";
+   protected static final String NAME_KEY = "name";
+   protected static final String CREATOR_KEY = "creator";   
+   protected static final String CREATE_DATE_KEY = "createdDate";
+   protected static final String UPDATE_DATE_KEY = "updatedDate";
+   protected static final String USERS_KEY = "users";
+   protected static final String TYPE_KEY = "type";
    
-   private String groupId;
-   private String name;
-   private String creator;
-   private long updatedDateRaw;
-   private String updatedDateStr;
-   private long createDateRaw;
-   private String createDateStr;
+   protected String groupId;
+   protected String name;
+   protected String creator;
+   protected long updatedDateRaw;
+   protected String updatedDateStr;
+   protected long createDateRaw;
+   protected String createDateStr;
+   protected String groupType;
    
    private ArrayList<AppUser> groupUsers = new ArrayList<AppUser>();
    
@@ -43,6 +45,7 @@ public class Group implements Comparable<Group> {
       if (groupInfo.containsKey(GROUP_ID_KEY)) groupId = groupInfo.get(GROUP_ID_KEY).isString().stringValue();
       if (groupInfo.containsKey(NAME_KEY)) name = groupInfo.get(NAME_KEY).isString().stringValue();
       if (groupInfo.containsKey(CREATOR_KEY)) creator = groupInfo.get(CREATOR_KEY).isString().stringValue();
+      if (groupInfo.containsKey(TYPE_KEY)) groupType = groupInfo.get(TYPE_KEY).isString().stringValue();
       if (groupInfo.containsKey(CREATE_DATE_KEY)) {
          createDateRaw = Long.parseLong(groupInfo.get(CREATE_DATE_KEY).isString().stringValue());
          createDateStr = DsUtil.getDateFormatLongDate(Long.parseLong(groupInfo.get(CREATE_DATE_KEY).isString().stringValue()));
@@ -147,6 +150,12 @@ public class Group implements Comparable<Group> {
     */
    public long getCreateDateRaw() {return createDateRaw;}
    public void setCreateDateRaw(long createDateRaw) {this.createDateRaw = createDateRaw;}
+   
+   /**
+    * {@link Group#groupType}
+    */
+   public String getGroupType() {return groupType;}
+   public void setGroupType(String groupType) {this.groupType = groupType;}
         
    @Override
    public int compareTo(Group o) {
@@ -154,5 +163,6 @@ public class Group implements Comparable<Group> {
       else if (this.updatedDateRaw < o.getUpdatedDateRaw()) return 1;
       else return -1;
    }
+
 
 }

@@ -27,9 +27,6 @@ public class AdminUserMgmtHelper {
    private ArrayList<AppUser> userManagerList = new ArrayList<AppUser>();
    private ArrayList<ParadataPublicationInfo> paraPubInfoList = new ArrayList<ParadataPublicationInfo>();   
    
-   private Group currentGroup;
-   private GroupManager groupManager = new GroupManager();
-   
    private ViewHandler viewHandler;
    
    public AdminUserMgmtHelper() {}

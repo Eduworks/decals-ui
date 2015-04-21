@@ -7,8 +7,10 @@ import com.eduworks.decals.ui.client.DsSession;
 import com.eduworks.decals.ui.client.model.AppUser;
 import com.eduworks.decals.ui.client.model.Collection;
 import com.eduworks.decals.ui.client.model.CollectionAccess;
+import com.eduworks.decals.ui.client.model.CollectionGroup;
 import com.eduworks.decals.ui.client.model.CollectionItem;
 import com.eduworks.decals.ui.client.model.CollectionUser;
+import com.eduworks.decals.ui.client.model.Group;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -37,14 +39,13 @@ public class CollectionsViewBuilder {
    private static final String CCOL_CHANGED_MESSAGE = "curColChangedMessage";
       
    private static final String CCOL_MOD_COL_CONTAINER = "curColModifyButtons";
-   private static final String CCOL_ADD_USER = "curColAddUser";
-   private static final String CCOL_ADD_ITEM = "curColAddItem";
+   
+   private static final String CCOL_ADD_BTN_CONTAINER = "colAddBtns";
    
    private static final String CCOL_NAME = "curColName";
    private static final String CCOL_USER_COUNT = "curColUserCount";   
    private static final String CCOL_ITEM_COUNT = "curColItemCount";
-   private static final String CCOL_USER_COUNT2 = "curColUserCount2";
-   private static final String CCOL_ITEM_COUNT2 = "curColItemCount2";
+   private static final String CCOL_GROUP_COUNT = "curColGroupCount";
    private static final String CCOL_DESC_CONTAINER = "curColDescContainer";
    private static final String CCOL_DESC_TEXT_AREA_CONTAINER = "curColDescTextAreaContainer";
    private static final String CCOL_DESC_EDIT_CONTAINER = "curColDescEditContainer";   
@@ -53,16 +54,20 @@ public class CollectionsViewBuilder {
    
    private static final String CCOL_ITEM_CONTAINER = "curColItemContainer";
    private static final String CCOL_USER_CONTAINER = "curColUserContainer";
+   private static final String CCOL_GROUP_CONTAINER = "curColGroupContainer";
    
    private static final String CCOL_ITEM_LIST_NAME = "curColItemList";
    private static final String CCOL_USER_LIST_NAME = "curColUserList";
+   private static final String CCOL_GROUP_LIST_NAME = "curColGroupList";
    
    private static final String CCOL_DELETE_ITEM_PREFIX = "ccolDelItem-";
    private static final String CCOL_ITEM_DETAILS_PREFIX = "ccolItemDet-";
    private static final String CCOL_DELETE_USER_PREFIX = "ccolDelUser-";
+   private static final String CCOL_DELETE_GROUP_PREFIX = "ccolDelGroup-";
    
    private static final String CCOL_DELETE_ITEM_TITLE = "Delete collection item";
    private static final String CCOL_DELETE_USER_TITLE = "Delete collection user";
+   private static final String CCOL_DELETE_GROUP_TITLE = "Delete collection group";
    private static final String CCOL_ITEM_DETAILS_TITLE = "Toggle item details";
    
    public static final String CCOL_ACCESS_DD_SUFFIX = "-colAccess";
@@ -75,6 +80,7 @@ public class CollectionsViewBuilder {
    
    private static final String EMPTY_DESC_TEXT = "No description has been added to this collection.";
    private static final String EMPTY_ITEM_TEXT = "No items have been added to this collection.";   
+   private static final String EMPTY_GROUP_TEXT = "No groups have been given permissions on this collection.";
    
    private static final String ITEM_CLASS_TOGGLE_STR = "onmouseover=\"this.className='alert-box info radius';\" onmouseleave=\"this.className='alert-box secondary radius';\"";
    private static final String ONCHANGE_TRIGGER_CHANGE_MESSAGE = "onchange=\"document.getElementById('" + CCOL_CHANGED_MESSAGE + "').style.display='block';\"";
@@ -86,7 +92,16 @@ public class CollectionsViewBuilder {
    private static final String ACU_TOOLS_PREFIX = "acuTools-";
    private static final String ACU_ADD_CLASS = "acuAddBtn";
    private static final String ACU_ADD_PREFIX = "acuAdd-";
-   private static final String ACU_ADD_TITLE = "Grant collection access";  
+   private static final String ACU_ADD_TITLE = "Grant collection access";
+   
+   private static final String ACG_CONTAINER = "addCollectionGroupList";
+   private static final String ACG_GROUP_NAME_CLASS = "acgGroupName";
+   private static final String ACG_GROUP_TYPE_CLASS = "acgGroupType";
+   private static final String ACG_SEARCH_PLACEHOLDER = "Find New Collection Group";
+   private static final String ACG_TOOLS_PREFIX = "acgTools-";
+   private static final String ACG_ADD_CLASS = "acgAddBtn";
+   private static final String ACG_ADD_PREFIX = "acgAdd-";
+   private static final String ACG_ADD_TITLE = "Grant collection access";  
    
    private static final String ARTC_CONTAINER = "addToCollectionList";
    private static final String ARTC_COL_NAME_CLASS = "artcColName";
@@ -149,14 +164,8 @@ public class CollectionsViewBuilder {
    
    //sets up the add item and user buttons
    private static void setUpAddButtons(boolean canModify) {
-      if (canModify){
-         DsUtil.showLabelInline(CCOL_ADD_USER);
-         DsUtil.showLabelInline(CCOL_ADD_ITEM);         
-      }
-      else {
-         DsUtil.hideLabel(CCOL_ADD_USER);
-         DsUtil.hideLabel(CCOL_ADD_ITEM);         
-      }
+      if (canModify) DsUtil.showLabel(CCOL_ADD_BTN_CONTAINER);
+      else DsUtil.hideLabel(CCOL_ADD_BTN_CONTAINER);
    }
    
    //sets up the collection tool bar
@@ -164,8 +173,7 @@ public class CollectionsViewBuilder {
       DsUtil.setLabelText(CCOL_NAME,col.getName());
       DsUtil.setLabelText(CCOL_USER_COUNT,"(" + String.valueOf(col.getNumberofUsers()) + ")");
       DsUtil.setLabelText(CCOL_ITEM_COUNT,"(" + String.valueOf(col.getNumberofItems()) + ")");
-      DsUtil.setLabelText(CCOL_USER_COUNT2,"(" + String.valueOf(col.getNumberofUsers()) + ")");
-      DsUtil.setLabelText(CCOL_ITEM_COUNT2,"(" + String.valueOf(col.getNumberofItems()) + ")");
+      DsUtil.setLabelText(CCOL_GROUP_COUNT,"(" + String.valueOf(col.getNumberofGroups()) + ")");
       if (canModify) DsUtil.showLabel(CCOL_MOD_COL_CONTAINER);
       else DsUtil.hideLabel(CCOL_MOD_COL_CONTAINER);
    }
@@ -306,14 +314,94 @@ public class CollectionsViewBuilder {
       RootPanel.get(CCOL_USER_CONTAINER).add(new HTML(sb.toString()));
    }
    
+   //builds the empty group statement
+   private static String buildEmptyGroupStatement() {
+      StringBuffer sb = new StringBuffer();
+      sb.append("<p class=\"" + EMPTY_CLASS + "\">");
+      sb.append(EMPTY_GROUP_TEXT);      
+      sb.append("</p>");
+      return sb.toString();
+   }
+   
+   //builds the group access section
+   private static String buildGroupAccess(CollectionGroup cg, boolean canModify) {
+      StringBuffer sb = new StringBuffer();
+      String ddId = cg.getLocatorKey() + CCOL_ACCESS_DD_SUFFIX;
+      if (!canModify) {         
+         sb.append("<span id=\"" + ddId + "\" style=\"font-size:14px;\">");
+         sb.append("<i>" + cg.getAccess() + "</i>");
+         sb.append("</span>");         
+      }
+      else {                  
+         sb.append("<select id=\"" + ddId + "\" style=\"margin: 0px;\" " + ONCHANGE_TRIGGER_CHANGE_MESSAGE + ">");
+         sb.append("<option value=\"" + CollectionAccess.VIEW_ACCESS + "\" ");
+         if (CollectionAccess.VIEW_ACCESS.equalsIgnoreCase(cg.getAccess())) sb.append("selected=\"selected\"");
+         sb.append(">" + CollectionAccess.VIEW_ACCESS + "</option>");
+         sb.append("<option value=\"" + CollectionAccess.MODIFY_ACCESS + "\" ");
+         if (CollectionAccess.MODIFY_ACCESS.equalsIgnoreCase(cg.getAccess())) sb.append("selected=\"selected\"");
+         sb.append(">" + CollectionAccess.MODIFY_ACCESS + "</option>");         
+         sb.append("</select>");
+      }
+      return sb.toString();
+   }
+   
+   //builds a collection group line item
+   private static String buildCollectionGroupLineItem(CollectionGroup cg, boolean canModify, HashMap<String,CollectionGroup> collectionGroupDeleteWidgets) {
+      String deleteGroupId = DsUtil.generateId(CCOL_DELETE_GROUP_PREFIX);
+      collectionGroupDeleteWidgets.put(deleteGroupId,cg);
+      StringBuffer sb = new StringBuffer();
+      sb.append("<li>");
+      sb.append("<div class=\"row\">");
+      sb.append("<div class=\"small-5 columns\">");
+      sb.append("<i class=\"fa fa-users\" style=\"color:#008cba;font-size:1.5em;\"></i>");
+      sb.append("<span class=\"" + WORD_WRAP_CLASS + "\">");
+      sb.append("&nbsp;&nbsp;&nbsp;<b>" + cg.getName() + "</b>");
+      sb.append("</span>");
+      sb.append("</div>");
+      sb.append("<div class=\"small-4 columns\">");
+      sb.append("<span class=\"" + WORD_WRAP_CLASS + "\" style=\"font-size:14px;color:#666\">");
+      sb.append("<i>" + cg.getGroupType() + "</i>");
+      sb.append("</span>");
+      sb.append("</div>");
+      sb.append("<div class=\"small-2 columns\">");
+      sb.append(buildGroupAccess(cg,canModify));
+      sb.append("</div>");
+      sb.append("<div class=\"small-1 columns\">");
+      if (canModify) {
+         sb.append("<a id=\"" + deleteGroupId + "\" title=\"" + CCOL_DELETE_GROUP_TITLE + "\">");
+         sb.append("<i style=\"color:red;font-size:1.2em\" class=\"fa fa-times-circle\"></i></a>");
+      }
+      sb.append("</div>");
+      sb.append("</div>");
+      sb.append("</li>");      
+      return sb.toString();
+   }
+  
+   //builds the group view
+   private static void buildGroupView(Collection col, boolean canModify, HashMap<String,CollectionGroup> collectionGroupDeleteWidgets) {
+      DsUtil.removeAllChildrenFromElement(CCOL_GROUP_CONTAINER);
+      String groupText;
+      if (col.getNumberofGroups() == 0) groupText = buildEmptyGroupStatement();
+      else {
+         StringBuffer sb = new StringBuffer();
+         sb.append("<ul id=\"" + CCOL_GROUP_LIST_NAME + "\">");
+         for (CollectionGroup cg: col.getCollectionGroups()) sb.append(buildCollectionGroupLineItem(cg,canModify,collectionGroupDeleteWidgets));
+         sb.append("</ul>");
+         groupText = sb.toString();
+      }      
+      RootPanel.get(CCOL_GROUP_CONTAINER).add(new HTML(groupText));
+   }
+   
    /**
     * Populates the collection data into the page view
     * 
     * @param col The collection to use for population
     * @param collectionItemDeleteWidgets The collection item delete widget register
     * @param collectionUserDeleteWidgets The collection user delete widget register
+    * @param collectionGroupDeleteWidgets The collection group delete widget register
     */
-   public static void populateCollectionData(Collection col, HashMap<String,CollectionItem> collectionItemDeleteWidgets, HashMap<String,CollectionUser> collectionUserDeleteWidgets) {
+   public static void populateCollectionData(Collection col, HashMap<String,CollectionItem> collectionItemDeleteWidgets, HashMap<String,CollectionUser> collectionUserDeleteWidgets, 
+         HashMap<String,CollectionGroup> collectionGroupDeleteWidgets) {
       boolean canModify = col.userCanModifyCollection(DsSession.getUser().getUserId());
       if (col.getHasChanged()) DsUtil.showLabel(CCOL_CHANGED_MESSAGE);
       else DsUtil.hideLabel(CCOL_CHANGED_MESSAGE);
@@ -323,6 +411,7 @@ public class CollectionsViewBuilder {
       setUpAddButtons(canModify);
       buildItemView(col,canModify,collectionItemDeleteWidgets);
       buildUserView(col,canModify,collectionUserDeleteWidgets);
+      buildGroupView(col,canModify,collectionGroupDeleteWidgets);
    }
    
    //builds the collection selection line item
@@ -399,6 +488,25 @@ public class CollectionsViewBuilder {
       for (AppUser pnu: addCollectionUserList) {
          sb.append(ViewBuilderHelper.generateUserPickListLineItem(pnu,newCollectionUserWidgets,ACU_TOOLS_PREFIX,ACU_ADD_PREFIX, 
                ACU_USER_NAME_CLASS,ACU_USER_ID_CLASS,ACU_ADD_CLASS,ACU_ADD_TITLE)); 
+      }            
+      sb.append(ViewBuilderHelper.buildListFooter());     
+      RootPanel.get(parentPanelId).add(new HTML(sb.toString()));
+   }
+   
+   /**
+    * Builds the add new collection group view HTML and attaches it to the given parent panel
+    * 
+    * @param parentPanelId The ID of the parent panel on which to attach the HTML
+    * @param addCollectionGroupList The list of potential new collection groups
+    * @param newCollectionGroupWidgets The new collection group widget register
+    */
+   public static void buildNewCollectionGroupList(String parentPanelId, ArrayList<Group> addCollectionGroupList, HashMap<String,Group> newCollectionGroupWidgets) {
+      DsUtil.removeAllChildrenFromElement(parentPanelId);      
+      StringBuffer sb = new StringBuffer();
+      sb.append(ViewBuilderHelper.buildListHeader(ACG_CONTAINER, ACG_SEARCH_PLACEHOLDER));      
+      for (Group png: addCollectionGroupList) {
+         sb.append(ViewBuilderHelper.generateGroupPickListLineItem(png,newCollectionGroupWidgets,ACG_TOOLS_PREFIX,ACG_ADD_PREFIX, 
+               ACG_GROUP_NAME_CLASS,ACG_GROUP_TYPE_CLASS,ACG_ADD_CLASS,ACG_ADD_TITLE)); 
       }            
       sb.append(ViewBuilderHelper.buildListFooter());     
       RootPanel.get(parentPanelId).add(new HTML(sb.toString()));

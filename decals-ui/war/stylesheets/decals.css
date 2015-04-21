@@ -24,13 +24,22 @@ html, body {
   background: white;
 }
 
-#curColUsersLink,
-#curColItemsLink{
-	font-size: 1.125rem;
-	font-style:italic; 
-	margin:0px; 
-	margin-bottom:10px;
-	color:#B2B2B2;
+#colSubNav .sub-nav dd a {
+  color: #008cba;
+}
+
+#colSubNav .sub-nav dd a:hover {
+  color: black;
+}
+
+#colSubNav .sub-nav dd.active a {
+  color: white;
+  background: #008cba;
+}
+
+#colSubNav .sub-nav dd.active a:hover {
+  color: white;
+  background: #008cba;
 }
 
 #curColItemOrderMessage {
@@ -94,7 +103,8 @@ html, body {
 	margin:0px;
 }
 
-#curColUserList li {
+#curColUserList li,
+#curColGroupList li {
 	padding:7px;
 }
 
@@ -108,9 +118,11 @@ html, body {
 #cgrpUsers ul,
 #addToCollectionList ul,
 #addGroupUserList ul,
+#addCollectionGroupList ul,
 #addCollectionUserList ul,
 #curColItemContainer ul,
 #curColUserContainer ul,
+#curColGroupContainer ul,
 #addAdminUserList ul,
 #daaAministrators ul,
 #daaParadataPublishings ul,
@@ -124,8 +136,10 @@ html, body {
 #cgrpUsers li:hover,
 #addToCollectionList li:hover,
 #addGroupUserList li:hover,
+#addCollectionGroupList li:hover,
 #addCollectionUserList li:hover,
 #curColUserList li:hover,
+#curColGroupList li:hover,
 #addAdminUserList li:hover,
 #daaAministrators li:hover,
 #daaParadataPublishings li:hover,
@@ -173,10 +187,12 @@ html, body {
 .curColDesc,
 .daaPpubUrl,
 .artcColName,
+.acgGroupName,
 .acuUserName,
 .aguUserName,
 .addAdminUserName,
 .acuUserId,
+.acgGroupType,
 .aguUserId,
 .addAdminUserId,
 .addUserMgrUserName,
@@ -217,6 +233,7 @@ html, body {
 .artcAddBtn .button,
 .aguAddBtn .button,
 .acuAddBtn .button,
+.acgAddBtn .button,
 .addAdminAddBtn .button,
 .addUserMgrAddBtn .button,
 .duatAddBtn .button,
@@ -231,6 +248,7 @@ html, body {
 }
 
 .artcColName,
+.acgGroupName,
 .acuUserName,
 .aguUserName,
 .addAdminUserName,
@@ -242,6 +260,7 @@ html, body {
 }
 
 .acuUserId,
+.acgGroupType,
 .aguUserId,
 .addAdminUserId,
 .addUserMgrUserId,
@@ -253,6 +272,7 @@ html, body {
 
 .artcAddBtn,
 .acuAddBtn,
+.acgAddBtn,
 .aguAddBtn,
 .addAdminAddBtn,
 .addUserMgrAddBtn,
@@ -301,6 +321,7 @@ html, body {
 
 #addGroupUserList .list,
 #addToCollectionList .list,
+#addCollectionGroupList .list,
 #addCollectionUserList .list,
 #addAdminUserList .list,
 #addUserMgrUserList .list,

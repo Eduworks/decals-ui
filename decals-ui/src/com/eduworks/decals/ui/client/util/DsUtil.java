@@ -23,6 +23,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -61,6 +62,16 @@ public class DsUtil {
       "to","too","twas","us","wants","was","we","were","what","when","where","which","while","who","whom","why",
       "will","with","would","yet","you","your"
    };
+   
+   /**
+    * Resets the given form
+    * 
+    * @param formId  The ID of the form to reset.
+    */
+   public static void resetForm(String formId) {
+      FormPanel aciForm = (FormPanel)PageAssembler.elementToWidget(formId, PageAssembler.FORM);
+      aciForm.reset();
+   }
    
    /**
     * Returns a nicely formatted file size string  given the file size in bytes
