@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import com.eduworks.decals.ui.client.DsSession;
 import com.eduworks.decals.ui.client.util.DsUtil;
 import com.google.gwt.json.client.JSONObject;
 
@@ -51,7 +52,10 @@ public class CollectionManager {
     * 
     * @param col The collection to add;
     */
-   public void addCollection(Collection col) {collectionList.add(0,col);}
+   public void addCollection(Collection col) {
+      collectionList.add(0,col);
+      syncCollectionSessionPermissions(col,DsSession.getUser().getUserId(),DsSession.getUserGroups());
+   }
    
    /**
     * Removes the collection with the given ID from the collection list.
@@ -77,6 +81,7 @@ public class CollectionManager {
       removeCollection(col.getCollectionId());
       addCollection(col);
       Collections.sort(collectionList);
+      //syncCollectionSessionPermissions(col,DsSession.getUser().getUserId(),DsSession.getUserGroups());
    }   
    
    //return the collection with the given ID
@@ -210,7 +215,6 @@ public class CollectionManager {
       return tempList;
    }
 
-   //TODO
    /**
     * Returns a list of groups that is given group list - collection group.
     * 
@@ -304,31 +308,29 @@ public class CollectionManager {
    }
    
    /**
-    * Returns a list of modifiable collections for the user.
+    * Returns a list of modifiable collections for the session user.
     * 
-    * BE SURE TO SET THE USER'S GROUPS AS WELL BEFORE CALLING THIS
+    * BE SURE TO SYNC THE USER'S GROUPS AS WELL BEFORE CALLING THIS
     * 
-    * @param userId The user ID
-    * @return  Returns a list of modifiable collections for the user.
+    * @return  Returns a list of modifiable collections for the session user.
     */
-   public ArrayList<Collection> getListOfModifiableCollections(String userId) {
+   public ArrayList<Collection> getListOfSessionModifiableCollections() {
       ArrayList<Collection> ret = new ArrayList<Collection>();
       for (Collection c :collectionList) {
-         if (c.userCanModifyCollection(userId)) ret.add(c);
+         if (c.sessionUserCanModify()) ret.add(c);
       }
       Collections.sort(ret);
       return ret;
    }
    
    /**
-    * Returns the number of modifiable collections for the given user.
+    * Returns the number of modifiable collections for the session user.
     * 
-    * BE SURE TO SET THE USER'S GROUPS AS WELL BEFORE CALLING THIS
+    * BE SURE TO SYCN THE USER'S GROUPS AS WELL BEFORE CALLING THIS
     * 
-    * @param The user ID
-    * @return Returns the number of modifiable collections for the given user.
+    * @return Returns the number of modifiable collections for the session user.
     */
-   public long getNumberOfModifiableCollections(String userId) {return getListOfModifiableCollections(userId).size();}
+   public long getNumberOfSessionModifiableCollections() {return getListOfSessionModifiableCollections().size();}
    
    
    /**
@@ -367,6 +369,34 @@ public class CollectionManager {
       }
       if (found) return generateUniqueCollectionName(name,idx2);
       else return name + " (" + idx2  + ")";
+   }
+   
+   //synchronizes the given collection permissions with session user groups
+   private void syncCollectionSessionPermissions(Collection c, String userId, ArrayList<Group> userGroupList) {
+      boolean hasMod = false;
+      hasMod = false;
+      if (c.getUserAccessMap().containsKey(userId)) c.setSessionUserAccess(c.getUserAccessMap().get(userId));
+      else {            
+         for (Group g: userGroupList) {
+            if (c.getGroupAccessMap().containsKey(g.getGroupId())) {
+               if (CollectionAccess.MODIFY_ACCESS.equalsIgnoreCase(c.getGroupAccessMap().get(g.getGroupId()))) {
+                  hasMod = true;
+                  break;
+               }
+            }
+         }
+         if (hasMod) c.setSessionUserAccess(CollectionAccess.MODIFY_ACCESS);
+         else c.setSessionUserAccess(CollectionAccess.VIEW_ACCESS);
+      }
+   }
+   
+   /**
+    * Synchronizes all collection permissions with user groups    
+    */
+   public void syncAllSessionCollectionPermissions() {
+      String userId = DsSession.getUser().getUserId();
+      ArrayList<Group> userGroupList = DsSession.getUserGroups();      
+      for (Collection c: collectionList) syncCollectionSessionPermissions(c,userId,userGroupList);
    }
    
 }

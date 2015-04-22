@@ -7,6 +7,8 @@ import com.eduworks.decals.ui.client.handler.InteractiveSearchHandler;
 import com.eduworks.decals.ui.client.model.AppUser;
 import com.eduworks.decals.ui.client.model.Collection;
 import com.eduworks.decals.ui.client.model.CollectionManager;
+import com.eduworks.decals.ui.client.model.Group;
+import com.eduworks.decals.ui.client.model.GroupManager;
 import com.eduworks.decals.ui.client.util.DsUtil;
 import com.eduworks.gwt.client.net.api.ESBApi;
 import com.eduworks.gwt.client.net.callback.ESBCallback;
@@ -35,7 +37,9 @@ public class DsSession {
       
    private SearchType sessionSearchType = SearchType.DUAL;
    
+   private GroupManager groupManager;
    private CollectionManager collectionManager;
+   private boolean groupsInitialized = false;
    
    public enum SessionState{LOGGED_IN, NONE, LOGGING_OUT}
    
@@ -46,9 +50,11 @@ public class DsSession {
    private static final DsSession INSTANCE = new DsSession();
    
    private DsSession() {
+      groupManager = new GroupManager();      
       collectionManager = new CollectionManager();
       cachedLrSearchHandler = null;
       setSessionState(SessionState.NONE);
+      groupsInitialized = false;
    }
 
    public static DsSession getInstance() {return INSTANCE;}
@@ -131,6 +137,12 @@ public class DsSession {
    public CollectionManager getCollectionManager() {return collectionManager;}
    
    /**
+    * {@link DsSession#groupManager}
+    */
+   public GroupManager getGroupManager() {return groupManager;}
+   
+   
+   /**
     * Returns the session user.
     * 
     * @return  Returns the session user.
@@ -149,7 +161,14 @@ public class DsSession {
     * 
     * @return  Returns the user's modifiable collections.
     */
-   public static ArrayList<Collection> getUserModifiableCollections() {return getUserCollectionManager().getListOfModifiableCollections(getUser().getUserId());}
+   public static ArrayList<Collection> getUserModifiableCollections() {return getUserCollectionManager().getListOfSessionModifiableCollections();}
+   
+   /**
+    * Returns the user's groups.
+    * 
+    * @return  Returns the user's groups.
+    */
+   public static ArrayList<Group> getUserGroups() {return getUserGroupManager().getGroupList();}
    
    /**
     * Returns true if the user has collections.  Returns false otherwise.
@@ -168,7 +187,7 @@ public class DsSession {
     */
    public static boolean userHasModifiableCollections() {
       if (getInstance().getCollectionManager() == null) return false;
-      return getInstance().getCollectionManager().getNumberOfModifiableCollections(getUser().getUserId()) > 0;
+      return getInstance().getCollectionManager().getNumberOfSessionModifiableCollections() > 0;
    }
    
    /**
@@ -191,7 +210,13 @@ public class DsSession {
     * @return  Returns the collection manager for the session user.
     */
    public static CollectionManager getUserCollectionManager() {return getInstance().getCollectionManager();}
-      
+   
+   /**
+    * Returns the group manager for the session user.
+    * 
+    * @return  Returns the group manager for the session user.
+    */
+   public static GroupManager getUserGroupManager() {return getInstance().getGroupManager();}
    
    /**
     * Parses application/session settings out of the given JSON Object
@@ -207,18 +232,36 @@ public class DsSession {
       setLrPublishParadataActor(jo.get(DsESBApi.LR_PUBLISH_PD_ACTOR_KEY).isString().stringValue());
    }
    
-   /**
-    * Builds the session user's collection list.
-    */
-   public void buildUserCollections() {
-      DsESBApi.decalsGetUserCollections(new ESBCallback<ESBPacket>() {
-         @Override
+   //initialize user groups
+   private void initializeUserGroups() {
+      DsESBApi.decalsGetMemberGroupsForUser(sessionUser.getUserId(), new ESBCallback<ESBPacket>() {
          public void onSuccess(ESBPacket result) {
-            collectionManager.initCollectionList(result.get(ESBApi.ESBAPI_RETURN_OBJ).isObject());            
+            groupsInitialized = true;
+            groupManager.initGroupList(result.get(ESBApi.ESBAPI_RETURN_OBJ).isObject());
+            groupManager.setForUser(sessionUser.getUserId());
+            collectionManager.syncAllSessionCollectionPermissions();
          }
          @Override
          public void onFailure(Throwable caught) {DsUtil.handleFailedApiCall(caught);}
-      });   
+      }); 
+   }
+   
+   /**
+    * Builds the session user's groups and collection list.
+    */
+   public void buildUserGroupsAndCollections() {
+      DsESBApi.decalsGetUserCollections(new ESBCallback<ESBPacket>() {
+         @Override
+         public void onSuccess(ESBPacket result) {
+            collectionManager.initCollectionList(result.get(ESBApi.ESBAPI_RETURN_OBJ).isObject());
+            if (groupsInitialized && groupManager != null && sessionUser.getUserId().equals(groupManager.getForUser())) {
+               collectionManager.syncAllSessionCollectionPermissions();
+            }
+            else initializeUserGroups();          
+         }
+         @Override
+         public void onFailure(Throwable caught) {DsUtil.handleFailedApiCall(caught);}
+      });         
    }
    
    /**
@@ -226,7 +269,7 @@ public class DsSession {
     */
    public void verifyUserCollectionSync() {
       if (!SessionState.LOGGING_OUT.equals(sessionState)) {
-         if (collectionManager.anyCollectionInChangedState()) buildUserCollections();
+         if (collectionManager.anyCollectionInChangedState()) buildUserGroupsAndCollections();
       }
    }
    

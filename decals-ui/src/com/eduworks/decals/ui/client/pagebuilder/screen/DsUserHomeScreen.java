@@ -653,7 +653,7 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       registerCollectionItemDeleteWidgets();
       registerCollectionUserDeleteWidgets();
       registerCollectionGroupDeleteWidgets();
-      if (currentCollection.getNumberofItems() > 0 && currentCollection.userCanModifyCollection(DsSession.getUser().getUserId())) {
+      if (currentCollection.getNumberofItems() > 0 && currentCollection.sessionUserCanModify()) {
          initCollectionsSortable(CCOL_LIST_NAME);
       }
    }

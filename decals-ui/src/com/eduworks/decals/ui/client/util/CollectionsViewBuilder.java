@@ -402,7 +402,7 @@ public class CollectionsViewBuilder {
     */
    public static void populateCollectionData(Collection col, HashMap<String,CollectionItem> collectionItemDeleteWidgets, HashMap<String,CollectionUser> collectionUserDeleteWidgets, 
          HashMap<String,CollectionGroup> collectionGroupDeleteWidgets) {
-      boolean canModify = col.userCanModifyCollection(DsSession.getUser().getUserId());
+      boolean canModify = col.sessionUserCanModify();
       if (col.getHasChanged()) DsUtil.showLabel(CCOL_CHANGED_MESSAGE);
       else DsUtil.hideLabel(CCOL_CHANGED_MESSAGE);
       DsUtil.hideLabel(CCOL_SAVE_SUCCESS_MESSAGE);

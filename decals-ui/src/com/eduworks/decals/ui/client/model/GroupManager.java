@@ -16,6 +16,8 @@ public class GroupManager {
    
    private ArrayList<Group> groupList = new ArrayList<Group>();
    
+   private String forUser = "";
+   
    /**
     * Initializes the group list
     * 
@@ -92,6 +94,12 @@ public class GroupManager {
     */
    public ArrayList<Group> getGroupList() {return groupList;}
    public void setGroupList(ArrayList<Group> groupList) {this.groupList = groupList;}
+   
+   /**
+    * {@link GroupManager#forUser}
+    */
+   public String getForUser() {return forUser;}
+   public void setForUser(String forUser) {this.forUser = forUser;}
    
    /**
     * Returns the number of groups being managed.

@@ -180,7 +180,7 @@ public class DsGuestScreen extends DecalsScreen {
          public void onSuccess(ESBPacket result) {         
             DsSession.getInstance().setSessionState(DsSession.SessionState.LOGGED_IN);
             DsSession.getInstance().parseAppSettings(result.get(ESBApi.ESBAPI_RETURN_OBJ).isObject());      
-            DsSession.getInstance().buildUserCollections();
+            DsSession.getInstance().buildUserGroupsAndCollections();
             DsSession.getInstance().setCachedLrSearchHandler(null);
             sendToUserHomePage();
          }

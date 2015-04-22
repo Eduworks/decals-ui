@@ -40,6 +40,8 @@ public class Collection implements Comparable<Collection>{
    private long createDateRaw;
    private String createDateStr;
    
+   private String sessionUserAccess = CollectionAccess.VIEW_ACCESS;
+   
    private boolean hasChanged = false;
    private boolean descriptionBeingChanged = false;
    
@@ -96,13 +98,12 @@ public class Collection implements Comparable<Collection>{
    public long getNumberofGroups() {return collectionGroups.size();}
    
    /**
-    * Returns true if the given user can modify the collection.  Returns false otherwise.
+    * Returns true if the session user can modify the collection.  Returns false otherwise.
     * 
-    * @param userId The user id to check for modify.
-    * @return  Returns true if the given user can modify the collection.  Returns false otherwise.
+    * @return  Returns true if the session user can modify the collection.  Returns false otherwise.
     */
-   public boolean userCanModifyCollection(String userId) {
-      if (CollectionAccess.MODIFY_ACCESS.equalsIgnoreCase(userAccessMap.get(userId))) return true;
+   public boolean sessionUserCanModify() {
+      if (CollectionAccess.MODIFY_ACCESS.equalsIgnoreCase(sessionUserAccess)) return true;
       return false;
    }
    
@@ -474,6 +475,12 @@ public class Collection implements Comparable<Collection>{
     */
    public boolean isDescriptionBeingChanged() {return descriptionBeingChanged;}
    public void setDescriptionBeingChanged(boolean descriptionBeingChanged) {this.descriptionBeingChanged = descriptionBeingChanged;}
+   
+   /**
+    * {@link Collection#sessionUserAccess}
+    */
+   public String getSessionUserAccess() {return sessionUserAccess;}
+   public void setSessionUserAccess(String sessionUserAccess) {this.sessionUserAccess = sessionUserAccess;}
       
    @Override
    public int compareTo(Collection o) {
