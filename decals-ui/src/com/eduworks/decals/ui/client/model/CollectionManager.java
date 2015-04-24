@@ -265,6 +265,15 @@ public class CollectionManager {
    }
    
    /**
+    * Removes the given group from all collections.
+    * 
+    * @param groupId The group ID
+    */
+   public void removeGroupFromAllCollections(String groupId) {
+      for (Collection c: collectionList) c.removeGroup(groupId);
+   }
+   
+   /**
     * Removes the given item from the given collection.
     * 
     * @param collectionId The collection ID

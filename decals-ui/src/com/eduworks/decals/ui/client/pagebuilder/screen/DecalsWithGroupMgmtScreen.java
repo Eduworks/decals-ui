@@ -3,6 +3,7 @@ package com.eduworks.decals.ui.client.pagebuilder.screen;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.eduworks.decals.ui.client.DsSession;
 import com.eduworks.decals.ui.client.api.DsESBApi;
 import com.eduworks.decals.ui.client.model.AppUser;
 import com.eduworks.decals.ui.client.model.Group;
@@ -300,7 +301,8 @@ public abstract class DecalsWithGroupMgmtScreen extends DecalsScreen {
       groupManager.removeGroup(groupId);
       buildGroupsView();
       DsUtil.hideLabel(DG_BUSY);   
-      DsUtil.showLabel(DG_SUCCESS);      
+      DsUtil.showLabel(DG_SUCCESS);   
+      DsSession.getUserCollectionManager().removeGroupFromAllCollections(groupId);
    }
    
    //delete group handler
