@@ -26,7 +26,7 @@
 	</target>
 
 	<property name="src.dir" value="src"/>
-	<property name="gwt.home" value="../../../../"/>
+	<property name="gwt.home" value="${gwt.home.location}"/>
 	<target name="gwt-compile" description="GWT compile to JavaScript">
 		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
 		    <classpath>
