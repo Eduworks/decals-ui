@@ -60,4 +60,6 @@ public interface DsHtmlTemplates extends HtmlTemplates {
 	@Source("template/UserLRSearchResultWidget.html")
    public TextResource getUserLRSearchResultWidget();
 	
+	@Source("template/DecalsUserPreferencesPanel.html")
+	public TextResource getUserPreferencesPanel();
 }

@@ -29,6 +29,8 @@ public class DsHeaderHandler {
    private static final String HEADER_ADMIN_DIVIDER = "headerAdminDivider";
    private static final String HEADER_USER_MGMT = "headerUserMgmt";
    private static final String HEADER_USER_MGMT_DIVIDER = "headerUserMgmtDivider";
+   private static final String HEADER_USER_PREFS = "headerUserPrefs";
+   private static final String HEADER_USER_PREFS_DIVIDER = "headerUserPrefsDivider";
    
    /**
     * DsHeaderHandler constructor
@@ -70,6 +72,14 @@ public class DsHeaderHandler {
       }     
    };
    
+   protected EventCallback userPreferencesClickListener = new EventCallback() {
+	      @Override
+	      public void onEvent(Event event) {
+	         screenDispatch.loadUserPreferencesScreen();
+	         DsUserTabsHandler.getInstance().setAsNoTabsActive();
+	      }     
+	   };
+   
    //set up the application administration links
    private void setUpAdminLinks() {
       if (DsSession.getUser().hasRole(UserRoles.ADMIN_ROLE)) {
@@ -105,6 +115,11 @@ public class DsHeaderHandler {
    /**
     * Attach the logout listener
     */
+   public void attachUserPreferencesHandler() {PageAssembler.attachHandler(HEADER_USER_PREFS, Event.ONCLICK, userPreferencesClickListener);}
+   
+   /**
+    * Attach the logout listener
+    */
    public void attachLogoutHandler() {PageAssembler.attachHandler(HEADER_LOGOUT, Event.ONCLICK, logoutListener);}
    
    /**
@@ -123,6 +138,7 @@ public class DsHeaderHandler {
     */
    public void setUpHeader(String headerUsernameText) {
       attachLogoutHandler();
+      attachUserPreferencesHandler();
       attachUsernameToHeader(headerUsernameText);
       setUpAdvancedPermissions();
    }

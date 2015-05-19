@@ -1335,3 +1335,16 @@ body.typing
 	height: 10px;
 }
 
+
+
+/* ---------------------
+ Preferences
+------------------------ */
+
+#userMyPreferences select{
+	height: auto;
+}
+
+#savePreferencesBtn{
+	float: right;
+}

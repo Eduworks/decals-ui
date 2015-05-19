@@ -36,7 +36,8 @@
 
 	<property name="src.dir" value="src"/>
 	<property name="gwt.home" value="${gwt.home.location}"/>
-	<target name="gwt-compile" description="GWT compile to JavaScript">
+	<target name="gwt-compile" description="GWT compile to JavaScript" depends="setModuleVersion">
+		<echo>${build.number}</echo>
 		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
 		    <classpath>
 		        <pathelement location="${src.dir}" />

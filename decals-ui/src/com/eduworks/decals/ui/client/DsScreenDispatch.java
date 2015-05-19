@@ -7,6 +7,7 @@ import com.eduworks.decals.ui.client.pagebuilder.screen.DsTeacherHomeScreen;
 import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserHomeScreen;
 import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserLrRSearchScreen;
 import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserManagementScreen;
+import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserPreferencesScreen;
 import com.eduworks.gwt.client.pagebuilder.ScreenDispatch;
 
 public class DsScreenDispatch extends ScreenDispatch
@@ -46,4 +47,9 @@ public class DsScreenDispatch extends ScreenDispatch
     * Loads DsUserManagementScreen.
     */
    public void loadUserManagementScreen() {loadScreen(new DsUserManagementScreen(), true);}
+   
+   /**
+    * Loads DsUserPreferencesScreen.
+    */
+   public void loadUserPreferencesScreen() {loadScreen(new DsUserPreferencesScreen(), true);}
 }
