@@ -1,16 +1,25 @@
 package com.eduworks.decals.ui.client.api;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
+import com.eduworks.decals.ui.client.Decals_ui;
+import com.eduworks.decals.ui.client.DsScreenDispatch;
 import com.eduworks.decals.ui.client.model.DarResourceMetadata;
+import com.eduworks.decals.ui.client.pagebuilder.DecalsScreen;
+import com.eduworks.decals.ui.client.pagebuilder.screen.enums.GRADE_LEVEL;
+import com.eduworks.decals.ui.client.pagebuilder.screen.enums.LANGUAGE;
+import com.eduworks.decals.ui.client.pagebuilder.screen.enums.RESOURCE_TYPE;
 import com.eduworks.decals.ui.client.util.DsUtil;
 import com.eduworks.gwt.client.net.CommunicationHub;
 import com.eduworks.gwt.client.net.MultipartPost;
 import com.eduworks.gwt.client.net.api.ESBApi;
 import com.eduworks.gwt.client.net.callback.ESBCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
+import com.eduworks.gwt.client.pagebuilder.ScreenDispatch;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
 
 /**
  * DECALS specific API for levr scripts/ESB.
@@ -85,6 +94,41 @@ public class DsESBApi extends ESBApi {
    public static final String LR_PUBLISH_CURATOR_KEY = "lrPublishCurator";
    public static final String LR_PUBLISH_FROM_NODE_KEY = "lrPublishFromNode";
    public static final String LR_PUBLISH_PD_ACTOR_KEY = "lrPublishParadataActor";
+   
+   public static String competencySessionId;
+   
+   public static ESBCallback<ESBPacket> getStoredUsernameCallback = new ESBCallback<ESBPacket>(){
+		@Override
+		public void onFailure(Throwable caught) {}
+		
+		@Override
+		public void onSuccess(ESBPacket esbPacket) {
+			String s = esbPacket.getContentString();
+			s.equals("");
+		}
+   };
+   
+   public static ESBCallback<ESBPacket> storedSessionValidatedCallback = new ESBCallback<ESBPacket>() {
+		@Override
+		public void onSuccess(ESBPacket esbPacket) {
+			((DsScreenDispatch)Decals_ui.dispatcher).loadUserHomeScreen();
+			competencySessionId = "";
+			username = "";
+			
+			DsESBApi.decalsGetUser(username, getStoredUsernameCallback);
+		}
+		
+		@Override
+		public void onFailure(Throwable caught) {
+			sessionId = null;
+		}
+	};
+   
+   static{
+	   if((sessionId = getStoredSessionId()) != null){
+		   DsESBApi.decalsValidateSession(storedSessionValidatedCallback);
+	   }
+   }
    
    //Turns an array list of strings into a levr recognized array of strings
    private static String buildQueryTerms(ArrayList<String> queryTerms) {
@@ -653,6 +697,14 @@ public class DsESBApi extends ESBApi {
       return CommunicationHub.sendMultipartPost(getESBActionURL("decalsGetCommentInfoForUrlGroup"),mp,false,callback);
    }   
    
+   public static String decalsGetParadataForUrls(ArrayList<String> resourceUrls, ESBCallback<ESBPacket> callback) {
+	      MultipartPost mp = new MultipartPost();
+	      ESBPacket jo = new ESBPacket();      
+	      //jo.put(SESSION_ID_KEY, sessionId);
+	      jo.put(RESOURCE_URLS_KEY, DsUtil.buildJsonArrayFromStringList(resourceUrls));      
+	      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+	      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsGetParadataForUrlGroup"),mp,false,callback);
+	   }   
    
    /**
     * Adds a rating to a resource (both DAR and registry)
@@ -1044,4 +1096,113 @@ public class DsESBApi extends ESBApi {
                                  callback);
    }
    
+   /**
+    * Get User Preferences
+    * @return Returns the user preferences JSON string
+    */
+   public static String decalsUserPreferences(ESBCallback<ESBPacket> callback) {
+	  MultipartPost mp = new MultipartPost();
+      ESBPacket jo = new ESBPacket();
+      jo.put(USER_ID_KEY, username);
+      jo.put(SESSION_ID_KEY, sessionId);
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsGetUserPreferences"),mp,false,callback);
+   }
+   
+   /**
+    * Get Preference Types for Select Boxes
+    * @return Returns the preference types JSON string
+    */
+   public static String decalsPreferenceTypes(ESBCallback<ESBPacket> callback) {
+	  MultipartPost mp = new MultipartPost();
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsPreferenceEnumTypes"),mp,false,callback);
+   }
+   
+   /**
+    * Get User Competencies
+    * @return Returns the preference types JSON string
+    */
+   public static String decalsUserCompetencies(ESBCallback<ESBPacket> callback) {
+	  MultipartPost mp = new MultipartPost();
+	  ESBPacket jo = new ESBPacket();
+      jo.put(USER_ID_KEY, username);
+      jo.put(SESSION_ID_KEY, sessionId);
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsUserCompetencies"),mp,false,callback);
+   }
+   
+   
+   /**
+    * Get Learning Objectives
+    * @return Returns an array of the learning objectives user's currently have used
+    */
+   public static String decalsLearningObjectives(ESBCallback<ESBPacket> callback) {
+	  MultipartPost mp = new MultipartPost();
+	  ESBPacket jo = new ESBPacket();
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsLearningObjectiveList"),mp,false,callback);
+   }
+   
+   /**
+    * Update User Preferences
+    * @param resourceTypes - 
+    * @param languages -
+    * @param gradeLevels - 
+    * @param learningObjectives -  
+    * @return Returns the preference types JSON string
+    */
+   public static String decalsUpdateUserPreferences(Vector<RESOURCE_TYPE> resourceTypes, Vector<LANGUAGE> languages, Vector<GRADE_LEVEL> gradeLevels, Vector<String> learningObjectives, ESBCallback<ESBPacket> callback) {
+	  MultipartPost mp = new MultipartPost();
+	  ESBPacket jo = new ESBPacket();
+      jo.put(USER_ID_KEY, username);
+      jo.put(SESSION_ID_KEY, sessionId);
+      
+      JSONArray types = new JSONArray();
+      for(int i = 0; i < resourceTypes.size(); i++)
+    	  types.set(i, new JSONString(resourceTypes.get(i).toSymbol()));
+      jo.put("resourceTypes", types);
+      
+      JSONArray langs = new JSONArray();
+      for(int i = 0; i < languages.size(); i++)
+    	  langs.set(i,new JSONString(languages.get(i).toSymbol()));
+      jo.put("languages", langs);
+      
+      JSONArray grades = new JSONArray();
+      for(int i = 0; i < gradeLevels.size(); i++)
+    	  grades.set(i, new JSONString(gradeLevels.get(i).toSymbol()));
+      jo.put("gradeLevels", grades);
+      
+      JSONArray objectives = new JSONArray();
+      for(int i = 0; i < learningObjectives.size(); i++)
+    	  objectives.set(i, new JSONString(learningObjectives.get(i)));
+      jo.put("learningObjectives", objectives);
+      
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsUpdateUserPreferences"),mp,false,callback);
+   }
+   
+   /**
+    * Update User Preferences
+    * @param resourceTypes - -  
+    * @return Returns the preference types JSON string
+    */
+   public static String decalsAddDesiredCompetencies(Vector<String> competencyIds, ESBCallback<ESBPacket> callback) {
+	  MultipartPost mp = new MultipartPost();
+	  ESBPacket jo = new ESBPacket();
+      jo.put(USER_ID_KEY, username);
+      jo.put(SESSION_ID_KEY, sessionId);
+      
+      
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsUserCompetencies"),mp,false,callback);
+   }
+   
+   public static String decalsValidateSession(ESBCallback<ESBPacket> callback){
+	   MultipartPost mp = new MultipartPost();
+	   ESBPacket jo = new ESBPacket();
+	   jo.put(SESSION_ID_KEY, sessionId);
+	   
+	   mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+	   return CommunicationHub.sendMultipartPost(getESBActionURL("decalsValidateSession"),mp,false,callback);
+   }
 }

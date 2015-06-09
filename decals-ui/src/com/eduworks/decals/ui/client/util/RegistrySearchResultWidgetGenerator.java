@@ -2,7 +2,13 @@ package com.eduworks.decals.ui.client.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
+
+
+
+
+
 
 import com.eduworks.decals.ui.client.DsSession;
 import com.eduworks.decals.ui.client.api.DsESBApi;
@@ -11,8 +17,10 @@ import com.eduworks.decals.ui.client.handler.InteractiveSearchHandler.CommentHan
 import com.eduworks.decals.ui.client.handler.InteractiveSearchHandler.RatingHandlerType;
 import com.eduworks.decals.ui.client.model.BasicSearchResult;
 import com.eduworks.decals.ui.client.model.InteractiveSearchResult;
+import com.eduworks.decals.ui.client.model.ParadataPublicationInfo;
 import com.eduworks.decals.ui.client.model.RegistrySearchResult;
 import com.eduworks.decals.ui.client.model.ResourceCommentSummaryInfo;
+import com.eduworks.decals.ui.client.model.ResourceParadata;
 import com.eduworks.decals.ui.client.model.ResourceRatingSummaryInfo;
 import com.eduworks.gwt.client.net.api.ESBApi;
 import com.eduworks.gwt.client.net.callback.ESBCallback;
@@ -20,9 +28,12 @@ import com.eduworks.gwt.client.net.callback.EventCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
 import com.eduworks.gwt.client.pagebuilder.PageAssembler;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTML;
+import com.ibm.icu.util.BytesTrie.Iterator;
 
 /**
  * Generates registry search results widgets.
@@ -56,6 +67,9 @@ public class RegistrySearchResultWidgetGenerator {
    private static final String DETAILS_SCORE_SUFFIX = "-srDetailsScore";
    private static final String DETAILS_CREATE_DATE_SUFFIX = "-srDetailsCreateDate";   
    private static final String DETAILS_ADD_TO_COL_CONTAINER_SUFFIX = "-srAddToCollectionContainer";
+   
+   private static final String DETAILS_VIEW_COUNT_SUFFIX = "-srDetailsViewCount";
+   private static final String DETAILS_COLLECTION_COUNT_SUFFIX = "-srDetailsCollectionCount";
    
    private static final String FLIP_ADD_TO_COL_SUFFIX = "-srFlipAddToCollection";
    private static final String ADD_TO_COL_LINK_SUFFIX = "-srAddToCollectionLink";   
@@ -93,6 +107,12 @@ public class RegistrySearchResultWidgetGenerator {
    
    private RegistryResourceActionHandler actionHandler;
 
+   private final String viewCountProxyUrl = DsESBApi.getESBActionURL("decalsIncrementViewsAndGo")+"?resourceUrl=";
+   
+   private String wrapResourceUrl(String url){
+	   return viewCountProxyUrl+url;
+   }
+   
    //Determines if the given URL is from bookshare.org   
    private boolean isBookshareResource(String url) {
       if (url == null ||  url.trim().isEmpty()) return false;
@@ -176,8 +196,11 @@ public class RegistrySearchResultWidgetGenerator {
    private void assignSearchResultWidgetValues(String token, RegistrySearchResult sr) {
       DsUtil.setAnchorTarget(token + THUMBNAIL_ANCHOR_SUFFIX, sr.getTitle());
       DsUtil.setAnchorTarget(token + DETAILS_ANCHOR_SUFFIX, sr.getTitle());
-      DsUtil.setAnchorHref(token + THUMBNAIL_ANCHOR_SUFFIX, sr.getResourceUrl());
-      DsUtil.setAnchorHref(token + DETAILS_ANCHOR_SUFFIX, sr.getResourceUrl());  
+      
+      String proxiedResourceUrl = wrapResourceUrl(sr.getResourceUrl());
+      
+      DsUtil.setAnchorHref(token + THUMBNAIL_ANCHOR_SUFFIX, proxiedResourceUrl);
+      DsUtil.setAnchorHref(token + DETAILS_ANCHOR_SUFFIX, proxiedResourceUrl);  
       addThumbnailImage(token,sr);
       DsUtil.setLabelText(token + DETAILS_TITLE_SUFFIX, cleanApostropheString(sr.getTitle()));
       DsUtil.setLabelText(token + DETAILS_LINK_SUFFIX, sr.getTruncatedResourceUrl());
@@ -295,6 +318,43 @@ public class RegistrySearchResultWidgetGenerator {
          });
       }
    }
+   	
+   	private static void updateParadataInfoHaveToken(String token, ResourceParadata paradata) {
+   		DsUtil.setLabelText(token + DETAILS_VIEW_COUNT_SUFFIX, paradata.getViewCount());
+   		DsUtil.setLabelText(token + DETAILS_COLLECTION_COUNT_SUFFIX, paradata.getCollectionCount());
+	}
+   
+   	private void addParadataInfo(HashMap<String,String> urlTokenMap, ArrayList<ResourceParadata> paradataList){
+	   for (ResourceParadata paradata : paradataList) {         
+	         updateParadataInfoHaveToken(urlTokenMap.get(paradata.getResourceUrl()), paradata);
+	      }
+   	}
+   
+   	private void fetchParadata(final HashMap<String, String> urlTokenMap){
+   		DsESBApi.decalsGetParadataForUrls(DsUtil.getKeyList(urlTokenMap), new ESBCallback<ESBPacket>(){
+
+		@Override
+		public void onFailure(Throwable caught) {}
+
+		@Override
+		public void onSuccess(ESBPacket esbPacket) {
+			addParadataInfo(urlTokenMap, parseParadataList(esbPacket.getObject(ESBApi.ESBAPI_RETURN_OBJ)));
+		}
+		   
+   		});
+   	}
+   
+   private ArrayList<ResourceParadata> parseParadataList(JSONObject responseObj){
+	   Set<String> keys = responseObj.keySet();
+	   ArrayList<ResourceParadata> paradata = new ArrayList<ResourceParadata>();
+	   for(String key: keys){
+		   JSONValue val = responseObj.get(key);
+		   
+		   paradata.add(new ResourceParadata(val.isObject()));
+	   }
+	   
+	   return paradata;
+   }
    
    //add rating event handlers
    private void addRatingAndCommentHandlers(String token, InteractiveSearchResult sr) {
@@ -380,6 +440,7 @@ public class RegistrySearchResultWidgetGenerator {
       }
       fetchRatingInfo(urlTokenMap);
       fetchCommentInfo(urlTokenMap);
+      fetchParadata(urlTokenMap);
    }
 
 }
