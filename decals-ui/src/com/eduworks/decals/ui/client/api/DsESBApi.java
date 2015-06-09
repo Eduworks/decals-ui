@@ -97,39 +97,6 @@ public class DsESBApi extends ESBApi {
    
    public static String competencySessionId;
    
-   public static ESBCallback<ESBPacket> getStoredUsernameCallback = new ESBCallback<ESBPacket>(){
-		@Override
-		public void onFailure(Throwable caught) {}
-		
-		@Override
-		public void onSuccess(ESBPacket esbPacket) {
-			String s = esbPacket.getContentString();
-			s.equals("");
-		}
-   };
-   
-   public static ESBCallback<ESBPacket> storedSessionValidatedCallback = new ESBCallback<ESBPacket>() {
-		@Override
-		public void onSuccess(ESBPacket esbPacket) {
-			((DsScreenDispatch)Decals_ui.dispatcher).loadUserHomeScreen();
-			competencySessionId = "";
-			username = "";
-			
-			DsESBApi.decalsGetUser(username, getStoredUsernameCallback);
-		}
-		
-		@Override
-		public void onFailure(Throwable caught) {
-			sessionId = null;
-		}
-	};
-   
-   static{
-	   if((sessionId = getStoredSessionId()) != null){
-		   DsESBApi.decalsValidateSession(storedSessionValidatedCallback);
-	   }
-   }
-   
    //Turns an array list of strings into a levr recognized array of strings
    private static String buildQueryTerms(ArrayList<String> queryTerms) {
       StringBuffer sb = new StringBuffer();
@@ -1203,6 +1170,6 @@ public class DsESBApi extends ESBApi {
 	   jo.put(SESSION_ID_KEY, sessionId);
 	   
 	   mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
-	   return CommunicationHub.sendMultipartPost(getESBActionURL("decalsValidateSession"),mp,false,callback);
+	   return CommunicationHub.sendMultipartPost(getESBActionURL("decalsTestCheckSession"),mp,false,callback);
    }
 }

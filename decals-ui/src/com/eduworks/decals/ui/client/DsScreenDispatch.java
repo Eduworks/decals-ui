@@ -1,5 +1,6 @@
 package com.eduworks.decals.ui.client;
 
+import com.eduworks.decals.ui.client.api.DsESBApi;
 import com.eduworks.decals.ui.client.pagebuilder.screen.DsApplicationAdminScreen;
 import com.eduworks.decals.ui.client.pagebuilder.screen.DsGuestScreen;
 import com.eduworks.decals.ui.client.pagebuilder.screen.DsStudentHomeScreen;
@@ -8,6 +9,8 @@ import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserHomeScreen;
 import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserLrRSearchScreen;
 import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserManagementScreen;
 import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserPreferencesScreen;
+import com.eduworks.gwt.client.net.callback.ESBCallback;
+import com.eduworks.gwt.client.net.packet.ESBPacket;
 import com.eduworks.gwt.client.pagebuilder.ScreenDispatch;
 
 public class DsScreenDispatch extends ScreenDispatch
@@ -51,5 +54,21 @@ public class DsScreenDispatch extends ScreenDispatch
    /**
     * Loads DsUserPreferencesScreen.
     */
-   public void loadUserPreferencesScreen() {loadScreen(new DsUserPreferencesScreen(), true);}
+   public void loadUserPreferencesScreen() {
+	   
+	   DsESBApi.decalsUserPreferences(new ESBCallback<ESBPacket>(){
+
+		@Override
+		public void onFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void onSuccess(ESBPacket esbPacket) {
+			loadScreen(new DsUserPreferencesScreen(esbPacket), true);
+		}
+		   
+	   });
+	   
+   }
 }
