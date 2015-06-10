@@ -200,7 +200,7 @@ public class DsGuestScreen extends DecalsScreen {
          handleBadLogin(result);
       }
       else {
-         ESBApi.sessionId = sessionId;
+         ESBApi.setSessionId(sessionId);
          ESBApi.username = userId;
          DsESBApi.decalsGetUser(userId, new ESBCallback<ESBPacket>() {
             @Override

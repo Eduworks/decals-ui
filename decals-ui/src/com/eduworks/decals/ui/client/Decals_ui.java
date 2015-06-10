@@ -7,6 +7,7 @@ import com.eduworks.decals.ui.client.model.AppUser;
 import com.eduworks.decals.ui.client.pagebuilder.DecalsScreen;
 import com.eduworks.decals.ui.client.pagebuilder.DsHtmlTemplates;
 import com.eduworks.decals.ui.client.pagebuilder.screen.DsGuestScreen;
+import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserHomeScreen;
 import com.eduworks.gwt.client.component.AppEntry;
 import com.eduworks.gwt.client.net.CommunicationHub;
 import com.eduworks.gwt.client.net.api.ESBApi;
@@ -24,7 +25,9 @@ import com.google.gwt.user.client.Window;
 public class Decals_ui extends AppEntry implements EntryPoint, ValueChangeHandler<String> {
    
    private static final String IS_TN_ROOT_PROP = "int.search.thumbnail.root";
+   private static final String COMPETENCY_MANAGER_PROP = "competency.url";
    
+   private static String competencyManagerUrl;
    
    @Override
 	public void onModuleLoad() {
@@ -52,9 +55,13 @@ public class Decals_ui extends AppEntry implements EntryPoint, ValueChangeHandle
    private void parseDecalsProperties(String[] rawProperties) {      
       if ((rawProperties[0].indexOf(SITE_NAME_PROP) != -1)) {
          for (String prop:rawProperties) {            
-            if (prop.indexOf(IS_TN_ROOT_PROP) != -1) DsSession.getInstance().setInteractiveSearchThumbnailRootUrl(parseProperty(prop));            
+            if (prop.indexOf(IS_TN_ROOT_PROP) != -1) DsSession.getInstance().setInteractiveSearchThumbnailRootUrl(parseProperty(prop));
+            if (prop.indexOf(COMPETENCY_MANAGER_PROP) != -1) competencyManagerUrl = parseProperty(prop);
          }
-      }            
+      }
+      
+      
+
    }
    
    public static ESBCallback<ESBPacket> getStoredUsernameCallback = new ESBCallback<ESBPacket>(){
@@ -67,9 +74,14 @@ public class Decals_ui extends AppEntry implements EntryPoint, ValueChangeHandle
 			DsSession.getInstance().setSessionState(DsSession.SessionState.LOGGED_IN);
 			DsSession.getInstance().buildUserGroupsAndCollections();
             DsSession.getInstance().setCachedLrSearchHandler(null);
+            PageAssembler.setTemplate(new DsUserHomeScreen().getTemplates().getHeader().getText(), new DsUserHomeScreen().getTemplates().getFooter().getText(), DecalsScreen.CONTENT_PANE);
 			((DsScreenDispatch)Decals_ui.dispatcher).loadUserHomeScreen();
 		}
   };
+  
+  public static String getCompetencyManagerUrl(){
+	  return competencyManagerUrl;
+  }
   
   public static ESBCallback<ESBPacket> storedSessionValidatedCallback = new ESBCallback<ESBPacket>() {
 		@Override
@@ -78,7 +90,6 @@ public class Decals_ui extends AppEntry implements EntryPoint, ValueChangeHandle
 			DsESBApi.username = esbPacket.getPayloadString();
 		
 			DsESBApi.decalsGetUser(DsESBApi.username, getStoredUsernameCallback);
-			
 		}
 		
 		@Override

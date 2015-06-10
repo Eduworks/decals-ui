@@ -95,6 +95,8 @@ public class DsESBApi extends ESBApi {
    public static final String LR_PUBLISH_FROM_NODE_KEY = "lrPublishFromNode";
    public static final String LR_PUBLISH_PD_ACTOR_KEY = "lrPublishParadataActor";
    
+   public static final String COMPETENCY_SESSION_ID_KEY = "competencySessionId";
+   
    public static String competencySessionId;
    
    //Turns an array list of strings into a levr recognized array of strings
@@ -1093,7 +1095,7 @@ public class DsESBApi extends ESBApi {
 	  MultipartPost mp = new MultipartPost();
 	  ESBPacket jo = new ESBPacket();
       jo.put(USER_ID_KEY, username);
-      jo.put(SESSION_ID_KEY, sessionId);
+      jo.put(COMPETENCY_SESSION_ID_KEY, competencySessionId);
       mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
       return CommunicationHub.sendMultipartPost(getESBActionURL("decalsUserCompetencies"),mp,false,callback);
    }

@@ -21,6 +21,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTML; 
 import com.google.gwt.user.client.ui.ListBox;
 import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+import com.eduworks.decals.ui.client.Decals_ui;
 import com.eduworks.decals.ui.client.api.DsESBApi;
 import com.eduworks.decals.ui.client.pagebuilder.screen.enums.GRADE_LEVEL;
 import com.eduworks.decals.ui.client.pagebuilder.screen.enums.LANGUAGE;
@@ -42,6 +43,8 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	
 	private static final String ADD_OBJECTIVE_INPUT_ID = "prefAddObjectiveInput";
 	private static final String ADD_OBJECTIVE_BTN_ID = "addObjectiveBtn";
+	
+	private static final String COMPETENCY_LINK_ID = "prefCompetencyLink";
 	
 	private static final String DESIRED_COMPETENCY_LIST_ID = "desiredCompetenciesList";
 	private static final String NO_DESIRED_COMPETENCY_ITEM_ID = "noDesiredCompetenciesItem";
@@ -135,7 +138,8 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 		
 		setupPreferences();
 		setupPageHandlers(); 
-
+		DOM.getElementById(COMPETENCY_LINK_ID).setAttribute("href", Decals_ui.getCompetencyManagerUrl() + "?competencySessionId="+DsESBApi.competencySessionId);
+		
 	}
 
 	private void setupPageHandlers(){
@@ -147,7 +151,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 		PageAssembler.attachHandler(DOM.getElementById(ADD_OBJECTIVE_BTN_ID), Event.ONCLICK, addLearningObjectiveCallback);
 		
 		PageAssembler.attachHandler(DOM.getElementById(ADD_COMPETENCY_INPUT_ID), Event.ONCLICK | Event.ONFOCUS, openCompetencyCallback);
-		PageAssembler.attachHandler(DOM.getElementById(ADD_COMPETENCY_BTN_ID), Event.ONCLICK, addDesiredCompetencyCallback);
+		PageAssembler.attachHandler(DOM.getElementById(ADD_COMPETENCY_BTN_ID), Event.ONCLICK, openCompetencyCallback);
 	}
 	
 	private void setupPreferences(){
@@ -481,14 +485,14 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	private EventCallback addLearningObjectiveCallback = new EventCallback() {
 		@Override
 		public void onEvent(Event event) {
-			informChangesMade();
-			
 			InputElement input = InputElement.as(DOM.getElementById(ADD_OBJECTIVE_INPUT_ID));
 			String learningObjective = input.getValue();
 			
-			learningObjectives.add(learningObjective);
-			
-			addLearningObjectiveToList(learningObjective);
+			if(!learningObjective.isEmpty()){
+				informChangesMade();
+				learningObjectives.add(learningObjective);
+				addLearningObjectiveToList(learningObjective);
+			}
 			
 			input.setValue("");
 		}
