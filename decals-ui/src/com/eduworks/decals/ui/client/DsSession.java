@@ -33,8 +33,11 @@ public class DsSession {
    private String lrPublishCurator;
    private String lrPublishFromNode;
    private String lrPublishParadataActor;
+   
+   private String competencyManagerUrl;
+   
    private AppUser sessionUser;
-      
+   
    private SearchType sessionSearchType = SearchType.DUAL;
    
    private GroupManager groupManager;
@@ -118,6 +121,12 @@ public class DsSession {
     */
    public String getLrPublishParadataActor() {return lrPublishParadataActor;}
    public void setLrPublishParadataActor(String lrPublishParadataActor) {this.lrPublishParadataActor = lrPublishParadataActor;}
+   
+   /**
+    * {@link DsSession#competencyManagerUrl}
+    */
+   public String getCompetencyManagerUrl() {return competencyManagerUrl;}
+   public void setCompetencyManagerUrl(String competencyManagerUrl) {this.competencyManagerUrl = competencyManagerUrl;}
    
    /**
     * {@link DsSession#sessionState}

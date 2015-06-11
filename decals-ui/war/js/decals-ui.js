@@ -1,4 +1,17 @@
 
+function setupTypeahead(e, objectives){
+	$wnd.$(e).typeahead({
+		hint: true,
+		highlight: true,
+		minLength: 1
+	},
+	{
+		name: "Learning Objectives",
+		source: objectives
+	});
+}
+
+
 function slowShowDiv(divId){
 	$('#' + divId).show("slow");
 } 

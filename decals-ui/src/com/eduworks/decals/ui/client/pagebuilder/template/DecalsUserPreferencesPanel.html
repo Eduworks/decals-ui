@@ -64,7 +64,7 @@
 						<br/>
 						<u>Competencies Held</u>
 						<ul id="heldCompetenciesList">
-							<li id="noCompetenciesHeld"><em>No Competencies Held</em></li>
+							<li id="noHeldCompetenciesItem"><em>No Competencies Held</em></li>
 						</ul>
 						<u>Competencies Desired</u>
 						<ul id="desiredCompetenciesList">
@@ -97,11 +97,12 @@
     <h2><i class="fa fa-sitemap"></i> Find Desired Competency</h2>
     
     <div class="row">
-    	<input type="text" placeholder="Competency Search"/>
+    	<input type="text" placeholder="Competency Search" id="searchCompetencyInput"/>
+    	<button id="searchCompetencyBtn" class="button small">Search</button>
     </div>
     
     <div class="row">
-    	<div class="large-12 columns">
+    	<div class="large-12 columns" id="competencyResultsList">
     	</div>
     </div>
     

@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import com.eduworks.decals.ui.client.Decals_ui;
 import com.eduworks.decals.ui.client.DsScreenDispatch;
+import com.eduworks.decals.ui.client.DsSession;
 import com.eduworks.decals.ui.client.model.DarResourceMetadata;
 import com.eduworks.decals.ui.client.pagebuilder.DecalsScreen;
 import com.eduworks.decals.ui.client.pagebuilder.screen.enums.GRADE_LEVEL;
@@ -96,8 +97,7 @@ public class DsESBApi extends ESBApi {
    public static final String LR_PUBLISH_PD_ACTOR_KEY = "lrPublishParadataActor";
    
    public static final String COMPETENCY_SESSION_ID_KEY = "competencySessionId";
-   
-   public static String competencySessionId;
+
    
    //Turns an array list of strings into a levr recognized array of strings
    private static String buildQueryTerms(ArrayList<String> queryTerms) {
@@ -1095,7 +1095,7 @@ public class DsESBApi extends ESBApi {
 	  MultipartPost mp = new MultipartPost();
 	  ESBPacket jo = new ESBPacket();
       jo.put(USER_ID_KEY, username);
-      jo.put(COMPETENCY_SESSION_ID_KEY, competencySessionId);
+      jo.put(COMPETENCY_SESSION_ID_KEY, DsSession.getUser().getCompetencySessionId());
       mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
       return CommunicationHub.sendMultipartPost(getESBActionURL("decalsUserCompetencies"),mp,false,callback);
    }
@@ -1151,7 +1151,7 @@ public class DsESBApi extends ESBApi {
    }
    
    /**
-    * Update User Preferences
+    * Adds New Competencies to the Users Desired Competencies List
     * @param resourceTypes - -  
     * @return Returns the preference types JSON string
     */
@@ -1174,4 +1174,15 @@ public class DsESBApi extends ESBApi {
 	   mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
 	   return CommunicationHub.sendMultipartPost(getESBActionURL("decalsTestCheckSession"),mp,false,callback);
    }
+   
+   
+   public static String decalsSearchCompetencies(String query, ESBCallback<ESBPacket> callback) {
+		  MultipartPost mp = new MultipartPost();
+		  ESBPacket jo = new ESBPacket();
+	      jo.put("query", query);
+	      jo.put(SESSION_ID_KEY, DsSession.getUser().getCompetencySessionId());
+	      
+	      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+	      return CommunicationHub.sendMultipartPost(getESBActionURL("competency/query/searchCompetencies"),mp,false,callback);
+	   }
 }

@@ -1342,9 +1342,182 @@ body.typing
 ------------------------ */
 
 #userMyPreferences select{
-	height: auto;
+	height: 8rem;
 }
 
 #savePreferencesBtn{
 	float: right;
+	margin-bottom:0px;
+}
+
+#readingLevelContainer span{
+	margin-bottom: 1rem;
+	display: inline-block;
+}
+
+#readingLevelContainer span input{
+	margin-bottom: 0px;
+}
+
+#prefAddCompetencyInput{
+	width:80%;
+	display:inline-block;
+}
+
+#userMyPreferences .button.small{
+	padding-top:0.75rem;
+	padding-bottom:0.65rem;
+}
+
+#userMyPreferences ul{
+	font-size:0.9rem;
+}
+
+#userMyPreferences h6{
+	text-decoration: underline;
+}
+
+#userMyPreferences h6 a{
+	text-decoration: none;
+}
+
+#userMyPreferences .row{
+	margin-top: 1rem;
+}
+
+#userMyPreferences .row:first-of-type{
+	margin-top:0px;
+}
+
+#userObjectivesList{
+	height: 185px;
+	overflow-y: scroll;
+}
+
+#userObjectivesList li {
+	position: relative;
+}
+
+#userObjectivesList li .fa-times{
+	cursor:pointer;
+	position: absolute;
+	right:5px;
+	top:2px;
+	font-size:12pt;
+}
+
+
+#userObjectivesList li:not(:first-child):hover span{
+	border-bottom:1px dotted gray;
+}
+
+#userObjectivesList .fa-times:hover{
+	color:#008cba;
+}
+
+#prefChangedAlert{
+ 	display: inline-block;
+  	position: absolute;
+  	width: 400px;
+  	text-align: center;
+  	right: 30%;
+  	padding: 10px;
+}
+
+#heldCompetenciesList{
+	overflow-y: scroll;
+	height: 70px;
+}
+
+#desiredCompetenciesList{
+	overflow-y: scroll;
+	height: 70px;
+}
+
+#prefCompetencyLink{
+	font-size:small; 
+	position:absolute; 
+	right:10px; 
+	top:10px;
+}
+
+#searchCompetencyInput{
+	width:80%;
+	display:inline-block;
+}
+
+#searchCompetencyBtn{
+	padding-top: 0.75rem;
+  	padding-bottom: 0.65rem;
+}
+
+.twitter-typeahead{
+	width:80%;
+	margin-bottom: 100px;
+}
+
+.typeahead,
+.tt-query,
+.tt-hint {
+  width: 396px;
+  height: 30px;
+  padding: 8px 12px;
+  font-size: 24px;
+  line-height: 30px;
+  border: 2px solid #ccc;
+  outline: none;
+}
+
+.typeahead {
+  background-color: #fff;
+  margin-bottom:0px;
+}
+
+.typeahead:focus {
+  border: 2px solid #0097cf;
+}
+
+.tt-query {
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.tt-hint {
+  color: #999
+}
+
+.tt-menu {
+  padding: 8px 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  width:100%;
+  margin-bottom: 50px;
+}
+
+.tt-suggestion {
+  padding: 3px 20px;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.tt-suggestion:hover {
+  cursor: pointer;
+  color: #fff;
+  background-color: #0097cf;
+}
+
+.tt-suggestion.tt-cursor {
+  color: #fff;
+  background-color: #0097cf;
+
+}
+
+.tt-suggestion p {
+  margin: 0;
+}
+
+.gist {
+  font-size: 14px;
 }
