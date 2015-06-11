@@ -22,6 +22,8 @@ public class AppUser implements Comparable<AppUser>{
    public static final String CREATE_DATE_KEY = "dateCreated";
    public static final String USERID_KEY = "userId";
    
+   public static final String COMPETENCY_SESSION_ID = "competencySessionId";
+   
    public static final String NEVER_LOGGED_IN_STRING = "never";
    
    protected String userId;
@@ -31,7 +33,9 @@ public class AppUser implements Comparable<AppUser>{
    private String createDateStr;
    private String lastLoginDateStr;
    private HashMap<String,String> roles = new HashMap<String,String>();
-      
+     
+   private String competencySessionId;
+   
    public AppUser() {}
    
    /**
@@ -53,6 +57,9 @@ public class AppUser implements Comparable<AppUser>{
       }
       if (userInfo.containsKey(CREATE_DATE_KEY)) createDateStr = DsUtil.getDateFormatLongDate(Long.parseLong(userInfo.get(CREATE_DATE_KEY).isString().stringValue()));
       if (userInfo.containsKey(ROLES_KEY)) parseRoles(userInfo.get(ROLES_KEY).isArray());
+      
+      if(userInfo.containsKey(COMPETENCY_SESSION_ID)) competencySessionId = userInfo.get(COMPETENCY_SESSION_ID).isString().stringValue();
+      
       parseLastLoginDate(userInfo);      
    }
    
@@ -125,6 +132,12 @@ public class AppUser implements Comparable<AppUser>{
     */
    public String getLastLoginDateStr() {return lastLoginDateStr;}
    public void setLastLoginDateStr(String lastLoginDateStr) {this.lastLoginDateStr = lastLoginDateStr;}
+   
+   /**
+    * {@link AppUser#lastLoginDateStr}
+    */
+   public String getCompetencySessionId() {return competencySessionId;}
+   public void setCompetencySessionId(String competencySessionId) {this.competencySessionId = competencySessionId;}
    
    /**
     * Returns the full name in the format <last name>, <first name>
