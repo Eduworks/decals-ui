@@ -1442,7 +1442,7 @@ body.typing
 }
 
 #searchCompetencyInput{
-	width:80%;
+	width:75%;
 	display:inline-block;
 }
 
@@ -1450,6 +1450,33 @@ body.typing
 	padding-top: 0.75rem;
   	padding-bottom: 0.65rem;
 }
+
+#competencyResultsList{
+	margin-bottom: 1rem;
+}
+
+.competencyResult{
+	padding: 0.5rem;
+	font-size: 1rem;
+	cursor: pointer;
+}
+
+.competencyResult .fa{
+	display:none;
+	float:right;
+}
+
+.competencyResult:hover{
+	background-color:#F4FAF9	
+}
+.competencyResult:hover .fa-square-o{
+	display:inline;
+}
+
+.competencyResult.selected .fa-check-square-o{
+	display:inline;
+}
+
 
 .twitter-typeahead{
 	width:80%;

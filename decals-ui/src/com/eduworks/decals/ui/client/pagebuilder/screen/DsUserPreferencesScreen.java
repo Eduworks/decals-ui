@@ -9,10 +9,7 @@ import com.eduworks.gwt.client.net.callback.ESBCallback;
 import com.eduworks.gwt.client.net.callback.EventCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
 import com.eduworks.gwt.client.pagebuilder.PageAssembler;
-import com.eduworks.lang.json.impl.EwJsonObject;
 import com.google.gwt.dom.client.InputElement;
-import com.google.gwt.dom.client.SelectElement;
-import com.google.gwt.i18n.client.LocalizableResource.Key;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -20,8 +17,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTML; 
 import com.google.gwt.user.client.ui.ListBox;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
-import com.eduworks.decals.ui.client.Decals_ui;
 import com.eduworks.decals.ui.client.DsSession;
 import com.eduworks.decals.ui.client.api.DsESBApi;
 import com.eduworks.decals.ui.client.pagebuilder.screen.enums.GRADE_LEVEL;
@@ -504,24 +499,48 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 		}
 		
 		public static void displayCompetencyResults(JSONObject thing) {
-			for(String modelId : thing.keySet()){
-				JSONObject competencies = thing.get(modelId).isObject();
+			JSONObject allModelInfo = thing.get("modelInfo").isObject();
+			
+			
+			JSONObject results = thing.get("results").isObject();
+			for(String modelId : results.keySet()){
+				JSONObject competencies = results.get(modelId).isObject();
+				JSONObject modelInfo = allModelInfo.get(modelId).isObject();
 				for(String competencyId : competencies.keySet()){
 					JSONObject competency = competencies.get(competencyId).isObject();
-					addCompetencySearchResult(competency);
+					addCompetencySearchResult(competency, modelInfo);
 				}
 			}
 			
 		}
 		
-		public static void addCompetencySearchResult(JSONObject competency){
+		public static void addCompetencySearchResult(JSONObject competency, JSONObject modelInfo){
 			String competencyTitle = competency.get(":competencyTitle").isArray().get(0).isString().stringValue();
-		
-			Element result = DOM.createElement("div");	
-			result.addClassName("columns");
-			result.addClassName("large-12");
+			String modelTitle = modelInfo.get("name").isString().stringValue();
 			
+			Element resultRow = DOM.createElement("div");	
+			resultRow.addClassName("row");
+			Element result = DOM.createElement("div");
+			result.addClassName("large-12");
+			result.addClassName("competencyResult");
 			result.setInnerText(competencyTitle);
+			
+			Element modelName = DOM.createElement("span");
+			modelName.setInnerText(modelTitle);
+			result.appendChild(modelName);
+			
+			Element emptyCheck = DOM.createElement("i");
+			emptyCheck.addClassName("fa");
+			emptyCheck.addClassName("fa-square-o");
+			result.appendChild(emptyCheck);
+			
+			Element fullCheck = DOM.createElement("i");
+			fullCheck.addClassName("fa");
+			fullCheck.addClassName("fa-check-square-o");
+			result.appendChild(fullCheck);
+			
+			resultRow.appendChild(result);
+			
 			
 			Element resultsContainer = DOM.getElementById(SEARCH_COMPETENCY_RESULTS_ID);
 			
@@ -741,10 +760,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	
 	private ESBCallback<ESBPacket> competencyResultsCallback = new ESBCallback<ESBPacket>() {
 		@Override
-		public void onFailure(Throwable caught) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void onFailure(Throwable caught) {}
 
 		@Override
 		public void onSuccess(ESBPacket packet) {

@@ -1180,9 +1180,9 @@ public class DsESBApi extends ESBApi {
 		  MultipartPost mp = new MultipartPost();
 		  ESBPacket jo = new ESBPacket();
 	      jo.put("query", query);
-	      jo.put(SESSION_ID_KEY, DsSession.getUser().getCompetencySessionId());
+	      jo.put(COMPETENCY_SESSION_ID_KEY, DsSession.getUser().getCompetencySessionId());
 	      
 	      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
-	      return CommunicationHub.sendMultipartPost(getESBActionURL("competency/query/searchCompetencies"),mp,false,callback);
+	      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsSearchCompetencies"),mp,false,callback);
 	   }
 }
