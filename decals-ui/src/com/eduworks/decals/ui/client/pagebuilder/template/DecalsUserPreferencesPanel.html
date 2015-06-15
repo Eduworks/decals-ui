@@ -59,20 +59,28 @@
 						<button id="addObjectiveBtn" class="button small">Add</button>
 					</div>
 					<div class="small-6 columns">												
-						<h6>Competencies:</h6>
-						<a href="javascript:;" id="prefCompetencyLink">Go to Competency Manager</a> 
-						<br/>
-						<u>Competencies Held</u>
-						<ul id="heldCompetenciesList">
-							<li id="noHeldCompetenciesItem"><em>No Competencies Held</em></li>
-						</ul>
-						<u>Competencies Desired</u>
-						<ul id="desiredCompetenciesList">
-							<li id="noDesiredCompetenciesItem"><em>No Competencies Desired</em></li>
-						</ul>
-						<input type="text" id="prefAddCompetencyId" style="display:none;"/>
-						<input type="text" id="prefAddCompetencyInput" placeholder="Add Desired Competency"/>
-						<button id="addCompetencyBtn" class="button small">Add</button>
+						<div id="findingCompetencies">
+							<h6>Competencies:</h6>
+							<a href="javascript:;" id="prefCompetencyLink1">Go to Competency Manager</a> 
+							<img src="images/loading.gif">
+							<p>Loading...</p>
+						</div>
+						<div id="competencyLists" class="hidden">
+							<h6>Competencies:</h6>
+							<a href="javascript:;" id="prefCompetencyLink2">Go to Competency Manager</a> 
+							<br/>
+							<u>Competencies Held</u>
+							<ul id="heldCompetenciesList">
+								<li id="noHeldCompetenciesItem"><em>No Competencies Held</em></li>
+							</ul>
+							<u>Competencies Desired</u>
+							<ul id="desiredCompetenciesList">
+								<li id="noDesiredCompetenciesItem"><em>No Competencies Desired</em></li>
+							</ul>
+							<input type="text" id="prefAddCompetencyId" style="display:none;"/>
+							<input type="text" id="prefAddCompetencyInput" placeholder="Add Desired Competency"/>
+							<button id="addCompetencyBtn" class="button small">Add</button>
+						</div>
 					</div>
 				</div>					
 			</div>			
@@ -104,7 +112,6 @@
     <div class="row">
     	<div class="large-12 columns" id="competencyResultsList">
     		<div class="row">
-    			<div class="large-12 columns competencyResult">Math</div>
     		</div>
     	</div>
     </div>

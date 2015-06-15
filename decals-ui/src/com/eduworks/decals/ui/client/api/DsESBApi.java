@@ -1120,7 +1120,7 @@ public class DsESBApi extends ESBApi {
     * @param learningObjectives -  
     * @return Returns the preference types JSON string
     */
-   public static String decalsUpdateUserPreferences(Vector<RESOURCE_TYPE> resourceTypes, Vector<LANGUAGE> languages, Vector<GRADE_LEVEL> gradeLevels, Vector<String> learningObjectives, ESBCallback<ESBPacket> callback) {
+   public static String decalsUpdateUserPreferences(ArrayList<RESOURCE_TYPE> resourceTypes, ArrayList<LANGUAGE> languages, ArrayList<GRADE_LEVEL> gradeLevels, ArrayList<String> learningObjectives, ESBCallback<ESBPacket> callback) {
 	  MultipartPost mp = new MultipartPost();
 	  ESBPacket jo = new ESBPacket();
       jo.put(USER_ID_KEY, username);
@@ -1155,7 +1155,7 @@ public class DsESBApi extends ESBApi {
     * @param resourceTypes - -  
     * @return Returns the preference types JSON string
     */
-   public static String decalsAddDesiredCompetencies(Vector<String> competencyIds, ESBCallback<ESBPacket> callback) {
+   public static String decalsAddDesiredCompetencies(ArrayList<String> competencyIds, ESBCallback<ESBPacket> callback) {
 	  MultipartPost mp = new MultipartPost();
 	  ESBPacket jo = new ESBPacket();
       jo.put(USER_ID_KEY, username);
@@ -1177,12 +1177,24 @@ public class DsESBApi extends ESBApi {
    
    
    public static String decalsSearchCompetencies(String query, ESBCallback<ESBPacket> callback) {
-		  MultipartPost mp = new MultipartPost();
-		  ESBPacket jo = new ESBPacket();
-	      jo.put("query", query);
-	      jo.put(COMPETENCY_SESSION_ID_KEY, DsSession.getUser().getCompetencySessionId());
+	   MultipartPost mp = new MultipartPost();
+	   ESBPacket jo = new ESBPacket();
+	   jo.put("query", query);
+	   jo.put(COMPETENCY_SESSION_ID_KEY, DsSession.getUser().getCompetencySessionId());
 	      
-	      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
-	      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsSearchCompetencies"),mp,false,callback);
-	   }
+	   mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+	   return CommunicationHub.sendMultipartPost(getESBActionURL("decalsSearchCompetencies"),mp,false,callback);
+   }
+
+   public static String decalsAddDesiredCompetency(String competencyId,String modelId, ESBCallback<ESBPacket> callback) {
+	   MultipartPost mp = new MultipartPost();
+	   ESBPacket jo = new ESBPacket();
+	   jo.put("competencyId", competencyId);
+	   jo.put("modelId", modelId);
+	   jo.put(USER_ID_KEY, username);
+	   jo.put(SESSION_ID_KEY, DsSession.getUser().getCompetencySessionId());
+	
+	   mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+	   return CommunicationHub.sendMultipartPost(getESBActionURL("decalsAddDesiredCompetency"),mp,false,callback);
+   }
 }

@@ -1,5 +1,7 @@
 package com.eduworks.decals.ui.client.pagebuilder.screen;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.json.JSONException;
@@ -66,20 +68,24 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	private static final String CONFIRM_CHANGES_MODAL = "modalConfirmCancel";
 	private static final String COMPETENCY_SEARCH_MODAL = "modalCompetencySearch";
 	
-	public static Vector<RESOURCE_TYPE> resourceTypes = new Vector<RESOURCE_TYPE>();
-	public static Vector<GRADE_LEVEL> gradeLevels = new Vector<GRADE_LEVEL>();
-	public static Vector<LANGUAGE> languages = new Vector<LANGUAGE>();
+	public static ArrayList<RESOURCE_TYPE> resourceTypes = new ArrayList<RESOURCE_TYPE>();
+	public static ArrayList<GRADE_LEVEL> gradeLevels = new ArrayList<GRADE_LEVEL>();
+	public static ArrayList<LANGUAGE> languages = new ArrayList<LANGUAGE>();
 
-	public static Vector<String> learningObjectives = new Vector<String>();
+	public static ArrayList<String> learningObjectives = new ArrayList<String>();
 	
-	public static Vector<String> newDesiredCompetencyIds = new Vector<String>();
+	public static ArrayList<String> competencyIds = new ArrayList<String>();
+	
+	public static ArrayList<String> newDesiredCompetencyIds = new ArrayList<String>();
+	
+	private static HashMap<String, JSONObject> competencyCache = new HashMap<String, JSONObject>();
 	
 	public DsUserPreferencesScreen(ESBPacket packet) {
-		resourceTypes = new Vector<RESOURCE_TYPE>();
-		gradeLevels = new Vector<GRADE_LEVEL>();
-		languages = new Vector<LANGUAGE>();
-		learningObjectives = new Vector<String>();
-		newDesiredCompetencyIds = new Vector<String>();
+		resourceTypes = new ArrayList<RESOURCE_TYPE>();
+		gradeLevels = new ArrayList<GRADE_LEVEL>();
+		languages = new ArrayList<LANGUAGE>();
+		learningObjectives = new ArrayList<String>();
+		newDesiredCompetencyIds = new ArrayList<String>();
 		
 		prefsChanged = false;
 		
@@ -148,8 +154,8 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 		
 		UI.setupPreferences();
 		setupPageHandlers(); 
-		DOM.getElementById(COMPETENCY_LINK_ID).setAttribute("href", DsSession.getInstance().getCompetencyManagerUrl() + "/home?competencySessionId="+DsSession.getUser().getCompetencySessionId());
-		
+		DOM.getElementById(COMPETENCY_LINK_ID + "1").setAttribute("href", DsSession.getInstance().getCompetencyManagerUrl() + "/home?competencySessionId="+DsSession.getUser().getCompetencySessionId());
+		DOM.getElementById(COMPETENCY_LINK_ID + "2").setAttribute("href", DsSession.getInstance().getCompetencyManagerUrl() + "/home?competencySessionId="+DsSession.getUser().getCompetencySessionId());
 	}
 
 	private void setupPageHandlers(){
@@ -393,6 +399,9 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 		
 		public static void setupCompetencyLists(JSONObject competencyObj){
 			if(competencyObj != null){
+				DOM.getElementById("heldCompetenciesList").setInnerHTML("<li id='noHeldCompetenciesItem'><em>No Competencies Held</em></li>");
+				DOM.getElementById("desiredCompetenciesList").setInnerHTML("<li id='noDesiredCompetenciesItem'><em>No Competencies Desired</em></li>");
+				
 				for(String id : competencyObj.keySet()){
 					JSONObject competency = competencyObj.get(id).isObject();
 					
@@ -414,17 +423,51 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 								}catch(NumberFormatException e){	}
 							}
 	
+							String competencyTitle = competency.get("competencyDetails").isObject().get(":competencyTitle").isArray().get(0).isString().stringValue();
+							String competencyId = competency.get(":recordCompetency").isArray().get(0).isString().stringValue();
+							
 							if(levelId.equals(maxId)){
-								addCompetencyToHeldList(competency);
+								addCompetencyToHeldList(competencyId, competencyTitle);
 							}else{
-								addCompetencyToDesiredList(competency);
+								addCompetencyToDesiredList(competencyId, competencyTitle);
 							}
+							
+							competencyCache.put(competencyId, competency.get("competencyDetails").isObject());
 						}
 					}
 				}
+				
+				DOM.getElementById("findingCompetencies").addClassName("hidden");
+				DOM.getElementById("competencyLists").removeClassName("hidden");
 			}
 		}
 		
+		/** Competency Methods **/
+		
+		public static void addCompetencyToHeldList(String competencyId, String competencyTitle){
+			
+			competencyIds.add(competencyId);
+			
+			Element listItem = DOM.createElement("li");
+			listItem.setInnerText(competencyTitle);
+			
+			DOM.getElementById(HELD_COMPETENCY_LIST_ID).appendChild(listItem);
+			
+			DOM.getElementById(NO_HELD_COMPETENCY_ITEM_ID).setClassName("hidden");
+		}
+		
+		public static void addCompetencyToDesiredList(String competencyId, String competencyTitle){
+			competencyIds.add(competencyId);
+			
+			Element listItem = DOM.createElement("li");
+			listItem.setInnerText(competencyTitle);
+			
+			DOM.getElementById(DESIRED_COMPETENCY_LIST_ID).appendChild(listItem);
+			
+			DOM.getElementById(NO_DESIRED_COMPETENCY_ITEM_ID).setClassName("hidden");
+		}
+		
+
 		/** Learning Objective Methods **/
 		
 		public static void addLearningObjectiveToList(String objective){
@@ -453,29 +496,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 				DOM.getElementById(NO_OBJECTIVE_ITEM_ID).removeClassName("hidden");	
 		}
 		
-		/** Competency Methods **/
 		
-		public static void addCompetencyToHeldList(JSONObject competency){
-			String competencyTitle = competency.get("competencyDetails").isObject().get(":competencyTitle").isArray().get(0).isString().stringValue();
-			
-			Element listItem = DOM.createElement("li");
-			listItem.setInnerText(competencyTitle);
-			
-			DOM.getElementById(HELD_COMPETENCY_LIST_ID).appendChild(listItem);
-			
-			DOM.getElementById(NO_HELD_COMPETENCY_ITEM_ID).setClassName("hidden");
-		}
-		
-		public static void addCompetencyToDesiredList(JSONObject competency){
-			String competencyTitle = competency.get("competencyDetails").isObject().get(":competencyTitle").isArray().get(0).isString().stringValue();
-			
-			Element listItem = DOM.createElement("li");
-			listItem.setInnerText(competencyTitle);
-			
-			DOM.getElementById(DESIRED_COMPETENCY_LIST_ID).appendChild(listItem);
-			
-			DOM.getElementById(NO_DESIRED_COMPETENCY_ITEM_ID).setClassName("hidden");
-		}
 		
 		public static void showSavePreferencesButton(){
 			DOM.getElementById(SAVE_PREFERENCES_BTN_ID).removeClassName("hidden");
@@ -496,27 +517,36 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 		public static void openCompetencyModal() {
 			PageAssembler.openPopup(COMPETENCY_SEARCH_MODAL);
 			InputElement.as(DOM.getElementById(ADD_COMPETENCY_INPUT_ID)).blur();
+			PageAssembler.attachHandler(DOM.getElementById("addSelectedCompetency"), Event.ONCLICK, addCompetencyCallback);
+			PageAssembler.attachHandler(DOM.getElementById("cancelAddCompetency"), Event.ONCLICK, closeCompetencyModalCallback);
+		}
+		
+		public static void closeCompetencyModal(){
+			PageAssembler.closePopup(COMPETENCY_SEARCH_MODAL);
 		}
 		
 		public static void displayCompetencyResults(JSONObject thing) {
 			JSONObject allModelInfo = thing.get("modelInfo").isObject();
 			
-			
 			JSONObject results = thing.get("results").isObject();
 			for(String modelId : results.keySet()){
 				JSONObject competencies = results.get(modelId).isObject();
 				JSONObject modelInfo = allModelInfo.get(modelId).isObject();
+				
+				DOM.getElementById(SEARCH_COMPETENCY_RESULTS_ID).setInnerHTML("");
 				for(String competencyId : competencies.keySet()){
 					JSONObject competency = competencies.get(competencyId).isObject();
-					addCompetencySearchResult(competency, modelInfo);
+					addCompetencySearchResult(competencyId, competency, modelInfo);
 				}
 			}
-			
 		}
 		
-		public static void addCompetencySearchResult(JSONObject competency, JSONObject modelInfo){
+		public static void addCompetencySearchResult(String competencyId, JSONObject competency, JSONObject modelInfo){
+			competencyCache.put(competencyId, competency);
+			
 			String competencyTitle = competency.get(":competencyTitle").isArray().get(0).isString().stringValue();
 			String modelTitle = modelInfo.get("name").isString().stringValue();
+			String modelId = modelInfo.get("ontologyId").isString().stringValue();
 			
 			Element resultRow = DOM.createElement("div");	
 			resultRow.addClassName("row");
@@ -524,27 +554,39 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 			result.addClassName("large-12");
 			result.addClassName("competencyResult");
 			result.setInnerText(competencyTitle);
+			result.setId(modelId + " " + competencyId);
 			
 			Element modelName = DOM.createElement("span");
+			modelName.addClassName("modelInfo");
 			modelName.setInnerText(modelTitle);
 			result.appendChild(modelName);
+			
+			Element checkWrapper = DOM.createElement("span");
+			checkWrapper.addClassName("checkWrapper");
 			
 			Element emptyCheck = DOM.createElement("i");
 			emptyCheck.addClassName("fa");
 			emptyCheck.addClassName("fa-square-o");
-			result.appendChild(emptyCheck);
+			checkWrapper.appendChild(emptyCheck);
 			
 			Element fullCheck = DOM.createElement("i");
 			fullCheck.addClassName("fa");
 			fullCheck.addClassName("fa-check-square-o");
-			result.appendChild(fullCheck);
+			checkWrapper.appendChild(fullCheck);
+			result.appendChild(checkWrapper);
 			
 			resultRow.appendChild(result);
+			
+			if(competencyIds.contains(competencyId)){
+				result.addClassName("selected");
+			}else{
+				PageAssembler.attachHandler(resultRow, Event.ONCLICK, toggleSelectCallback);
+			}
 			
 			
 			Element resultsContainer = DOM.getElementById(SEARCH_COMPETENCY_RESULTS_ID);
 			
-			resultsContainer.appendChild(result);
+			resultsContainer.appendChild(resultRow);
 		}
 	}
 	
@@ -561,21 +603,21 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 			ListBox langSelect = ListBox.wrap(DOM.getElementById(LANGUAGE_SELECT_ID));
 			
 			
-			resourceTypes = new Vector<RESOURCE_TYPE>();
+			resourceTypes = new ArrayList<RESOURCE_TYPE>();
 			for(int i = 0; i < resourceTypeSelect.getItemCount(); i++){
 				if(resourceTypeSelect.isItemSelected(i)){
 					resourceTypes.add(RESOURCE_TYPE.findSymbolType(resourceTypeSelect.getValue(i)));
 				}
 			}
 			
-			languages = new Vector<LANGUAGE>();
+			languages = new ArrayList<LANGUAGE>();
 			for(int i = 0; i < langSelect.getItemCount(); i++){
 				if(langSelect.isItemSelected(i)){
 					languages.add(LANGUAGE.findSymbolLanguage(langSelect.getValue(i)));
 				}
 			}
 			
-			gradeLevels = new Vector<GRADE_LEVEL>();
+			gradeLevels = new ArrayList<GRADE_LEVEL>();
 			for(int i = 0; i < gradeSelect.getItemCount(); i++){
 				if(gradeSelect.isItemSelected(i)){
 					gradeLevels.add(GRADE_LEVEL.findSymbolGrade(gradeSelect.getValue(i)));
@@ -606,8 +648,6 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	public static boolean competenciesSaved = false;
 	
 	private static ESBCallback<ESBPacket> preferencesSavedCallback = new ESBCallback<ESBPacket>() {
-
-		
 		@Override
 		public void onFailure(Throwable caught) {
 			
@@ -724,10 +764,13 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	
 	/** Competency Modal Callbacks **/
 	
+	private static ArrayList<String> selectedCompetencies = new ArrayList<String>();
+	
 	private EventCallback openCompetencyModalCallback = new EventCallback() {
 		@Override
 		public void onEvent(Event event) {
 			UI.openCompetencyModal();
+			DOM.getElementById("searchCompetencyInput").focus();
 		}
 	};
 	
@@ -740,15 +783,65 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	};
 	
 	private EventCallback keypressSearchCompetenciesCallback = new EventCallback(){
-
 		@Override
 		public void onEvent(Event event) {
 			if(event.getKeyCode() == 13){
 				searchCompetencies();
 			}
 		}
-		
 	}; 
+	
+	private static EventCallback toggleSelectCallback = new EventCallback(){
+		@Override
+		public void onEvent(Event event) {
+			com.google.gwt.dom.client.Element e = event.getTarget();
+			while(!e.getClassName().contains("competencyResult")){
+				e = e.getParentElement();
+			}
+			
+			e.toggleClassName("selected");
+			
+			String competencyId = e.getId();
+			selectedCompetencies.add(competencyId);
+		}
+	}; 
+	
+	private static EventCallback addCompetencyCallback = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {			
+			for(String ids : selectedCompetencies){
+				String[] idArray = ids.split(" ");
+				String modelId = idArray[0];
+				String competencyId = idArray[1];
+				
+				JSONObject x = competencyCache.get(competencyId);
+				
+				UI.addCompetencyToDesiredList(competencyId, x.get(":competencyTitle").isArray().get(0).isString().stringValue());
+				DsESBApi.decalsAddDesiredCompetency(competencyId, modelId, competencyAddedCallback);
+			}
+			
+			selectedCompetencies = new ArrayList<String>();
+			UI.closeCompetencyModal();
+		}
+	};
+	
+	private static EventCallback closeCompetencyModalCallback = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {
+			selectedCompetencies = new ArrayList<String>();
+			UI.closeCompetencyModal();
+		}
+	};
+	
+	private static ESBCallback<ESBPacket> competencyAddedCallback = new ESBCallback<ESBPacket>() {
+		@Override
+		public void onSuccess(ESBPacket esbPacket) {
+			
+		}
+		
+		@Override
+		public void onFailure(Throwable caught) {}
+	};
 	
 	private void searchCompetencies(){
 		InputElement input = InputElement.as(DOM.getElementById(SEARCH_COMPETENCY_INPUT_ID));
@@ -779,23 +872,6 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 		}
 	};
 	
-	private EventCallback addDesiredCompetencyCallback = new EventCallback() {
-		@Override
-		public void onEvent(Event event) {
-			informChangesMade();
-			
-			InputElement input = InputElement.as(DOM.getElementById(COMPETENCY_ID_INPUT));
-			String competencyId = input.getValue();
-			
-			newDesiredCompetencyIds.add(competencyId);
-			
-			InputElement titleInput = InputElement.as(DOM.getElementById(ADD_COMPETENCY_INPUT_ID));
-			String competencyTitle = titleInput.getValue();
-			
-			//UI.addCompetencyToDesiredList(competencyTitle);
-			titleInput.setValue("");
-		}
-	};
 	
 	
 	/** Native Javascript Functions **/

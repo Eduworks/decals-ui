@@ -1434,7 +1434,7 @@ body.typing
 	height: 70px;
 }
 
-#prefCompetencyLink{
+#prefCompetencyLink1,#prefCompetencyLink2{
 	font-size:small; 
 	position:absolute; 
 	right:10px; 
@@ -1451,6 +1451,18 @@ body.typing
   	padding-bottom: 0.65rem;
 }
 
+#findingCompetencies p{
+	margin: auto;
+  	display: block;
+  	width: 60px;
+}
+
+#findingCompetencies img{
+	margin: auto;
+  	display: block;
+  	margin-top: 60px;
+}
+
 #competencyResultsList{
 	margin-bottom: 1rem;
 }
@@ -1461,9 +1473,8 @@ body.typing
 	cursor: pointer;
 }
 
-.competencyResult .fa{
-	display:none;
-	float:right;
+.competencyResult .fa-square-o{
+	margin-right:3px;
 }
 
 .competencyResult:hover{
@@ -1471,6 +1482,29 @@ body.typing
 }
 .competencyResult:hover .fa-square-o{
 	display:inline;
+}
+
+.competencyResult .modelInfo{
+	font-size: small;
+  	color: gray;
+  	margin-left: 20px;
+}
+
+.checkWrapper{
+	float:right;
+}
+.checkWrapper .fa{
+	display:none;
+}
+.checkWrapper:hover .fa-square-o{
+	display:none;
+}
+.checkWrapper:hover .fa-check-square-o{
+	display:inline;
+}
+
+.competencyResult.selected .fa-square-o{
+	display:none;
 }
 
 .competencyResult.selected .fa-check-square-o{
