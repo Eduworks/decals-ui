@@ -1582,3 +1582,13 @@ body.typing
 .gist {
   font-size: 14px;
 }
+
+/* ---------------------
+ Learner Focused Search
+------------------------ */
+
+#openOptionsLink{
+	color: #008cba;
+	cursor: pointer;
+	font-size: 10px;
+}

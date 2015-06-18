@@ -52,8 +52,8 @@ public class InteractiveSearchHandler extends SearchHandler {
    private static final String TH_NOUNS_KEY = "nouns";
    //private static final String TH_TEXT_KEY = "text";
    
-   private static final String MORE_OPTS_MORE_TEXT = "Show Options";
-   private static final String MORE_OPTS_LESS_TEXT = "Hide Options";
+   protected static final String MORE_OPTS_MORE_TEXT = "Show Options";
+   protected static final String MORE_OPTS_LESS_TEXT = "Hide Options";
    
    //private static final String TEMP_NAV_QUESTION = "Initializing helper...";
    protected static final String TEMP_NAV_QUESTION = "Searching...";
@@ -81,10 +81,10 @@ public class InteractiveSearchHandler extends SearchHandler {
    private static final String GRADE_LEVEL_CU = "CU";
    private static final String GRADE_LEVEL_VTP = "VTP";
    
-   private static final String SEARCH_HISTORY_DESC = "Search History:";
-   private static final String SEARCH_HISTORY_ID_PREFIX = "srchHist_"; 
-   private String searchHistoryElementId;
-   private ArrayList<SearchHistoryItem> searchHistory = new ArrayList<SearchHistoryItem>();
+   protected static final String SEARCH_HISTORY_DESC = "Search History:";
+   protected static final String SEARCH_HISTORY_ID_PREFIX = "srchHist_"; 
+   protected String searchHistoryElementId;
+   protected ArrayList<SearchHistoryItem> searchHistory = new ArrayList<SearchHistoryItem>();
    
    protected static final String APPLIED_GRADE_LEVELS_DESC = "Applied Grade Levels:";
    protected static final String GRADE_LEVEL_ALL_DESC = "All";
@@ -103,18 +103,18 @@ public class InteractiveSearchHandler extends SearchHandler {
    protected static final int RESULTS_PER_PAGE = 25;
    //private static final int NUMBER_OF_NAV_ANSWERS = 3;
    
-   private static final String DEFINITION_MODE_ANSWER_PREFIX = "defNavAnswer_";
-   private static final String NYM_MODE_ANSWER_PREFIX = "nymNavAnswer_";
-   private static final String CATEGORY_MODE_ANSWER_PREFIX = "catNavAnswer_";
-   private static final String TOPIC_MODE_ANSWER_PREFIX = "topNavAnswer_"; 
+   protected static final String DEFINITION_MODE_ANSWER_PREFIX = "defNavAnswer_";
+   static final String NYM_MODE_ANSWER_PREFIX = "nymNavAnswer_";
+   protected static final String CATEGORY_MODE_ANSWER_PREFIX = "catNavAnswer_";
+   protected static final String TOPIC_MODE_ANSWER_PREFIX = "topNavAnswer_"; 
    
    private static final String NAV_ANSWER_SUFFIX = "<i class=\"fa fa-chevron-circle-right\"></i>";
    
    private static final String SHOW_MORE_RESULTS_ID_SUFFIX = "-ish";
    
-   private enum NavMode{DEFINITION,NYM,CATEGORY,TOPIC,GRADE}
-   private enum MoreOptsMode{MORE,LESS}
-   private enum GradeLevelToggleMode{ALL,NONE}
+   protected enum NavMode{DEFINITION,NYM,CATEGORY,TOPIC,GRADE}
+   protected enum MoreOptsMode{MORE,LESS}
+   protected enum GradeLevelToggleMode{ALL,NONE}
    
    public enum RatingHandlerType{VIEW, MODIFY, NONE} 
    public enum CommentHandlerType{VIEW, MODIFY, NONE}
@@ -124,8 +124,8 @@ public class InteractiveSearchHandler extends SearchHandler {
    protected int lastNavAnswerIndex;
    protected String lastWordForOntology;
    
-   private NavMode currentNavMode;
-   private MoreOptsMode currentMoreOptsMode = MoreOptsMode.LESS;
+   protected NavMode currentNavMode;
+   MoreOptsMode currentMoreOptsMode = MoreOptsMode.LESS;
    private GradeLevelToggleMode currentGradeLevelToggleMode = GradeLevelToggleMode.ALL;
    
    protected OntologyHelper ontologyHelper;
@@ -140,12 +140,12 @@ public class InteractiveSearchHandler extends SearchHandler {
    protected String appliedGradeLevelsContainerId;
    protected String filterNavContaierId;
    protected String filterNavQuestionId;
-   private String filterNavAnswer1LiId;
-   private String filterNavAnswer2LiId;
-   private String filterNavAnswer3LiId;
-   private String filterNavLinksId;
-   private String filterNavMoreAnswersLinkId;
-   private String filterNavMoreOptionsLinkId;
+   protected String filterNavAnswer1LiId;
+   protected String filterNavAnswer2LiId;
+   protected String filterNavAnswer3LiId;
+   protected String filterNavLinksId;
+   protected String filterNavMoreAnswersLinkId;
+   protected String filterNavMoreOptionsLinkId;
    private String filterNavGrdLvlKgLiId;
    private String filterNavGrdLvlEsLiId;
    private String filterNavGrdLvlMsLiId;
@@ -153,7 +153,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    private String filterNavGrdLvlCuLiId;
    private String filterNavGrdLvlVtpLiId;
    private String filterNavGrdLvlApplyLiId;
-   private String filterNavGrdLvlApplyLinkId;
+   String filterNavGrdLvlApplyLinkId;
    private String filterNavGrdLvlToggleLiId;
    private String filterNavGrdLvlToggleLinkId;
    private String filterNavGrdLvlKgCbId;
@@ -162,15 +162,15 @@ public class InteractiveSearchHandler extends SearchHandler {
    private String filterNavGrdLvlHsCbId;
    private String filterNavGrdLvlCuCbId;
    private String filterNavGrdLvlVtpCbId;
-   private String filterNavMoreOptLinkTxtId;
-   private String filterNavMoreOptContainerId;
+   protected String filterNavMoreOptLinkTxtId;
+   String filterNavMoreOptContainerId;
    protected String filterNavMoreOptDisambigLiId;
    protected String filterNavMoreOptCatLiId;
    protected String filterNavMoreOptTopicLiId;
-   private String filterNavMoreOptDisambigId;
-   private String filterNavMoreOptCatId;
-   private String filterNavMoreOptTopicId;
-   private String filterNavMoreOptGrdLvlId;
+   protected String filterNavMoreOptDisambigId;
+   protected String filterNavMoreOptCatId;
+   protected String filterNavMoreOptTopicId;
+   protected String filterNavMoreOptGrdLvlId;
    private String searchTermBoxId;
    
    protected boolean kgGlApplied = true;
@@ -187,7 +187,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    protected RegistryResourceActionHandler actionHandler;
    
    //Represents a search history item
-   private class SearchHistoryItem {
+   class SearchHistoryItem {
       private String displayedSearchTerm;
       private String searchQuery;
       
@@ -255,12 +255,12 @@ public class InteractiveSearchHandler extends SearchHandler {
       @Override
       public void onEvent(Event event) {
          syncId++;
-         DsUtil.setLabelText(filterNavQuestionId,TEMP_NAV_QUESTION);
+         //DsUtil.setLabelText(filterNavQuestionId,TEMP_NAV_QUESTION);
          if (currentNavMode.equals(NavMode.DEFINITION)) addNextMultiDefinitionNavigation(lastWordForOntology);
          else if (currentNavMode.equals(NavMode.NYM)) addNextNymNavigation();
          else if (currentNavMode.equals(NavMode.TOPIC)) addNextTopicNavigation();
          else if (currentNavMode.equals(NavMode.CATEGORY)) addNextCategoryNavigation();
-         else if (currentNavMode.equals(NavMode.GRADE)) findAndHandleWordOntology(searchQuery, syncId);
+         //else if (currentNavMode.equals(NavMode.GRADE)) findAndHandleWordOntology(searchQuery, syncId);
       }
    };
    
@@ -338,7 +338,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    };   
    
    //Returns the index value for the given element ID
-   private int getIndexFromElementId(String elementId, String prefix) {
+   int getIndexFromElementId(String elementId, String prefix) {
       return Integer.parseInt(elementId.substring(prefix.length()));
    }
    
@@ -479,7 +479,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Update grade level flags based on check box values.
-   private void updateAppliedGradeLevels() {
+   protected void updateAppliedGradeLevels() {
       kgGlApplied = DsUtil.isCheckBoxChecked(filterNavGrdLvlKgCbId);      
       esGlApplied = DsUtil.isCheckBoxChecked(filterNavGrdLvlEsCbId);
       msGlApplied = DsUtil.isCheckBoxChecked(filterNavGrdLvlMsCbId);
@@ -546,7 +546,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Returns a sub list of the search history list (GWT and sub list don't work well together)
-   private ArrayList<SearchHistoryItem> getSearchHistorySubList(ArrayList<SearchHistoryItem> list, int size) {
+   protected ArrayList<SearchHistoryItem> getSearchHistorySubList(ArrayList<SearchHistoryItem> list, int size) {
       ArrayList<SearchHistoryItem> ret = new ArrayList<SearchHistoryItem>();
       for (int i=0;i<size;i++) {
          if (i < list.size()) ret.add(list.get(i));
@@ -681,7 +681,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Build the display term for the current definition
-   private String buildDisplayTermForCurrentDefinition() {
+   protected String buildDisplayTermForCurrentDefinition() {
       String detail = ontologyHelper.getCurrentDefinition().getWikiLookupValue().toLowerCase().replace(ontologyHelper.getCurrentDefinition().getWord().toLowerCase(),"").trim();
       StringBuffer sb = new StringBuffer();
       sb.append(ontologyHelper.getCurrentDefinition().getWord());
@@ -690,7 +690,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //After deciding how to perform the definition search, perform it and update the appropriate page elements
-   private void finishDefinitionSelectedActions(final long currentSyncId) {
+   protected void finishDefinitionSelectedActions(final long currentSyncId) {
       addWordDefinition(ontologyHelper.getCurrentDefinition());
       DsUtil.removeAllWidgetsFromRootPanel(RootPanel.get(resultsContainerId));
       setCounterContainerDisplay(false);
@@ -837,7 +837,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Get definition information
-   private void buildSearchValuesForNonDomainDefintion(final long currentSyncId) {
+   protected void buildSearchValuesForNonDomainDefintion(final long currentSyncId) {
       DsESBApi.decalsGetTextHighlights(ontologyHelper.getCurrentDefinition().getDefinition().replaceAll("[^A-Za-z0-9 ;,.]", ""),new ESBCallback<ESBPacket>() {
          @Override
          public void onSuccess(ESBPacket result) {
@@ -942,7 +942,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Build search history anchor
-   private String buildSearchHistoryLink(int idx, String value) {
+   protected String buildSearchHistoryLink(int idx, String value) {
       return "<a id=" + SEARCH_HISTORY_ID_PREFIX + idx +">" + value + "</a>";
    }
    
@@ -992,7 +992,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Add a navigation answer
-   private void addNavAnswer(String answerLiId, String answerId, String answerText) {
+   protected void addNavAnswer(String answerLiId, String answerId, String answerText) {
       DsUtil.showLabel(answerLiId);         
       StringBuffer sb = new StringBuffer();
       sb.append("<a id=\"" + answerId + "\">");
@@ -1005,10 +1005,10 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Generate an answer ID
-   private String genNavAnswerId(String prefix) {return prefix + lastNavAnswerIndex;}
+   protected String genNavAnswerId(String prefix) {return prefix + lastNavAnswerIndex;}
    
    //Set the related word navigation 'question'
-   private void buildNymNavigationQuestion() {DsUtil.setLabelText(filterNavQuestionId,NYM_NAV_QUESTION_PREFIX);}
+   protected void buildNymNavigationQuestion() {DsUtil.setLabelText(filterNavQuestionId,NYM_NAV_QUESTION_PREFIX);}
    
    //Add related word answer
    private void addNymNavigationAnswer(String navAnswerLiId, int navAnswerIndex) {
@@ -1043,7 +1043,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
          
    //Returns the current definition's related word list
-   private ArrayList<String> getCurrentDefinitionRelatedWordsList() {
+   protected ArrayList<String> getCurrentDefinitionRelatedWordsList() {
       ArrayList<String> retList = new ArrayList<String>();
       for (WordOntologyItem woi:ontologyHelper.getCurrentDefinition().getRelatedWords()) {
          woi.setSearchValue(ontologyHelper.getCurrentDefinition().getWord() + " " + woi.getWord());
@@ -1053,7 +1053,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Parse the query result counts for the current definition's related words
-   private void parseCurrentDefRelatedWordsResultCountsResults(JSONObject rcr) {
+   void parseCurrentDefRelatedWordsResultCountsResults(JSONObject rcr) {
       for (WordOntologyItem woi: ontologyHelper.getCurrentDefinition().getRelatedWords()) {         
          if (rcr.containsKey(woi.getSearchValue())) {
             woi.setNumResults((long)rcr.get(woi.getSearchValue()).isNumber().doubleValue());            
@@ -1089,12 +1089,12 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Add definition navigation 'question'
-   private void buildDefinitionNavigationQuestion(String word) {
+   protected void buildDefinitionNavigationQuestion(String word) {
       DsUtil.setLabelText(filterNavQuestionId,MULTI_DEFINITION_NAV_QUESTION_PREFIX + "\"" + word + "\"" + MULTI_DEFINITION_NAV_QUESTION_SUFFIX);
    }
      
    //Add definition navigation answer
-   private void addDefinitionNavigationAnswer(String navAnswerLiId, int navAnswerIndex) {
+   protected void addDefinitionNavigationAnswer(String navAnswerLiId, int navAnswerIndex) {
       WordOntologyDefinition def = ontologyHelper.getDefinitions().get(navAnswerIndex);
       String answerId = genNavAnswerId(DEFINITION_MODE_ANSWER_PREFIX);
       addNavAnswer(navAnswerLiId,answerId,def.getDefinition());
@@ -1178,7 +1178,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Build the topic navigation 'question'
-   private void buildTopicNavigationQuestion() {DsUtil.setLabelText(filterNavQuestionId,RELATED_TOPICS_QUESTION_PREFIX);}
+   protected void buildTopicNavigationQuestion() {DsUtil.setLabelText(filterNavQuestionId,RELATED_TOPICS_QUESTION_PREFIX);}
    
    //Add the topic navigation answer
    private void addTopicNavigationAnswer(String navAnswerLiId, int navAnswerIndex) {
@@ -1212,7 +1212,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Build the related category navigation 'question'
-   private void buildCategoryNavigationQuestion() {DsUtil.setLabelText(filterNavQuestionId,RELATED_CATEGORIES_QUESTION_PREFIX);}
+   protected void buildCategoryNavigationQuestion() {DsUtil.setLabelText(filterNavQuestionId,RELATED_CATEGORIES_QUESTION_PREFIX);}
    
    //Add category navigation answer
    private void addCategoryNavigationAnswer(String navAnswerLiId, int navAnswerIndex) {
@@ -1454,16 +1454,16 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Display the word ontology item definition
-   private void addWordDefinition(WordOntologyItem woi) {addWordDefinition(woi.getWord(),woi.getDefinition());}
+   protected void addWordDefinition(WordOntologyItem woi) {addWordDefinition(woi.getWord(),woi.getDefinition());}
    
    //Clear the word definition
-   private void clearWordDefinition() {
+   protected void clearWordDefinition() {
       DsUtil.removeAllWidgetsFromRootPanel(RootPanel.get(wordDefContainerId));
       DsUtil.hideLabel(wordDefContainerId);
    }
    
    //Change the search term box text
-   private void setSearchTermBoxText(String text) {DsUtil.setTextBoxText(searchTermBoxId,text);}
+   protected void setSearchTermBoxText(String text) {DsUtil.setTextBoxText(searchTermBoxId,text);}
    
    //Set up the initial interactive search navigation
    protected void setUpInitialNavigation(final long currentSyncId) {

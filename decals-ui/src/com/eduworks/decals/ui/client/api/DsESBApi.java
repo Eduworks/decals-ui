@@ -1076,7 +1076,8 @@ public class DsESBApi extends ESBApi {
     * @param callback The event callback
     * @return Returns the query result JSON string
     */
-   public static String decalsSolrLearnerFocusedSearch(String terms, String rows, String returnFields, boolean mustMatchAll, int start, ESBCallback<ESBPacket> callback) {
+   public static String decalsSolrLearnerFocusedSearch(String terms, String rows, String returnFields, boolean mustMatchAll, int start, 
+		   ArrayList<String> ignorePrefs, String appliedGradeLevels, ESBCallback<ESBPacket> callback) {
       MultipartPost mp = new MultipartPost();
       ESBPacket jo = new ESBPacket();
       jo.put(SESSION_ID_KEY, sessionId);
@@ -1088,6 +1089,16 @@ public class DsESBApi extends ESBApi {
       jo.put(USE_CURSOR_KEY, "false");
       jo.put(USE_MMA_KEY, String.valueOf(mustMatchAll));
       jo.put(START_KEY, start);
+      
+      JSONArray ignoredPrefs = new JSONArray();
+      for(int i = 0; i < ignorePrefs.size(); i++){
+    	  String pref = ignorePrefs.get(i);
+    	  ignoredPrefs.set(i, new JSONString(pref));
+      }
+      jo.put("ignorePrefs", ignoredPrefs);
+      
+      if(ignorePrefs.contains("grade_levels")) jo.put("appliedGradeLevels", appliedGradeLevels);
+      
       mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
       return CommunicationHub.sendMultipartPost(getESBActionURL("decalsLearnerProfileQuery"),mp,false,callback);
    }
