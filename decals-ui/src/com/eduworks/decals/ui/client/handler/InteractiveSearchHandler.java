@@ -42,11 +42,11 @@ public class InteractiveSearchHandler extends SearchHandler {
    //TODO replace local element IDs with param packet attributes
    
    private static final String WORD_DEF_CLASS = "wordDef";
-   private static final String APPLIED_GRADE_LEVELS_CLASS = "appliedGradeLevels"; 
+   protected static final String APPLIED_GRADE_LEVELS_CLASS = "appliedGradeLevels"; 
    
-   private static final int MAX_NUM_DEF_TERMS = 200;
+   protected static final int MAX_NUM_DEF_TERMS = 200;
    
-   private static final String WORD_BOOST = "^4";
+   protected static final String WORD_BOOST = "^4";
    
    private static final String TH_KEYWORDS_KEY = "keywords";
    private static final String TH_NOUNS_KEY = "nouns";
@@ -56,7 +56,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    private static final String MORE_OPTS_LESS_TEXT = "Hide Options";
    
    //private static final String TEMP_NAV_QUESTION = "Initializing helper...";
-   private static final String TEMP_NAV_QUESTION = "Searching...";
+   protected static final String TEMP_NAV_QUESTION = "Searching...";
    
    private static final String MULTI_DEFINITION_NAV_QUESTION_PREFIX = "Did you mean ";
    private static final String MULTI_DEFINITION_NAV_QUESTION_SUFFIX = " defined as:";
@@ -69,7 +69,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    private static final String SOLR_TITLE_FIELD = "title";
    private static final String SOLR_DESC_FIELD = "description";   
    private static final String SOLR_GRADE_LEVELS_FIELD = "grade_levels";
-   private static final String SOLR_QUERY_FIELDS = "score " + SOLR_KEYWORDS_FIELD + " " + SOLR_TITLE_FIELD + " " + SOLR_DESC_FIELD + " author create_date url publisher thumbnail url_status";
+   protected static final String SOLR_QUERY_FIELDS = "score " + SOLR_KEYWORDS_FIELD + " " + SOLR_TITLE_FIELD + " " + SOLR_DESC_FIELD + " author create_date url publisher thumbnail url_status";
    
    private static final String GRADE_LEVEL_QUERY_STRING_PREFIX = " AND ( ";
    private static final String GRADE_LEVEL_QUERY_STRING_SUFFIX = " )";
@@ -86,21 +86,21 @@ public class InteractiveSearchHandler extends SearchHandler {
    private String searchHistoryElementId;
    private ArrayList<SearchHistoryItem> searchHistory = new ArrayList<SearchHistoryItem>();
    
-   private static final String APPLIED_GRADE_LEVELS_DESC = "Applied Grade Levels:";
-   private static final String GRADE_LEVEL_ALL_DESC = "All";
-   private static final String GRADE_LEVEL_NONE_DESC = "None";
-   private static final String GRADE_LEVEL_KG_DESC = "Kindergarten";   
-   private static final String GRADE_LEVEL_ES_DESC = "Elementary School";
-   private static final String GRADE_LEVEL_MS_DESC = "Middle School";
-   private static final String GRADE_LEVEL_HS_DESC = "High School";
-   private static final String GRADE_LEVEL_CU_DESC = "College/University";
-   private static final String GRADE_LEVEL_VTP_DESC = "Vocational/Technical/Professional";
+   protected static final String APPLIED_GRADE_LEVELS_DESC = "Applied Grade Levels:";
+   protected static final String GRADE_LEVEL_ALL_DESC = "All";
+   protected static final String GRADE_LEVEL_NONE_DESC = "None";
+   protected static final String GRADE_LEVEL_KG_DESC = "Kindergarten";   
+   protected static final String GRADE_LEVEL_ES_DESC = "Elementary School";
+   protected static final String GRADE_LEVEL_MS_DESC = "Middle School";
+   protected static final String GRADE_LEVEL_HS_DESC = "High School";
+   protected static final String GRADE_LEVEL_CU_DESC = "College/University";
+   protected static final String GRADE_LEVEL_VTP_DESC = "Vocational/Technical/Professional";
    
-   private static final int DEFINE_WORD_LEVELS = 3;
+   protected static final int DEFINE_WORD_LEVELS = 3;
    
    private static final int RESULT_COUNT_UPPER_LIMIT = 10000;
    
-   private static final int RESULTS_PER_PAGE = 25;
+   protected static final int RESULTS_PER_PAGE = 25;
    //private static final int NUMBER_OF_NAV_ANSWERS = 3;
    
    private static final String DEFINITION_MODE_ANSWER_PREFIX = "defNavAnswer_";
@@ -119,27 +119,27 @@ public class InteractiveSearchHandler extends SearchHandler {
    public enum RatingHandlerType{VIEW, MODIFY, NONE} 
    public enum CommentHandlerType{VIEW, MODIFY, NONE}
    
-   private InteractiveSearchResultSetReturn intSearchResultSet; 
+   InteractiveSearchResultSetReturn intSearchResultSet; 
    private int lastResultStart;
-   private int lastNavAnswerIndex;
-   private String lastWordForOntology;
+   protected int lastNavAnswerIndex;
+   protected String lastWordForOntology;
    
    private NavMode currentNavMode;
    private MoreOptsMode currentMoreOptsMode = MoreOptsMode.LESS;
    private GradeLevelToggleMode currentGradeLevelToggleMode = GradeLevelToggleMode.ALL;
    
-   private OntologyHelper ontologyHelper;
-   private WikiInfoHelper wikiInfoHelper;
+   protected OntologyHelper ontologyHelper;
+   protected WikiInfoHelper wikiInfoHelper;
       
-   private String displayedSearchTerm;
+   protected String displayedSearchTerm;
    
    @SuppressWarnings("unused")
    private String filterNavMoreOptGrdLvlLiId;
    
    private String wordDefContainerId;   
-   private String appliedGradeLevelsContainerId;
-   private String filterNavContaierId;
-   private String filterNavQuestionId;
+   protected String appliedGradeLevelsContainerId;
+   protected String filterNavContaierId;
+   protected String filterNavQuestionId;
    private String filterNavAnswer1LiId;
    private String filterNavAnswer2LiId;
    private String filterNavAnswer3LiId;
@@ -164,27 +164,27 @@ public class InteractiveSearchHandler extends SearchHandler {
    private String filterNavGrdLvlVtpCbId;
    private String filterNavMoreOptLinkTxtId;
    private String filterNavMoreOptContainerId;
-   private String filterNavMoreOptDisambigLiId;
-   private String filterNavMoreOptCatLiId;
-   private String filterNavMoreOptTopicLiId;
+   protected String filterNavMoreOptDisambigLiId;
+   protected String filterNavMoreOptCatLiId;
+   protected String filterNavMoreOptTopicLiId;
    private String filterNavMoreOptDisambigId;
    private String filterNavMoreOptCatId;
    private String filterNavMoreOptTopicId;
    private String filterNavMoreOptGrdLvlId;
    private String searchTermBoxId;
    
-   private boolean kgGlApplied = true;
-   private boolean esGlApplied = true;
-   private boolean msGlApplied = true;
-   private boolean hsGlApplied = true;
-   private boolean cuGlApplied = true;
-   private boolean vtpGlApplied = true;
+   protected boolean kgGlApplied = true;
+   protected boolean esGlApplied = true;
+   protected boolean msGlApplied = true;
+   protected boolean hsGlApplied = true;
+   protected boolean cuGlApplied = true;
+   protected boolean vtpGlApplied = true;
    
-   private RatingHandlerType ratingHandlerType = RatingHandlerType.NONE;
-   private CommentHandlerType commentHandlerType = CommentHandlerType.NONE;
-   private boolean buildAddToCollectionWidgets = false;
+   protected RatingHandlerType ratingHandlerType = RatingHandlerType.NONE;
+   protected CommentHandlerType commentHandlerType = CommentHandlerType.NONE;
+   protected boolean buildAddToCollectionWidgets = false;
    
-   private RegistryResourceActionHandler actionHandler;
+   protected RegistryResourceActionHandler actionHandler;
    
    //Represents a search history item
    private class SearchHistoryItem {
@@ -750,7 +750,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Builds a string from all the values in the given array list of strings
-   private String getStringFromList(ArrayList<String> sl) {
+   protected String getStringFromList(ArrayList<String> sl) {
       StringBuffer sb = new StringBuffer();
       for (String s:sl) sb.append(s + " ");
       return sb.toString().trim();
@@ -869,7 +869,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Populate the page with the interactive search results
-   private void populateInteractiveResults(int start, final long currentSyncId) {
+   void populateInteractiveResults(int start, final long currentSyncId) {
       if (currentSyncId == syncId) {
          if (start == 0) DsUtil.removeAllWidgetsFromRootPanel(RootPanel.get(resultsContainerId));
          lastResultStart = start;      
@@ -885,7 +885,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Build the grade level query string
-   private String getAppliedGradeLevelsQueryString() {
+   protected String getAppliedGradeLevelsQueryString() {
       if (kgGlApplied && esGlApplied && msGlApplied && hsGlApplied && cuGlApplied && vtpGlApplied) return "";
       if (!kgGlApplied && !esGlApplied && !msGlApplied && !hsGlApplied && !cuGlApplied && !vtpGlApplied) return "";
       StringBuffer sb = new StringBuffer();
@@ -929,7 +929,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Adds a term to the search history and refreshes the search history display
-   private void updateSearchHistory(String displayedSearchTerm, String searchQuery) {
+   void updateSearchHistory(String displayedSearchTerm, String searchQuery) {
       if (searchHistory.size() >= 1) {
          SearchHistoryItem shi = searchHistory.get(searchHistory.size() - 1);
          if (shi.getDisplayedSearchTerm().equalsIgnoreCase(displayedSearchTerm) && shi.getSearchQuery().equalsIgnoreCase(searchQuery)) {
@@ -970,7 +970,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Show the applied grade level on the page
-   private void addAppliedGradeLevelDisplay() {
+   protected void addAppliedGradeLevelDisplay() {
       DsUtil.showLabel(appliedGradeLevelsContainerId);
       DsUtil.removeAllWidgetsFromRootPanel(RootPanel.get(appliedGradeLevelsContainerId));
       StringBuffer sb = new StringBuffer();
@@ -1062,7 +1062,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Build the result counts for the current definition's related words.
-   private void buildCurrentDefRelatedResultCountsAndPopulateNymNavigation(final long currentSyncId) {
+   protected void buildCurrentDefRelatedResultCountsAndPopulateNymNavigation(final long currentSyncId) {
       if (!ontologyHelper.currentDefinitionHasRelations()) findAndHandleWikiInfo(ontologyHelper.getCurrentDefinition().getWikiLookupValue(),currentSyncId,false);
       else {
          DsESBApi.decalsSolrRegistryQueryCounts(getCurrentDefinitionRelatedWordsList(),true,new ESBCallback<ESBPacket>() {
@@ -1102,7 +1102,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Add the next set of definition questions if there are any.  If not, add wiki info questions
-   private void addNextMultiDefinitionNavigation(String word) {      
+   protected void addNextMultiDefinitionNavigation(String word) {      
       lastWordForOntology = word;
       currentNavMode = NavMode.DEFINITION;
       clearWordDefinition();
@@ -1223,7 +1223,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Add the next set of category navigation if there are any.  If not add topic navigation
-   private void addNextCategoryNavigation() {
+   protected void addNextCategoryNavigation() {
       currentNavMode = NavMode.CATEGORY;
       hideAllNavigationLineItems();
       buildCategoryNavigationQuestion();      
@@ -1270,7 +1270,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Build the topic query result counts
-   private void buildTopicResultCountsAndPopulateTopicNavigation(final long currentSyncId) {
+   protected void buildTopicResultCountsAndPopulateTopicNavigation(final long currentSyncId) {
       DsUtil.setLabelText(filterNavQuestionId,TEMP_NAV_QUESTION);
       DsESBApi.decalsSolrRegistryQueryCounts(getRelatedTopicsList(),true,new ESBCallback<ESBPacket>() {
          @Override
@@ -1290,7 +1290,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Register the hyperlink listeners for the wiki info description extract
-   private void registerExtractMarkupLinks() {
+   protected void registerExtractMarkupLinks() {
       Iterator<String> it = wikiInfoHelper.getExtractMarkupMap().keySet().iterator();      
       while (it.hasNext()) PageAssembler.attachHandler(it.next(),Event.ONCLICK,extractMarkupSelectedListener);
    }
@@ -1396,7 +1396,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    private void buildGradeLevelNavigationQuestion() {DsUtil.setLabelText(filterNavQuestionId,GRADE_LEVELS_QUESTION_PREFIX);}
    
    //Display grade level navigation.
-   private void showGradeLevelNavigation() {
+   protected void showGradeLevelNavigation() {
       currentNavMode = NavMode.GRADE;
       hideAllNavigationLineItems();
       buildGradeLevelNavigationQuestion();    
@@ -1426,7 +1426,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Hide all navigation
-   private void hideAllNavigationLineItems() {
+   protected void hideAllNavigationLineItems() {
       DsUtil.hideLabel(filterNavAnswer1LiId);
       DsUtil.hideLabel(filterNavAnswer2LiId);
       DsUtil.hideLabel(filterNavAnswer3LiId);      
@@ -1442,7 +1442,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Display the word definition
-   private void addWordDefinition(String word, String definition) {
+   protected void addWordDefinition(String word, String definition) {
       DsUtil.showLabel(wordDefContainerId);
       DsUtil.removeAllWidgetsFromRootPanel(RootPanel.get(wordDefContainerId));
       StringBuffer sb = new StringBuffer();
@@ -1466,7 +1466,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    private void setSearchTermBoxText(String text) {DsUtil.setTextBoxText(searchTermBoxId,text);}
    
    //Set up the initial interactive search navigation
-   private void setUpInitialNavigation(final long currentSyncId) {
+   protected void setUpInitialNavigation(final long currentSyncId) {
       DsUtil.showLabel(filterNavContaierId);
       DsUtil.setLabelText(filterNavQuestionId,TEMP_NAV_QUESTION);      
       hideAllNavigationLineItems();
@@ -1490,7 +1490,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Grabs the needed element IDs out of the parameter packet
-   private void parseParamPacket(SearchHandlerParamPacket paramPacket) {
+   protected void parseParamPacket(SearchHandlerParamPacket paramPacket) {
       this.resultsContainerId = paramPacket.getResultsContainerId();      
       this.counterElementId = paramPacket.getCounterElementId();
       this.counterContainerElementId = paramPacket.getCounterContainerElementId();

@@ -5,6 +5,7 @@ import com.eduworks.decals.ui.client.handler.DsHeaderHandler;
 import com.eduworks.decals.ui.client.handler.InteractiveSearchHandler;
 import com.eduworks.decals.ui.client.handler.InteractiveSearchHandler.CommentHandlerType;
 import com.eduworks.decals.ui.client.handler.InteractiveSearchHandler.RatingHandlerType;
+import com.eduworks.decals.ui.client.handler.LearnerFocusedSearchHandler;
 import com.eduworks.decals.ui.client.model.SearchHandlerParamPacket;
 import com.eduworks.decals.ui.client.pagebuilder.DecalsScreen;
 import com.eduworks.decals.ui.client.util.DsUtil;
@@ -85,7 +86,7 @@ public class DsUserLrRSearchScreen  extends DecalsScreen {
    
    private static final String ULRS_TYPING = "userLRSearchTyping";
    
-   private InteractiveSearchHandler userLRSearchHandler = new InteractiveSearchHandler();
+   private LearnerFocusedSearchHandler userLRSearchHandler = new LearnerFocusedSearchHandler();
    
    //Generates a SearchHandlerParamPacket with the needed element IDs for an interactive search...so many :(
    private SearchHandlerParamPacket generateSearchParamPacket() {
@@ -199,7 +200,7 @@ public class DsUserLrRSearchScreen  extends DecalsScreen {
    //checks the session for a cached search and attempts to rebuild it if one is found
    private void checkForCachedSearch() {
       if (DsSession.getInstance().getCachedLrSearchHandler() == null) return;
-      userLRSearchHandler = DsSession.getInstance().getCachedLrSearchHandler();
+      userLRSearchHandler = (LearnerFocusedSearchHandler) DsSession.getInstance().getCachedLrSearchHandler();
       DsUtil.setTextBoxText(ULRS_HEADER_FIELD, userLRSearchHandler.getLastSearchTerm());
       DsUtil.hideLabel(DEFAULT_HEADER);
       DsUtil.showLabel(SEARCH_HEADER);

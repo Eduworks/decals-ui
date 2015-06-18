@@ -1066,6 +1066,33 @@ public class DsESBApi extends ESBApi {
    }
    
    /**
+    * Perform a SOLR search for the Learner Focused search.
+    * 
+    * @param terms The Terms to search for 
+    * @param rows The number of rows to return
+    * @param returnFields The fields to retrieve
+    * @param mustMatchAll The must match all flag (if set to yes, then all terms in the query must be matched 100%)
+    * @param start The record to start retrieval
+    * @param callback The event callback
+    * @return Returns the query result JSON string
+    */
+   public static String decalsSolrLearnerFocusedSearch(String terms, String rows, String returnFields, boolean mustMatchAll, int start, ESBCallback<ESBPacket> callback) {
+      MultipartPost mp = new MultipartPost();
+      ESBPacket jo = new ESBPacket();
+      jo.put(SESSION_ID_KEY, sessionId);
+      
+      jo.put(QUERY_KEY, terms);
+      jo.put(ROWS_KEY, rows);
+      jo.put(RETURN_FLDS_KEY, returnFields);
+      jo.put(ID_SORT_KEY, "false");
+      jo.put(USE_CURSOR_KEY, "false");
+      jo.put(USE_MMA_KEY, String.valueOf(mustMatchAll));
+      jo.put(START_KEY, start);
+      mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+      return CommunicationHub.sendMultipartPost(getESBActionURL("decalsLearnerProfileQuery"),mp,false,callback);
+   }
+   
+   /**
     * Get User Preferences
     * @return Returns the user preferences JSON string
     */

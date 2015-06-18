@@ -20,6 +20,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTML; 
 import com.google.gwt.user.client.ui.ListBox;
 import com.eduworks.decals.ui.client.DsSession;
+import com.eduworks.decals.ui.client.DsUserPreferences;
 import com.eduworks.decals.ui.client.api.DsESBApi;
 import com.eduworks.decals.ui.client.pagebuilder.screen.enums.GRADE_LEVEL;
 import com.eduworks.decals.ui.client.pagebuilder.screen.enums.LANGUAGE;
@@ -27,10 +28,7 @@ import com.eduworks.decals.ui.client.pagebuilder.screen.enums.RESOURCE_TYPE;
 
 public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 
-	public static String RESOURCE_TYPES_KEY = "resourceTypes";
-	public static String GRADE_LEVELS_KEY = "gradeLevel";
-	public static String LEARNING_OBJECTIVES_KEY = "learningObjectives";
-	public static String LANGUAGE_KEY = "language";
+	
 	
 	private static final String RESOURCE_TYPE_SELECT_ID = "prefResourceType";
 	private static final String LANGUAGE_SELECT_ID = "prefLang";
@@ -68,12 +66,6 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	private static final String CONFIRM_CHANGES_MODAL = "modalConfirmCancel";
 	private static final String COMPETENCY_SEARCH_MODAL = "modalCompetencySearch";
 	
-	public static ArrayList<RESOURCE_TYPE> resourceTypes = new ArrayList<RESOURCE_TYPE>();
-	public static ArrayList<GRADE_LEVEL> gradeLevels = new ArrayList<GRADE_LEVEL>();
-	public static ArrayList<LANGUAGE> languages = new ArrayList<LANGUAGE>();
-
-	public static ArrayList<String> learningObjectives = new ArrayList<String>();
-	
 	public static ArrayList<String> competencyIds = new ArrayList<String>();
 	
 	public static ArrayList<String> newDesiredCompetencyIds = new ArrayList<String>();
@@ -81,66 +73,15 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	private static HashMap<String, JSONObject> competencyCache = new HashMap<String, JSONObject>();
 	
 	public DsUserPreferencesScreen(ESBPacket packet) {
-		resourceTypes = new ArrayList<RESOURCE_TYPE>();
-		gradeLevels = new ArrayList<GRADE_LEVEL>();
-		languages = new ArrayList<LANGUAGE>();
-		learningObjectives = new ArrayList<String>();
+		DsUserPreferences.getInstance().resourceTypes = new ArrayList<RESOURCE_TYPE>();
+		DsUserPreferences.getInstance().gradeLevels = new ArrayList<GRADE_LEVEL>();
+		DsUserPreferences.getInstance().languages = new ArrayList<LANGUAGE>();
+		DsUserPreferences.getInstance().learningObjectives = new ArrayList<String>();
 		newDesiredCompetencyIds = new ArrayList<String>();
 		
 		prefsChanged = false;
 		
-		JSONObject thing = null;
-		
-		if (packet.containsKey("contentStream")) 
-			thing = JSONParser.parseStrict(packet.getContentString()).isObject();
-		else
-			thing = packet.isObject();
-		
-		if(thing == null){
-			return;
-		}else{
-			if(thing.containsKey(RESOURCE_TYPES_KEY)){
-				JSONArray types = thing.get(RESOURCE_TYPES_KEY).isArray();
-				
-				if(types != null){
-					for(int i = 0; i < types.size(); i++){
-						String type = types.get(i).isString().stringValue();
-						resourceTypes.add(RESOURCE_TYPE.findSymbolType(type));
-					}
-				}
-			}
-			
-			if(thing.containsKey(GRADE_LEVELS_KEY)){
-				JSONArray grades = thing.get(GRADE_LEVELS_KEY).isArray();
-				
-				if(grades != null){
-					for(int i = 0; i < grades.size(); i++){
-						String grade = grades.get(i).isString().stringValue();
-						gradeLevels.add(GRADE_LEVEL.findSymbolGrade(grade));
-					}
-				}
-			}
-			
-			if(thing.containsKey(LEARNING_OBJECTIVES_KEY)){
-				JSONArray objectives = thing.get(LEARNING_OBJECTIVES_KEY).isArray();
-			
-				if(objectives != null){
-					for(int i = 0; i < objectives.size(); i++){
-						learningObjectives.add(objectives.get(i).isString().stringValue());
-					}
-				}
-			}
-			
-			if(thing.containsKey(LANGUAGE_KEY)){
-				JSONArray langs = thing.get(LANGUAGE_KEY).isArray();
-				
-				if(langs != null){
-					for(int i = 0; i < langs.size(); i++){
-						languages.add(LANGUAGE.findSymbolLanguage(langs.get(i).isString().stringValue()));
-					}
-				}
-			}
-		}
+		DsUserPreferences.getInstance().parsePreferences(packet);
 		
 		DsESBApi.decalsUserCompetencies(setupCompetenciesCallback);
 		DsESBApi.decalsLearningObjectives(setupLearningObjectivesCallback);
@@ -246,7 +187,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 			   
 			});
 			
-			for(String objective : learningObjectives){
+			for(String objective : DsUserPreferences.getInstance().learningObjectives){
 				addLearningObjectiveToList(objective);
 			}
 		}
@@ -258,7 +199,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 			setupBasicGradeLevelSelect();
 			
 			String objectives = "";
-			for(String obj : learningObjectives){
+			for(String obj : DsUserPreferences.getInstance().learningObjectives){
 				objectives+="<li>"+obj+" <i class='fa fa-times'/></li>";
 			}
 			if(!objectives.isEmpty())
@@ -268,7 +209,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 		public static void setupBasicResourceTypeSelect(){
 			String resourceOptions = "";
 			for(RESOURCE_TYPE type : RESOURCE_TYPE.values()){		
-				if(resourceTypes.contains(type)){
+				if(DsUserPreferences.getInstance().resourceTypes.contains(type)){
 					resourceOptions+="<option value='"+type.toSymbol()+"' selected='selected'>"+type.toString()+"</option>";
 				}else{
 					resourceOptions+="<option value='"+type.toSymbol()+"'>"+type.toString()+"</option>";
@@ -280,7 +221,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 		public static void setupBasicGradeLevelSelect(){
 			String gradeOptions = "";
 			for(GRADE_LEVEL grade : GRADE_LEVEL.values()){
-				if(gradeLevels.contains(grade)){
+				if(DsUserPreferences.getInstance().gradeLevels.contains(grade)){
 					gradeOptions+="<option value='"+grade.toSymbol()+"' selected='selected'>"+grade.toString()+"</option>";
 				}else{
 					gradeOptions+="<option value='"+grade.toSymbol()+"'>"+grade.toString()+"</option>";
@@ -293,13 +234,13 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 			String languageOptions = "";
 			for(LANGUAGE language : LANGUAGE.values()){
 				if(language.equals(LANGUAGE.OTHER)){
-					if(languages.contains(language)){
+					if(DsUserPreferences.getInstance().languages.contains(language)){
 						languageOptions+="<option value='"+language.toSymbol()+"' selected='selected'>"+language.toString()+"</option>";
 					}else{
 						languageOptions+="<option value='"+language.toSymbol()+"'>"+language.toString()+"</option>";
 					}
 				}else{
-					if(languages.contains(language)){
+					if(DsUserPreferences.getInstance().languages.contains(language)){
 						languageOptions+="<option value='"+language.toSymbol()+"' selected='selected'>"+language.toString()+" ("+language.toSymbol()+")</option>";
 					}else{
 						languageOptions+="<option value='"+language.toSymbol()+"'>"+language.toString()+" ("+language.toSymbol()+")</option>";
@@ -321,12 +262,12 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 			if(thing == null){
 				setupPreferences();
 			}else{
-				if(thing.containsKey(RESOURCE_TYPES_KEY)){
-					JSONObject types = thing.get(RESOURCE_TYPES_KEY).isObject();
+				if(thing.containsKey(DsUserPreferences.RESOURCE_TYPES_KEY)){
+					JSONObject types = thing.get(DsUserPreferences.RESOURCE_TYPES_KEY).isObject();
 					if(types != null){
 						String resourceOptions = "";
 						for(String key : types.keySet()){
-							if(resourceTypes.contains(RESOURCE_TYPE.findSymbolType(key))){
+							if(DsUserPreferences.getInstance().resourceTypes.contains(RESOURCE_TYPE.findSymbolType(key))){
 								resourceOptions+="<option value='"+key+"' selected='selected'>"+types.get(key).isString().stringValue()+"</option>";
 							}else{
 								resourceOptions+="<option value='"+key+"'>"+types.get(key).isString().stringValue()+"</option>";
@@ -339,13 +280,13 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 					}
 				}
 				
-				if(thing.containsKey(GRADE_LEVELS_KEY)){
-					JSONObject grades = thing.get(GRADE_LEVELS_KEY).isObject();
+				if(thing.containsKey(DsUserPreferences.GRADE_LEVELS_KEY)){
+					JSONObject grades = thing.get(DsUserPreferences.GRADE_LEVELS_KEY).isObject();
 					
 					if(grades != null){
 						String gradeOptions = "";
 						for(String key : grades.keySet()){
-							if(gradeLevels.contains(GRADE_LEVEL.findSymbolGrade(key))){
+							if(DsUserPreferences.getInstance().gradeLevels.contains(GRADE_LEVEL.findSymbolGrade(key))){
 								gradeOptions+="<option value='"+key+"' selected='selected'>"+grades.get(key).isString().stringValue()+"</option>";
 							}else{
 								gradeOptions+="<option value='"+key+"'>"+grades.get(key).isString().stringValue()+"</option>";
@@ -358,8 +299,8 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 					}
 				}
 				
-				if(thing.containsKey(LANGUAGE_KEY)){
-					JSONArray possibleLanguages = thing.get(LANGUAGE_KEY).isArray();
+				if(thing.containsKey(DsUserPreferences.LANGUAGE_KEY)){
+					JSONArray possibleLanguages = thing.get(DsUserPreferences.LANGUAGE_KEY).isArray();
 					
 					if(possibleLanguages != null){
 						boolean hasOther = false;
@@ -370,7 +311,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 							LANGUAGE lang = LANGUAGE.findSymbolLanguage(key);
 							
 							if(lang != null){
-								if(languages.contains(lang)){
+								if(DsUserPreferences.getInstance().languages.contains(lang)){
 									languageOptions+="<option value='"+key+"' selected='selected'>"+lang.toString()+" ("+lang.toSymbol()+")</option>";
 								}else{
 									languageOptions+="<option value='"+key+"'>"+lang.toString()+" ("+lang.toSymbol()+")</option>";
@@ -382,7 +323,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 						}
 						
 						if(!hasOther){
-							if(languages.contains(LANGUAGE.OTHER.toSymbol())){
+							if(DsUserPreferences.getInstance().languages.contains(LANGUAGE.OTHER.toSymbol())){
 								languageOptions += "<option value='"+LANGUAGE.OTHER.toSymbol()+"' selected='selected'>"+LANGUAGE.OTHER.toString()+"</option>";
 							}else{
 								languageOptions += "<option value='"+LANGUAGE.OTHER.toSymbol()+"' >"+LANGUAGE.OTHER.toString()+"</option>";
@@ -492,7 +433,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 		public static void removeLearningObjectiveFromList(Element e){
 			e.removeFromParent();
 			
-			if(learningObjectives.size() == 0)
+			if(DsUserPreferences.getInstance().learningObjectives.size() == 0)
 				DOM.getElementById(NO_OBJECTIVE_ITEM_ID).removeClassName("hidden");	
 		}
 		
@@ -603,24 +544,24 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 			ListBox langSelect = ListBox.wrap(DOM.getElementById(LANGUAGE_SELECT_ID));
 			
 			
-			resourceTypes = new ArrayList<RESOURCE_TYPE>();
+			DsUserPreferences.getInstance().resourceTypes = new ArrayList<RESOURCE_TYPE>();
 			for(int i = 0; i < resourceTypeSelect.getItemCount(); i++){
 				if(resourceTypeSelect.isItemSelected(i)){
-					resourceTypes.add(RESOURCE_TYPE.findSymbolType(resourceTypeSelect.getValue(i)));
+					DsUserPreferences.getInstance().resourceTypes.add(RESOURCE_TYPE.findSymbolType(resourceTypeSelect.getValue(i)));
 				}
 			}
 			
-			languages = new ArrayList<LANGUAGE>();
+			DsUserPreferences.getInstance().languages = new ArrayList<LANGUAGE>();
 			for(int i = 0; i < langSelect.getItemCount(); i++){
 				if(langSelect.isItemSelected(i)){
-					languages.add(LANGUAGE.findSymbolLanguage(langSelect.getValue(i)));
+					DsUserPreferences.getInstance().languages.add(LANGUAGE.findSymbolLanguage(langSelect.getValue(i)));
 				}
 			}
 			
-			gradeLevels = new ArrayList<GRADE_LEVEL>();
+			DsUserPreferences.getInstance().gradeLevels = new ArrayList<GRADE_LEVEL>();
 			for(int i = 0; i < gradeSelect.getItemCount(); i++){
 				if(gradeSelect.isItemSelected(i)){
-					gradeLevels.add(GRADE_LEVEL.findSymbolGrade(gradeSelect.getValue(i)));
+					DsUserPreferences.getInstance().gradeLevels.add(GRADE_LEVEL.findSymbolGrade(gradeSelect.getValue(i)));
 				}
 			}
 			
@@ -635,7 +576,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	private static EventCallback savePreferencesCallback = new EventCallback() {
 		@Override
 		public void onEvent(com.google.gwt.user.client.Event event) {
-			DsESBApi.decalsUpdateUserPreferences(resourceTypes, languages, gradeLevels, learningObjectives, preferencesSavedCallback);
+			DsESBApi.decalsUpdateUserPreferences(DsUserPreferences.getInstance().resourceTypes, DsUserPreferences.getInstance().languages, DsUserPreferences.getInstance().gradeLevels, DsUserPreferences.getInstance().learningObjectives, preferencesSavedCallback);
 			DsESBApi.decalsAddDesiredCompetencies(newDesiredCompetencyIds, competenciesSavedCallback);
 			
 			prefsChanged = false;
@@ -687,7 +628,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	private static EventCallback confirmSavePreferencesCallback = new EventCallback() {
 		@Override
 		public void onEvent(com.google.gwt.user.client.Event event) {
-			DsESBApi.decalsUpdateUserPreferences(resourceTypes, languages, gradeLevels, learningObjectives, preferencesSavedCallback);
+			DsESBApi.decalsUpdateUserPreferences(DsUserPreferences.getInstance().resourceTypes, DsUserPreferences.getInstance().languages, DsUserPreferences.getInstance().gradeLevels, DsUserPreferences.getInstance().learningObjectives, preferencesSavedCallback);
 			DsESBApi.decalsAddDesiredCompetencies(newDesiredCompetencyIds, competenciesSavedCallback);
 			
 			UI.closeSavePreferencesModal();
@@ -712,7 +653,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 			if(!learningObjective.isEmpty()){
 				informChangesMade();
 				
-				learningObjectives.add(learningObjective);
+				DsUserPreferences.getInstance().learningObjectives.add(learningObjective);
 				
 				UI.addLearningObjectiveToList(learningObjective);
 			}
@@ -735,7 +676,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 			
 			String oldObjective = e.getInnerText();
 			
-			learningObjectives.remove(oldObjective);
+			DsUserPreferences.getInstance().learningObjectives.remove(oldObjective);
 			
 			UI.removeLearningObjectiveFromList(e);
 			
@@ -751,7 +692,7 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 				
 				String learningObjective = InputElement.as(DOM.getElementById(ADD_OBJECTIVE_INPUT_ID)).getValue();
 				
-				learningObjectives.add(learningObjective);
+				DsUserPreferences.getInstance().learningObjectives.add(learningObjective);
 				
 				UI.addLearningObjectiveToList(learningObjective);
 				
