@@ -217,6 +217,7 @@ public class DsUserLrRSearchScreen  extends DecalsScreen {
    
    @Override
    public void display() {
+	  validateSession();
       PageAssembler.ready(new HTML(getTemplates().getUserLRSearchPanel().getText()));
       PageAssembler.buildContents();
       DsHeaderHandler dhh = new DsHeaderHandler(getDispatcher());

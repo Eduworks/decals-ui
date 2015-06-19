@@ -486,5 +486,7 @@ public abstract class DecalsWithGroupMgmtScreen extends DecalsScreen {
       PageAssembler.attachHandler(AGU_OK_BTN,Event.ONCLICK,addGroupUserOkClickHandler);
       PageAssembler.attachHandler(AGU_ADD_BTN,Event.ONCLICK,addGroupUserAddClickHandler);
    }
+   
+  
 
 }

@@ -19,6 +19,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTML; 
 import com.google.gwt.user.client.ui.ListBox;
+import com.eduworks.decals.ui.client.DsScreenDispatch;
 import com.eduworks.decals.ui.client.DsSession;
 import com.eduworks.decals.ui.client.DsUserPreferences;
 import com.eduworks.decals.ui.client.api.DsESBApi;
@@ -89,6 +90,8 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	
 	@Override
 	public void display() {
+		
+		validateSession();
 		
 		PageAssembler.ready(new HTML(getTemplates().getUserPreferencesPanel().getText()));
 		PageAssembler.buildContents();

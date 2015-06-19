@@ -759,6 +759,8 @@ public class DsUserManagementScreen extends DecalsWithGroupMgmtScreen implements
 
    @Override
    public void display() {
+	  validateSession();
+	  
       initGroupElements();
       instanceGroupType = GroupTypeEnum.PUBLIC;
       DsUserTabsHandler.getInstance().setAsNoTabsActive();

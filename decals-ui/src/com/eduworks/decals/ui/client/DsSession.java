@@ -282,4 +282,10 @@ public class DsSession {
       }
    }
    
+   /**
+    * Validates the Current Session
+    */
+   public void validateSession(ESBCallback<ESBPacket> callback) {
+      DsESBApi.decalsValidateSession(callback);
+   }
 }

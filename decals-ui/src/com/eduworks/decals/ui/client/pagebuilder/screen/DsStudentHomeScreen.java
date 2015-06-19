@@ -17,7 +17,8 @@ import com.google.gwt.user.client.ui.HTML;
 public class DsStudentHomeScreen extends DecalsScreen {
    
 	@Override
-	public void display() {	   
+	public void display() {	 
+		validateSession();
 	   PageAssembler.ready(new HTML(getTemplates().getStudentHomePanel().getText()));
       PageAssembler.buildContents();
       DOM.getElementById("student").setAttribute("style", "display:block;");

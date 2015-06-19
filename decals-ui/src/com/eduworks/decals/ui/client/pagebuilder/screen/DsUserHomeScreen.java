@@ -1242,6 +1242,7 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
    //Display handler for my contributions
    @Override
    public void display() {
+	  validateSession();
       initGroupElements();
       instanceGroupType = GroupTypeEnum.PRIVATE;
       collectionManager = DsSession.getUserCollectionManager();

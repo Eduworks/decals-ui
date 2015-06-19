@@ -115,23 +115,41 @@ public class LearnerFocusedSearchHandler extends InteractiveSearchHandler {
 		DsUtil.showLabel(appliedGradeLevelsContainerId);
 		DsUtil.removeAllWidgetsFromRootPanel(RootPanel.get(appliedGradeLevelsContainerId));
 		StringBuffer sb = new StringBuffer();
-		sb.append("<p class=\"" + APPLIED_GRADE_LEVELS_CLASS + "\">");
-		sb.append("<b>" + APPLIED_GRADE_LEVELS_DESC + " </b>");
 		
 		ArrayList<GRADE_LEVEL> prefGradeLevels = DsUserPreferences.getInstance().gradeLevels;
+		if(!ignoreGradeLevelPrefs){
+			if(prefGradeLevels.contains(GRADE_LEVEL.KINDERGARTEN)) kgGlApplied = true;
+			else kgGlApplied = false;
+			if(prefGradeLevels.contains(GRADE_LEVEL.ELEMENTARY)) esGlApplied = true;
+			else esGlApplied = false;
+			if(prefGradeLevels.contains(GRADE_LEVEL.MIDDLE_SCHOOL)) msGlApplied = true;
+			else msGlApplied = false;
+			if(prefGradeLevels.contains(GRADE_LEVEL.HIGH_SCHOOL)) hsGlApplied = true;
+			else hsGlApplied = false;
+			if(prefGradeLevels.contains(GRADE_LEVEL.HIGHER_ED)) cuGlApplied = true;
+			else cuGlApplied = false;
+			if(prefGradeLevels.contains(GRADE_LEVEL.VOCATIONAL)) vtpGlApplied = true;
+			else vtpGlApplied = false;
 		
-		if(prefGradeLevels.contains(GRADE_LEVEL.KINDERGARTEN)) kgGlApplied = true;
-		else kgGlApplied = false;
-		if(prefGradeLevels.contains(GRADE_LEVEL.ELEMENTARY)) esGlApplied = true;
-		else esGlApplied = false;
-		if(prefGradeLevels.contains(GRADE_LEVEL.MIDDLE_SCHOOL)) msGlApplied = true;
-		else msGlApplied = false;
-		if(prefGradeLevels.contains(GRADE_LEVEL.HIGH_SCHOOL)) hsGlApplied = true;
-		else hsGlApplied = false;
-		if(prefGradeLevels.contains(GRADE_LEVEL.HIGHER_ED)) cuGlApplied = true;
-		else cuGlApplied = false;
-		if(prefGradeLevels.contains(GRADE_LEVEL.VOCATIONAL)) vtpGlApplied = true;
-		else vtpGlApplied = false;
+			if(!kgGlApplied && !esGlApplied && !msGlApplied && !hsGlApplied && !cuGlApplied && !vtpGlApplied){
+				kgGlApplied = true;
+				 esGlApplied = true;
+				 msGlApplied = true;
+				 hsGlApplied = true;
+				 cuGlApplied = true;
+				 vtpGlApplied = true;
+				 
+				 ignoreGradeLevelPrefs = true;
+			}
+		}
+		
+		if(ignoreGradeLevelPrefs){
+			sb.append("<p class=\"" + InteractiveSearchHandler.APPLIED_GRADE_LEVELS_CLASS + "\">");
+			sb.append("<b>" + InteractiveSearchHandler.APPLIED_GRADE_LEVELS_DESC + " </b>");
+		}else{
+			sb.append("<p class=\"" + APPLIED_GRADE_LEVELS_CLASS + "\">");
+			sb.append("<b>" + APPLIED_GRADE_LEVELS_DESC + " </b>");
+		}
 		
 		if (kgGlApplied && esGlApplied && msGlApplied && hsGlApplied && cuGlApplied && vtpGlApplied) sb.append(GRADE_LEVEL_ALL_DESC);
 		else if (!kgGlApplied && !esGlApplied && !msGlApplied && !hsGlApplied && !cuGlApplied && !vtpGlApplied) sb.append(GRADE_LEVEL_NONE_DESC);
