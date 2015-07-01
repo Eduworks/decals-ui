@@ -106,4 +106,24 @@ public class DsUserPreferences {
 		}
 	}
 	
+	public void clearResourceTypes(){
+		resourceTypes.clear();
+	}
+	
+	public void clearLanguages(){
+		languages.clear();
+	}
+	
+	public void clearGradeLevels(){
+		gradeLevels.clear();
+	}
+	
+	public void savePreferencesToServer(ESBCallback<ESBPacket> preferencesSavedCallback){
+		DsESBApi.decalsUpdateUserPreferences(resourceTypes, languages, gradeLevels, learningObjectives, preferencesSavedCallback);
+	}
+	
+	public void addDesiredCompetenciesToServer(ArrayList<String> newDesiredCompetencyIds, ESBCallback<ESBPacket> competenciesSavedCallback){
+		DsESBApi.decalsAddDesiredCompetencies(newDesiredCompetencyIds, competenciesSavedCallback);
+	}
+	
 }

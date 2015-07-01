@@ -12,6 +12,7 @@ import com.eduworks.gwt.client.net.callback.EventCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
 import com.eduworks.gwt.client.pagebuilder.PageAssembler;
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -67,6 +68,10 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	private static final String CONFIRM_CHANGES_MODAL = "modalConfirmCancel";
 	private static final String COMPETENCY_SEARCH_MODAL = "modalCompetencySearch";
 	
+	private static final String CLEAR_RESOURCE_TYPE_BTN_ID = "clearResourceType";
+	private static final String CLEAR_LANGUAGE_BTN_ID = "clearLanguage";
+	private static final String CLEAR_GRADE_LEVEL_BTN_ID = "clearGrade";
+	
 	public static ArrayList<String> competencyIds = new ArrayList<String>();
 	
 	public static ArrayList<String> newDesiredCompetencyIds = new ArrayList<String>();
@@ -115,6 +120,11 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 		
 		PageAssembler.attachHandler(DOM.getElementById(SEARCH_COMPETENCY_INPUT_ID), Event.ONKEYPRESS, keypressSearchCompetenciesCallback);
 		PageAssembler.attachHandler(DOM.getElementById(SEARCH_COMPETENCY_BTN_ID), Event.ONCLICK, searchCompetenciesCallback);
+		
+		PageAssembler.attachHandler(DOM.getElementById(CLEAR_RESOURCE_TYPE_BTN_ID), Event.ONCLICK, clearResourceTypeCallback);
+		PageAssembler.attachHandler(DOM.getElementById(CLEAR_LANGUAGE_BTN_ID), Event.ONCLICK, clearLanguageCallback);
+		PageAssembler.attachHandler(DOM.getElementById(CLEAR_GRADE_LEVEL_BTN_ID), Event.ONCLICK, clearGradeLevelCallback);
+		
 	}
 	
 	private ESBCallback<ESBPacket> setupCompetenciesCallback = new ESBCallback<ESBPacket>() {
@@ -386,6 +396,30 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 			}
 		}
 		
+		/** Resource Type Methods **/
+		
+		public static void clearResourceTypeSelect(){
+			SelectElement input = SelectElement.as(DOM.getElementById(RESOURCE_TYPE_SELECT_ID));
+			
+			input.setValue(null);
+		}
+		
+		/** Language Methods **/
+		
+		public static void clearLanguageSelect(){
+			SelectElement input = SelectElement.as(DOM.getElementById(LANGUAGE_SELECT_ID));
+			
+			input.setValue(null);
+		}
+		
+		/** Grade Level Methods **/
+		
+		public static void clearGradeLevelSelect(){
+			SelectElement input = SelectElement.as(DOM.getElementById(GRADE_LEVEL_SELECT_ID));
+			
+			input.setValue(null);
+		}
+		
 		/** Competency Methods **/
 		
 		public static void addCompetencyToHeldList(String competencyId, String competencyTitle){
@@ -534,6 +568,46 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 		}
 	}
 	
+	/** Clear Resource Callbacks **/
+	
+	private EventCallback clearResourceTypeCallback = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {
+			informChangesMade();
+			
+			DsUserPreferences.getInstance().clearResourceTypes();
+			
+			UI.clearResourceTypeSelect();
+			
+			//UI.hideResourceTypeClearBtn();
+		}
+	};
+	
+	private EventCallback clearLanguageCallback = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {
+			informChangesMade();
+			
+			DsUserPreferences.getInstance().clearLanguages();
+			
+			UI.clearLanguageSelect();
+			
+			//UI.hideLanguageClearBtn();
+		}
+	};
+	
+	private EventCallback clearGradeLevelCallback = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {
+			informChangesMade();
+			
+			DsUserPreferences.getInstance().clearGradeLevels();
+			
+			UI.clearGradeLevelSelect();
+			
+			//UI.hideGradeLevelClearBtn();
+		}
+	};
 
 	/** Save Preference Callbacks **/
 	
@@ -579,9 +653,9 @@ public class DsUserPreferencesScreen extends DecalsWithGroupMgmtScreen {
 	private static EventCallback savePreferencesCallback = new EventCallback() {
 		@Override
 		public void onEvent(com.google.gwt.user.client.Event event) {
-			DsESBApi.decalsUpdateUserPreferences(DsUserPreferences.getInstance().resourceTypes, DsUserPreferences.getInstance().languages, DsUserPreferences.getInstance().gradeLevels, DsUserPreferences.getInstance().learningObjectives, preferencesSavedCallback);
-			DsESBApi.decalsAddDesiredCompetencies(newDesiredCompetencyIds, competenciesSavedCallback);
-			
+			DsUserPreferences.getInstance().savePreferencesToServer(preferencesSavedCallback);
+			DsUserPreferences.getInstance().addDesiredCompetenciesToServer(newDesiredCompetencyIds, competenciesSavedCallback);
+		
 			prefsChanged = false;
 			
 			UI.hideSavePreferencesButton();

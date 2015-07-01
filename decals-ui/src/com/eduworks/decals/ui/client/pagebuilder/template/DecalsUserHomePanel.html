@@ -141,16 +141,76 @@
 							</div>
 						</div> 
 					 	<div id="curColDescContainer" class="row">
-					 		<div id="curColDesc" class="small-12 columns"></div>
-					 	</div>
-					 	<div id="curColDescEditContainer" class="row">
-					 		<a id="curColDescEdit" title="Edit description" style="font-size:12px;color:#008cba;"><i class="fa fa-pencil"></i> (edit)</a>
+					 		<div class="small-12 columns">
+					 			<strong>Description:</strong> 
+					 			<div id="curColDesc" style="margin-left:10px;"></div> 
+					 		</div>
 					 	</div>
 					 	<div id="curColDescTextAreaContainer" class="row" style="display:none;">
 					 		<div class="small-12 columns">
-					 			<textarea id="curColDescTextArea" onkeydown="document.getElementById('curColChangedMessage').style.display='block';" style="overflow:auto; resize:none; margin-bottom:0px;" rows="4" placeholder="Please describe your collection."></textarea>
+					 			<strong>Description:</strong> 
+					 			<textarea id="curColDescTextArea" onkeydown="document.getElementById('curColChangedMessage').style.display='block';" style="overflow:auto; resize:none; margin-bottom:0px;margin-left:10px;" rows="3" placeholder="Please describe your collection."></textarea>
 					 		</div>					 		
-					 	</div>	
+					 	</div>
+					 	<div id="curColMetadataContainer" class="row" style="display:none;">
+					 		<div class="small-12 columns">
+					 			<strong>Keywords:</strong> 
+					 			<div id="curColKeywords" style="margin-left:10px;">
+					 				
+					 			</div> 
+					 			<strong>Objectives:</strong> 
+					 			<div id="curColObjectives" style="margin-left:10px;">
+					 				
+					 			</div> 
+					 			<strong>Coverage:</strong> 
+					 			<div id="curColCoverage" style="margin-left:10px;">
+					 				
+					 			</div>
+					 			<strong>Environment:</strong> 
+					 			<div id="curColEnvironment" style="margin-left:10px;">
+					 				
+					 			</div>
+					 		</div>
+					 	</div>
+					 	<div id="curColMetadataEditContainer" class="row" style="display:none;">
+					 		<div class="small-12 columns">
+					 			<strong>Keywords:</strong> 
+					 			<textarea id="curColKeywordsTextArea" onkeydown="document.getElementById('curColChangedMessage').style.display='block';" style="overflow:auto; resize:none; margin-bottom:0px;margin-left:10px;" rows="2" placeholder="Attach Keywords to your collection."></textarea>
+					 			<strong>Objectives:</strong> 
+					 			<div id="curColEditObjectives" style="margin-left:10px;">
+					 				<ul id="curColObjectivesList"></ul>
+					 				<input id="curColObjectivesInput" type="text"/>
+					 			</div>
+					 			<strong>Coverage:</strong> 
+					 			<div id="curColEditCoverage" style="margin-left:10px;">
+					 				<input id="curColCoverageInput" type="text"/>
+					 			</div>
+					 			<strong>Environment:</strong> 
+					 			<div style="margin-left:10px;">
+					 				<select id="curColSelectEnvironment" class="value-input" size="1" style="display: none;">
+										<option value="Primary Education">Grades 1-8 (Primary Education)</option>
+										<option value="Secondary Education">High school (Secondary Education)</option>
+										<option value="Higher Education">Post high school (Higher Education)</option>
+										<option value="University First Cycle">University basic course (1st cycle)</option>
+										<option value="University Second Cycle">University specialized course (2nd cycle)</option>
+										<option value="University Postgraduate">University Graduate level (Postgraduate)</option>
+										<option value="Technical School First Cycle">Technical school core course (1st Cycle)</option>
+										<option value="Technical School Second Cycle">Technical School specialized course (2nd Cycle)</option>
+										<option value="Professional Formation">Professional Development (Formation)</option>
+										<option value="Continuing Education">Continuing Education</option>
+										<option value="Vocational">Vocational</option>
+									</select>
+					 			</div>
+					 		</div>					 		
+					 	</div>
+					 	<div id="curColDescEditContainer" class="row">
+					 		<a id="curColDescEdit" title="Edit Metadata" style="font-size:12px;color:#008cba;">
+					 			<i class="fa fa-pencil"></i> (Edit)
+					 		</a>
+					 		<a id="curColMetadataToggle" data-toggle="show" title="Show Metadata" style="font-size: 12px;color: #008cba;">
+					 			(Show Metadata)
+					 		</a>
+					 	</div>
 					 	<hr>
 						<div class="row">	
 							<div id="colSubNav" class="small-8 columns" style="text-align:left;">

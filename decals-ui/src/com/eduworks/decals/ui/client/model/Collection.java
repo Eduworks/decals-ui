@@ -43,13 +43,18 @@ public class Collection implements Comparable<Collection>{
    private String sessionUserAccess = CollectionAccess.VIEW_ACCESS;
    
    private boolean hasChanged = false;
-   private boolean descriptionBeingChanged = false;
+   private boolean metadataBeingChanged = false;
    
    private ArrayList<CollectionUser> collectionUsers = new ArrayList<CollectionUser>();
    private ArrayList<CollectionItem> collectionItems = new ArrayList<CollectionItem>();
    private ArrayList<CollectionGroup> collectionGroups = new ArrayList<CollectionGroup>();
    private HashMap<String,String> userAccessMap = new HashMap<String,String>();
    private HashMap<String,String> groupAccessMap = new HashMap<String,String>();
+   
+   private ArrayList<String> keywords = new ArrayList<String>();
+   private ArrayList<String> objectives = new ArrayList<String>();
+   private String coverage = new String();
+   private String environment = new String();
    
    public Collection() {}
    
@@ -473,8 +478,27 @@ public class Collection implements Comparable<Collection>{
    /**
     * {@link Collection#hasChanged}
     */
-   public boolean isDescriptionBeingChanged() {return descriptionBeingChanged;}
-   public void setDescriptionBeingChanged(boolean descriptionBeingChanged) {this.descriptionBeingChanged = descriptionBeingChanged;}
+   public boolean isMetadataBeingChanged() {return metadataBeingChanged;}
+   public void setMetadataBeingChanged(boolean metadataBeingChanged) {this.metadataBeingChanged = metadataBeingChanged;}
+   
+   
+   public String[] getKeywords() {return keywords.toArray(new String[1]);}
+   public void setKeywords(String keywords){
+	   this.keywords = new ArrayList<String>();
+	   String [] keys = keywords.split(",");
+	   
+	   for(String key : keys){
+		   this.keywords.add(key);
+	   }
+   }
+   
+   public String[] getObjectives() {return objectives.toArray(new String[1]);}
+   public void addObjective(String objective){
+	   objectives.add(objective);
+   }
+   public void removeObjectives(String objective){
+	   objectives.remove(objective);
+   }
    
    /**
     * {@link Collection#sessionUserAccess}

@@ -496,7 +496,7 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
    
    //attempt to keep track of descriptions being edited
    private void syncDescription() {
-      if (currentCollection != null && currentCollection.isDescriptionBeingChanged()) {
+      if (currentCollection != null && currentCollection.isMetadataBeingChanged()) {
          currentCollection.setDescription(DsUtil.getTextAreaText(CCOL_DESC_TEXT_AREA));
       }
    }
@@ -806,15 +806,20 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       return accessMap;      
    }
    
+   protected EventCallback toggleViewCollectionMetadataListener = new EventCallback() {
+	@Override
+	public void onEvent(Event event) {
+		CollectionsViewBuilder.toggleShowCollectionMetadata(currentCollection);
+	}
+};
+   
    //show collection users listener
    protected EventCallback editCollectionDescriptionListener = new EventCallback() {
       @Override
       public void onEvent(Event event) {
-         DsUtil.hideLabel(CCOL_DESC_CONTAINER);
-         DsUtil.hideLabel(CCOL_DESC_EDIT_CONTAINER);
-         DsUtil.showLabel(CCOL_DESC_TEXT_AREA_CONTAINER);
-         currentCollection.setDescriptionBeingChanged(true);
+         currentCollection.setMetadataBeingChanged(true);
          currentCollection.setHasChanged(true);
+         CollectionsViewBuilder.setUpCollectionDescriptionBeingChanged(currentCollection);
       }
    };
       
@@ -1279,6 +1284,7 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       PageAssembler.attachHandler(CCOL_USERS_LINK,Event.ONCLICK,showCollectionUsersListener);
       PageAssembler.attachHandler(CCOL_GROUPS_LINK,Event.ONCLICK,showCollectionGroupsListener);
       PageAssembler.attachHandler(ACG_FORM,VALID_EVENT,addCollectionGroupSubmitHandler);
+      PageAssembler.attachHandler(CollectionsViewBuilder.METADATA_TOGGLE_ID, Event.ONCLICK, toggleViewCollectionMetadataListener);
       attachGroupHandlers();
       refreshMyContributionSearchResults();      
    }

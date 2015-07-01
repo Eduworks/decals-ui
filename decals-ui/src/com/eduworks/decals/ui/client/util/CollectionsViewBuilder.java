@@ -11,6 +11,9 @@ import com.eduworks.decals.ui.client.model.CollectionGroup;
 import com.eduworks.decals.ui.client.model.CollectionItem;
 import com.eduworks.decals.ui.client.model.CollectionUser;
 import com.eduworks.decals.ui.client.model.Group;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -112,9 +115,51 @@ public class CollectionsViewBuilder {
    private static final String ARTC_ADD_TITLE = "Add resource to this collection";
    
    private static final String TOOLS_CLASS = "tools";
-      
+   
+   public static final String METADATA_TOGGLE_ID = "curColMetadataToggle";
+   public static final String METADATA_CONTAINER_ID = "curColMetadataContainer";
+   public static final String METADATA_EDIT_CONTAINER_ID = "curColMetadataEditContainer";
+   
+   
+   public static final String METADATA_VIEW_KEYWORDS = "curColKeywords";
+   public static final String METADATA_VIEW_OBJECTIVES = "curColObjectives";
+   public static final String METADATA_VIEW_COVERAGE = "curColCoverage";
+   public static final String METADATA_VIEW_ENVIRONMENT = "curColEnvironment";
+   
+   public static final String METADATA_EDIT_KEYWORDS = "curColKeywordsTextArea";
+   public static final String METADATA_EDIT_OBJECTIVES_LIST = "curColObjectivesList";
+   public static final String METADATA_EDIT_OBJECTIVES_Input = "curColObjectivesInput";
+   public static final String METADATA_EDIT_COVERAGE = "curColEditCoverage";
+   public static final String METADATA_EDIT_ENVIRONMENT = "curColSelectEnvironment";
+   
+   public static void showCollectionMetadataView(Collection col){
+	   DsUtil.showLabel(METADATA_CONTAINER_ID);
+	   
+	   Element toggle = DOM.getElementById(METADATA_TOGGLE_ID);
+	   toggle.setAttribute("data-toggle", "hide");
+	   toggle.setTitle("Hide Metadata");
+	   toggle.setInnerText("(Hide Metadata)");
+   }
+   
+   public static void hideCollectionMetadataView(Collection col){
+	   DsUtil.hideLabel(METADATA_CONTAINER_ID);
+	   
+	   Element toggle = DOM.getElementById(METADATA_TOGGLE_ID);
+	   toggle.setAttribute("data-toggle", "show");
+	   toggle.setTitle("Show Metadata");
+	   toggle.setInnerText("(Show Metadata)");
+   }
+   
+   public static void toggleShowCollectionMetadata(Collection col){
+	   if(DOM.getElementById(METADATA_TOGGLE_ID).getAttribute("data-toggle").equals("show")){
+		   showCollectionMetadataView(col);
+	   }else{
+		  hideCollectionMetadataView(col);
+	   }
+   }
+   
    //sets up the collection description text area
-   private static void setUpCollectionDescriptionBeingChanged(Collection col) {      
+   public static void setUpCollectionDescriptionBeingChanged(Collection col) {      
       DsUtil.hideLabel(CCOL_DESC_EDIT_CONTAINER);
       DsUtil.hideLabel(CCOL_DESC_CONTAINER);
       DsUtil.showLabel(CCOL_DESC_TEXT_AREA_CONTAINER);
@@ -132,34 +177,74 @@ public class CollectionsViewBuilder {
       DsUtil.showLabel(CCOL_SAVE_SUCCESS_MESSAGE);
    }
    
+   private static void setUpCollectionMetadata(Collection col, boolean canModify){
+	   if(col.getKeywords().length == 0){
+		   RootPanel.get(METADATA_VIEW_KEYWORDS).add(createMetadataField(EMPTY_CLASS, "None"));
+		   DsUtil.setTextAreaText(METADATA_EDIT_KEYWORDS, null);
+	   }else{
+		   StringBuilder sb = new StringBuilder();
+		   for(String keyword : col.getKeywords()){
+			   sb.append(keyword);
+			   if(!keyword.equals(col.getKeywords()[col.getKeywords().length-1])){
+				   sb.append(", ");
+			   }
+		   }
+		   RootPanel.get(METADATA_VIEW_KEYWORDS).add(createMetadataField(NON_EMPTY_CLASS, sb.toString()));
+		   DsUtil.setTextAreaText(METADATA_EDIT_KEYWORDS, sb.toString());
+	   }
+	   
+	   if(col.getObjectives().length == 0){
+		   RootPanel.get(METADATA_VIEW_OBJECTIVES).add(createMetadataField(EMPTY_CLASS, "None"));
+		   DOM.getElementById(METADATA_EDIT_OBJECTIVES_LIST).setInnerHTML("");
+		   InputElement.as(DOM.getElementById(METADATA_EDIT_OBJECTIVES_Input)).setValue("");
+	   }else{
+		   for(String objective : col.getObjectives()){
+			   RootPanel.get(METADATA_VIEW_OBJECTIVES).add(createMetadataField(NON_EMPTY_CLASS, objective));
+			   Element editListItem = DOM.createElement("li");
+			   editListItem.addClassName(NON_EMPTY_CLASS);
+			   editListItem.setInnerText(objective);
+			   DOM.getElementById(METADATA_EDIT_OBJECTIVES_LIST).appendChild(editListItem);
+		   }
+		   InputElement.as(DOM.getElementById(METADATA_EDIT_OBJECTIVES_Input)).setValue("");
+	   }
+	   
+	   if(col.isMetadataBeingChanged()){
+		   DsUtil.showLabel(METADATA_EDIT_CONTAINER_ID);
+		   DsUtil.hideLabel(METADATA_CONTAINER_ID);
+	   }else{
+		   DsUtil.hideLabel(METADATA_EDIT_CONTAINER_ID);
+	   }
+   }
+   
    //sets up the collection description
    private static void setUpCollectionDescription(Collection col, boolean canModify) {
-      if (col.isDescriptionBeingChanged()) setUpCollectionDescriptionBeingChanged(col);
+      if (col.isMetadataBeingChanged()) setUpCollectionDescriptionBeingChanged(col);
       else {
          DsUtil.hideLabel(CCOL_DESC_TEXT_AREA_CONTAINER);
          DsUtil.hideLabel(CCOL_DESC_EDIT_CONTAINER);
          DsUtil.showLabel(CCOL_DESC_CONTAINER);
          DsUtil.removeAllChildrenFromElement(CCOL_DESC);
-         String descText;
-         String descClass;
+
          if (col.getDescription() == null || col.getDescription().trim().isEmpty()) {
-            descText = EMPTY_DESC_TEXT;
-            descClass = EMPTY_CLASS;
+            RootPanel.get(CCOL_DESC).add(createMetadataField(EMPTY_CLASS, EMPTY_DESC_TEXT));
             DsUtil.setTextAreaText(CCOL_DESC_TEXT_AREA,null);
-         }
-         else {
-            descText = col.getDescription();
-            descClass = NON_EMPTY_CLASS;
+         } else {
+        	RootPanel.get(CCOL_DESC).add(createMetadataField(NON_EMPTY_CLASS, col.getDescription()));
             DsUtil.setTextAreaText(CCOL_DESC_TEXT_AREA,col.getDescription());
          }
-         StringBuffer sb = new StringBuffer();
-         sb.append("<p class=\"" + descClass + "\">");
-         sb.append(descText);      
-         sb.append("</p>");
-         RootPanel.get(CCOL_DESC).add(new HTML(sb.toString()));  
+          
          if (canModify) DsUtil.showLabel(CCOL_DESC_EDIT_CONTAINER);
          else DsUtil.hideLabel(CCOL_DESC_EDIT_CONTAINER);
       }
+   }
+   
+   private static HTML createMetadataField(String cls, String text){
+	   StringBuffer sb = new StringBuffer();
+       sb.append("<p class=\"" + cls + "\">");
+       sb.append(text);      
+       sb.append("</p>");
+       
+       return new HTML(sb.toString());
    }
    
    //sets up the add item and user buttons
@@ -408,6 +493,7 @@ public class CollectionsViewBuilder {
       DsUtil.hideLabel(CCOL_SAVE_SUCCESS_MESSAGE);
       setUpToolBar(col,canModify);
       setUpCollectionDescription(col,canModify);
+      setUpCollectionMetadata(col, canModify);
       setUpAddButtons(canModify);
       buildItemView(col,canModify,collectionItemDeleteWidgets);
       buildUserView(col,canModify,collectionUserDeleteWidgets);
