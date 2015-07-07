@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.UUID;
 
 import com.eduworks.decals.ui.client.DsSession;
 import com.eduworks.decals.ui.client.api.DsESBApi;
@@ -17,6 +18,7 @@ import com.eduworks.decals.ui.client.model.CollectionGroup;
 import com.eduworks.decals.ui.client.model.CollectionItem;
 import com.eduworks.decals.ui.client.model.CollectionManager;
 import com.eduworks.decals.ui.client.model.CollectionUser;
+import com.eduworks.decals.ui.client.model.DarResourceObjective;
 import com.eduworks.decals.ui.client.model.Group;
 import com.eduworks.decals.ui.client.model.GroupManager;
 import com.eduworks.decals.ui.client.model.SearchHandlerParamPacket;
@@ -29,7 +31,9 @@ import com.eduworks.gwt.client.net.callback.EventCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
 import com.eduworks.gwt.client.pagebuilder.PageAssembler;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -820,6 +824,7 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
          currentCollection.setMetadataBeingChanged(true);
          currentCollection.setHasChanged(true);
          CollectionsViewBuilder.setUpCollectionDescriptionBeingChanged(currentCollection);
+         CollectionsViewBuilder.showEditMetadata(currentCollection);
       }
    };
       
@@ -838,7 +843,24 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
          HashMap<String,String> userAccessMap = buildCollectionUserAccessMap();
          HashMap<String,String> groupAccessMap = buildCollectionGroupAccessMap();
          String description = DsUtil.getTextAreaText(CCOL_DESC_TEXT_AREA);
-         collectionManager.updateCollection(currentCollection.getCollectionId(),description,itemOrderMap,userAccessMap,groupAccessMap);
+         String keywords = DsUtil.getTextAreaText(CollectionsViewBuilder.METADATA_EDIT_KEYWORDS);
+         String coverage = InputElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_COVERAGE)).getValue();
+         String environment = SelectElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_ENVIRONMENT)).getValue();
+         
+         Element objectiveListElement = DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_LIST).getFirstChildElement();
+         
+         ArrayList<DarResourceObjective> objectives = new ArrayList<DarResourceObjective>();
+         while(objectiveListElement != null){
+        	 if(!objectiveListElement.getId().equalsIgnoreCase("noObjectivesItem")){
+	        	 Element p = Element.as(objectiveListElement.getChild(1));
+	        	 objectives.add(new DarResourceObjective(p.getInnerText(), p.getAttribute("data-description")));
+        	 }
+        	 objectiveListElement = objectiveListElement.getNextSiblingElement();
+         }
+         
+         collectionManager.updateCollection(currentCollection.getCollectionId(),description,itemOrderMap,userAccessMap,groupAccessMap,
+        		 keywords, coverage, environment, objectives, null);    
+
          DsESBApi.decalsUpdateCollection(currentCollection.getCollectionId(), currentCollection.toJson(), new ESBCallback<ESBPacket>() {
             @Override
             public void onSuccess(ESBPacket result) {handlePostCollectionSave(result.get(ESBApi.ESBAPI_RETURN_OBJ).isObject());}
@@ -1249,6 +1271,7 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
    public void display() {
 	  validateSession();
       initGroupElements();
+      
       instanceGroupType = GroupTypeEnum.PRIVATE;
       collectionManager = DsSession.getUserCollectionManager();
       DsUserTabsHandler.getInstance().init(getDispatcher());
@@ -1264,7 +1287,7 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       PageAssembler.attachHandler(MCOL_MORE_SELECTIONS_LINK,Event.ONCLICK,showAllCollectionsNavListener);      
       PageAssembler.attachHandler(MCOL_LESS_SELECTIONS_LINK,Event.ONCLICK,showLessCollectionsNavListener);
       PageAssembler.attachHandler(CCOL_EDIT_DESC,Event.ONCLICK,editCollectionDescriptionListener);
-      PageAssembler.attachHandler(CCOL_FORM,VALID_EVENT,currentCollectionSaveHandler);
+      PageAssembler.attachHandler(CCOL_SAVE_LINK,Event.ONCLICK,currentCollectionSaveHandler);
       PageAssembler.attachHandler(AC_FORM,VALID_EVENT,addCollectionHandler);
       PageAssembler.attachHandler(CCOL_DELETE_LINK,Event.ONCLICK,deleteCollectionClickHandler);
       PageAssembler.attachHandler(DC_FORM,VALID_EVENT,deleteCollectionHandler);
@@ -1284,10 +1307,96 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       PageAssembler.attachHandler(CCOL_USERS_LINK,Event.ONCLICK,showCollectionUsersListener);
       PageAssembler.attachHandler(CCOL_GROUPS_LINK,Event.ONCLICK,showCollectionGroupsListener);
       PageAssembler.attachHandler(ACG_FORM,VALID_EVENT,addCollectionGroupSubmitHandler);
+      
       PageAssembler.attachHandler(CollectionsViewBuilder.METADATA_TOGGLE_ID, Event.ONCLICK, toggleViewCollectionMetadataListener);
+      
+      PageAssembler.attachHandler(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_LINK, Event.ONCLICK, addObjectiveListener);
+      
+      PageAssembler.attachHandler(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_ADD_BTN, Event.ONCLICK, addObjectiveBtnListener);
+      PageAssembler.attachHandler(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_CANCEL_BTN, Event.ONCLICK, cancelAddObjectiveListener);
+      
+      PageAssembler.attachHandler(CollectionsViewBuilder.METADATA_EDIT_ENVIRONMENT, Event.ONCHANGE, environmentChangedListener);
+      
       attachGroupHandlers();
       refreshMyContributionSearchResults();      
    }
+   
+   public static boolean addingObjective = false;
+   
+   public static void startAddObjective(){
+	   	PageAssembler.attachHandler(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_ADD_BTN, Event.ONCLICK, addObjectiveBtnListener);
+	   	
+	   	InputElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_TITLE_INPUT)).setValue("");
+		InputElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_DESC_INPUT)).setValue("");
+		DsUtil.slideDownElement(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_CONTAINER), null);
+		addingObjective = true;
+   }
+   
+   public static EventCallback addObjectiveListener = new EventCallback(){
+	   public void onEvent(Event event) {
+			if(addingObjective){
+			}else{
+				startAddObjective();
+			}
+		}
+   };
+   
+   public static String editingId = "";
+   
+   public static EventCallback addObjectiveBtnListener = new EventCallback(){
+	   public void onEvent(Event event) {
+			if(addingObjective){
+				String title = InputElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_TITLE_INPUT)).getValue();
+				String description = InputElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_DESC_INPUT)).getValue();
+				
+				if(title.isEmpty()){
+					DsUtil.alert("Learning Objective Title Cannot be Empty");
+					return;
+				}
+				if(description.isEmpty()){
+					DsUtil.alert("Learning Objective Description Cannot be Empty");
+					return;
+				}
+				
+				String id = (DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_LIST).getChildCount()+1) + "temp";
+				
+				CollectionsViewBuilder.addObjectiveItem(id, title, description);
+				DsUtil.hideLabel(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_NONE_ITEM);
+				
+				InputElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_TITLE_INPUT)).setValue("");
+				InputElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_DESC_INPUT)).setValue("");
+				DsUtil.slideUpElement(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_CONTAINER));
+				addingObjective = false;
+			}
+		}
+   };
+   
+   public static void cancelAddObjective(){
+	   	InputElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_TITLE_INPUT)).setValue("");
+		InputElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_DESC_INPUT)).setValue("");
+		DsUtil.slideUpElement(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_CONTAINER));
+		addingObjective = false;
+   }
+   
+   public EventCallback cancelAddObjectiveListener = new EventCallback() {
+	   public void onEvent(Event event) {
+			if(addingObjective){
+				cancelAddObjective();
+			}else{
+			}
+		}
+   };
+   
+   public EventCallback environmentChangedListener = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {
+			if(SelectElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_ENVIRONMENT)).getValue().isEmpty()){
+				DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_ENVIRONMENT).addClassName("notSelected");
+			}else{
+				DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_ENVIRONMENT).removeClassName("notSelected");
+			}
+		}
+	};
    
    @Override
    public void lostFocus() {

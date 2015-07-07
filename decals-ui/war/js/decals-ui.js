@@ -408,6 +408,14 @@ $('#editContentDisplayObjectives #editContentCreateObjectiveHelp').unbind('click
 	alert(help);
 	return false;
 });
+$('#editMetadataCreateObjectiveWrapper #editMetadataCreateObjectiveHelp').unbind('click').live('click', function() {
+	var help = "How To Write an Objective \n\n";
+	help = help + "Learning objectives are brief descriptions of specific things a learner completing the training will know or be able to do. They should be succinctly expressed using clear action verbs. It is best to think in terms of knowledge and skills that can be directly observed and measured.  Remember, learners should not be asked to read or review material that is not relevant to one of the objectives. Nor should they be assessed on skills or knowledge which is not specifically outlined as important in one or more of the objectives.\n\n";
+	help = help + "For each learning objective, you must assign a brief title and a full description.  The full description should contain the condition, behavioral verb, and criteria for meeting the learning objective.";
+	alert(help);
+	return false;
+});
+
 
 
 /***************End From decals-ui.js********************/

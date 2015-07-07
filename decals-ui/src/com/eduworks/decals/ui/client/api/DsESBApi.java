@@ -373,7 +373,7 @@ public class DsESBApi extends ESBApi {
     * @param callback The event callback
     * @return Returns JSON result string
     */
-   public static String decalsAddCollectionItem(String collectionId, String resourceUrl, String resourceTitle, String resourceDescription, String itemIndex, ESBCallback<ESBPacket> callback) {
+   public static String decalsAddCollectionItem(String collectionId, String resourceUrl, String resourceTitle, String resourceDescription, JSONObject itemInfo, String itemIndex, ESBCallback<ESBPacket> callback) {
       MultipartPost mp = new MultipartPost();
       ESBPacket jo = new ESBPacket();      
       jo.put(SESSION_ID_KEY, sessionId);
@@ -382,6 +382,11 @@ public class DsESBApi extends ESBApi {
       jo.put(RESOURCE_TITLE_KEY, resourceTitle);
       jo.put(RESOURCE_DESC_KEY, resourceDescription);
       jo.put(ITEM_IDX_KEY, itemIndex);      
+      
+      if(itemInfo != null){
+    	  jo.put("itemInfo", itemInfo);
+      }
+      
       mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
       return CommunicationHub.sendMultipartPost(getESBActionURL("decalsAddCollectionItem"),mp,false,callback);
    }

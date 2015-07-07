@@ -10,6 +10,8 @@ import java.util.Vector;
 import com.eduworks.decals.ui.client.DsSession;
 import com.eduworks.decals.ui.client.model.AppUser;
 import com.eduworks.gwt.client.pagebuilder.PageAssembler;
+import com.google.gwt.core.client.Callback;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -894,5 +896,29 @@ public class DsUtil {
       PageAssembler.attachHandler(dm.getCloseBtnId(),Event.ONCLICK,new DsMessageCloser(messageId));
       return dm;
    }
+   
+   public static native JavaScriptObject slideDownElement(com.google.gwt.dom.client.Element e, Callback cb) /*-{
+   		$wnd.$(e).slideDown("slow", function(){
+			if(cb != undefined){
+				cb.@com.google.gwt.core.client.Callback::onSuccess(Ljava/lang/Object;)(undefined);
+			}
+		});
+	}-*/;
+
+	public static native JavaScriptObject fadeOutElement(com.google.gwt.dom.client.Element e, Callback cb) /*-{
+		return $wnd.$(e).fadeOut("slow", function(){
+			if(cb != undefined){
+				cb.@com.google.gwt.core.client.Callback::onSuccess(Ljava/lang/Object;)(undefined);
+			}
+		});
+	}-*/;
+
+	public static native JavaScriptObject slideUpElement(com.google.gwt.dom.client.Element e) /*-{
+		return $wnd.$(e).slideUp("slow");
+	}-*/;
+	
+	public static native JavaScriptObject alert(String str) /*-{
+		return $wnd.alert(str);
+	}-*/;
 
 }

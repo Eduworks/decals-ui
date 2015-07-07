@@ -260,7 +260,7 @@ public class RegistryResourceActionHandler {
          String resourceTitle = DsUtil.getLabelText(ARTC_CONFIRM_RESOURCE_TITLE_HIDDEN);
          String resourceUrl = DsUtil.getLabelText(ARTC_CONFIRM_RESOURCE_URL_HIDDEN);
          String resourceDescription = DsUtil.getLabelText(ARTC_CONFIRM_RESOURCE_DESC);
-         DsESBApi.decalsAddCollectionItem(collectionId,resourceUrl,resourceTitle,resourceDescription,"0",new ESBCallback<ESBPacket>() {
+         DsESBApi.decalsAddCollectionItem(collectionId,resourceUrl,resourceTitle,resourceDescription, result.toJson(), "0",new ESBCallback<ESBPacket>() {
             @Override
             public void onSuccess(ESBPacket result) {       
                handleAddToCollectionResponse(result.get(ESBApi.ESBAPI_RETURN_OBJ).isObject());            
@@ -274,10 +274,14 @@ public class RegistryResourceActionHandler {
       }
    };
    
+   private static InteractiveSearchResult result;
+   
    //TODO
    //handle add resource collection chosen
    private void handleAddResourceCollectionChosen(Collection col, InteractiveSearchResult sr) {
-      DsUtil.setLabelText(ARTC_CONFIRM_RESOURCE_TITLE,sr.getTitle());
+      result = sr;
+	   
+	  DsUtil.setLabelText(ARTC_CONFIRM_RESOURCE_TITLE,sr.getTitle());
       DsUtil.setLabelText(ARTC_CONFIRM_COL_NAME,col.getName());
       DsUtil.setLabelText(ARTC_CONFIRM_RESOURCE_URL,sr.getResourceUrl());
       DsUtil.setLabelText(ARTC_CONFIRM_COL_ID,col.getCollectionId());

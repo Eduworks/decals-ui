@@ -77,6 +77,11 @@ public class SolrResultsResponseParser {
       if (doc.containsKey(REG_LAST_MODIFIED_KEY)) sr.setLastModifiedDateStr(doc.get(REG_LAST_MODIFIED_KEY).isString().stringValue());   
       if (doc.containsKey(REG_SCORE_KEY)) sr.setScore(String.valueOf(doc.get(REG_SCORE_KEY).isNumber().doubleValue()));
       if (doc.containsKey(REG_URL_STATUS_KEY)) sr.setUrlStatus(doc.get(REG_URL_STATUS_KEY).isString().stringValue());
+      
+      if (doc.containsKey(InteractiveSearchResult.GRADE_LEVELS_KEY)) sr.setGradeLevels(parseJSONStringArray(doc.get(InteractiveSearchResult.GRADE_LEVELS_KEY).isArray()));
+      if (doc.containsKey(InteractiveSearchResult.LANGUAGE_KEY)) sr.setLanguage(doc.get(InteractiveSearchResult.LANGUAGE_KEY).isString().stringValue());
+      if (doc.containsKey(InteractiveSearchResult.MIME_TYPE_KEY)) sr.setMimeType(doc.get(InteractiveSearchResult.MIME_TYPE_KEY).isString().stringValue());
+      
       if (doc.containsKey(REG_THUMBNAIL_KEY)) {
          sr.setHasScreenshot(true);
          sr.setThumbnailImageUrl(thumbnailRootUrl + doc.get(REG_THUMBNAIL_KEY).isString().stringValue());

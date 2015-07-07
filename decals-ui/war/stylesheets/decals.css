@@ -548,7 +548,9 @@ body {
     top: 100px; /* match height of toolbar */
     left: 0;
     right: 0;    
-    overflow-y: auto;
+    overflow-y: scroll;
+    height: 100%;
+    padding-bottom:200px;
     /*bottom: 0;*/
     /*padding-top: 2rem*/;
 }
@@ -1157,14 +1159,14 @@ body.typing
 /*DECALS isn't currently using the display-objective-list and project-objective-list but I am going to leave it in here for now*/
 
 #editContentObjectivesList li > input {width: 85%;}
-#editContentObjectivesList .delete {margin-right: 20px;}
+#editContentObjectivesList .delete , #curColObjectivesList .delete{margin-right: 20px;}
 
 #editContentObjectivesList .objective,
 #display-objective-list .objective {margin-bottom: 0;}
 
 #display-objective-list .meta-value {display:block; padding-right: 0px;}
 
-#display-objective-list .meta-value.editable:hover {
+#display-objective-list .meta-value.editable:hover, #curColObjectivesList .meta-value.editable:hover {
 	cursor: pointer;
 	color: #2A85E8;
 	background: url(../images/icon-edit.png) top right no-repeat;
@@ -1174,14 +1176,17 @@ body.typing
 #editContentObjectivesList .objective.meta-value, 
 #display-objective-list .objective.editable,
 #display-objective-list .objective.value,
-#display-objective-list .objective.meta-value {
+#display-objective-list .objective.meta-value,
+#curColObjectivesList.objective.editable, 
+#curColObjectivesList .objective.value,
+#curColObjectivesList .objective.meta-value,{
 	cursor: pointer;
 	font-size: 14px;
 	padding: 0px;
 	margin: 0px;
 }
 
-#editContentObjectivesList li .delete {
+#editContentObjectivesList li .delete, #curColObjectivesList li .delete {
 	margin-top:7px;
 	display: none;
 	float:right;
@@ -1194,19 +1199,19 @@ body.typing
 	border-radius: 6px;
 	background: url(../images/btn-delete-idle.png) no-repeat;
 }
-#editContentObjectivesList li:hover .delete {display: block;}
-#editContentObjectivesList li .delete:hover {background-image: url(../images/btn-delete-over.png); }
+#editContentObjectivesList li:hover .delete, #curColObjectivesList li:hover .delete {display: block;}
+#editContentObjectivesList li .delete:hover, #curColObjectivesList li .delete:hover {background-image: url(../images/btn-delete-over.png); }
 
-#editContentCreateObjectiveWrapper {
+#editContentCreateObjectiveWrapper, #editMetadataCreateObjectiveWrapper {
 	margin-top: 10px;
 	padding: 10px;
 	-webkit-border-radius: 6px;
 	border-radius: 6px;
 	background-color: #eee;
 }
-#editContentCreateObjectiveWrapper input {width: 100%;}
-#editContentCreateObjectiveHelp {float: right;}
-#editContentCreateObjectiveHelp img { vertical-align: middle; padding-right: 3px;}
+#editContentCreateObjectiveWrapper input, #editMetadataCreateObjectiveWrapper input {width: 100%;}
+#editContentCreateObjectiveHelp, #editMetadataCreateObjectiveHelp{float: right;}
+#editContentCreateObjectiveHelp img, #editMetadataCreateObjectiveHelp img{ vertical-align: middle; padding-right: 3px;}
 
 /* Objectives: Upload/Edit Screen Variations */
 
@@ -1340,6 +1345,11 @@ body.typing
 /* ---------------------
  Preferences
 ------------------------ */
+
+#userMyPreferences h6 button{
+	float:right;
+	padding: 6px 15px;
+}
 
 #userMyPreferences select{
 	height: 8rem;
@@ -1592,3 +1602,74 @@ body.typing
 	cursor: pointer;
 	font-size: 10px;
 }
+
+
+/* ----------------------
+ Collection Metadata
+ ------------------------ */
+ 
+ #curColMetadataEditContainer strong{
+ 	margin-top:7px;
+ 	display:block;
+ }
+ 
+ #curColMetadataEditContainer input, #curColMetadataEditContainer select{
+ 	margin-bottom:0px;
+ }
+ 
+ #curColMetadataEditContainer ul{
+ 	margin-bottom: 10px;
+ 	list-style: none;
+ }
+ 
+ #curColMetadataEditContainer li{
+ 	font-size:small;
+ }
+ 
+ 
+ #curColSelectEnvironment.notSelected{
+ 	color: darkgray;
+    font-size: 10.5pt;
+ }
+ 
+ #addObjectiveLink{
+ 	display: block;
+ }
+ 
+
+ 
+ #curColObjectivesList li .delete{
+	margin-top: 2px;
+	display: none;
+	float: right;
+	width: 16px;
+	height: 16px;
+	text-align: center;
+	cursor: pointer;
+	z-index: 60;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	background: url(../images/btn-delete-idle.png) no-repeat;
+ }
+ 
+ #curColObjectivesList li:hover .delete{
+ 	display:block;
+ 	float:right;
+ }
+ 
+ #curColObjectivesList li p{
+ 	margin-right:40px;
+ 	margin-bottom:0px;
+ 	display: block;
+	padding-right: 20px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+ }
+ 
+ #editMetadataCreateObjectiveWrapper button, #editMetadataCreateObjectiveHelp{
+ 	margin-top:5px;
+ 	margin-bottom:5px;
+ }

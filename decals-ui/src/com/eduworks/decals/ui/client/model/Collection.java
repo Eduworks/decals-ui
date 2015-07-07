@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import com.eduworks.decals.ui.client.util.DsUtil;
+import com.google.gwt.dev.json.JsonArray;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
@@ -26,6 +27,16 @@ public class Collection implements Comparable<Collection>{
    private static final String USERS_KEY = "users";
    private static final String ITEMS_KEY = "items";
    private static final String GROUPS_KEY = "groups";   
+   
+   private static final String METADATA_KEY = "metadata";
+   
+   private static final String KEYWORD_KEY = "keywords";
+   private static final String OBJECTIVES_KEY = "objectives";
+   private static final String OBJECTIVE_TITLE_KEY = "objTitle";
+   private static final String OBJECTIVE_DESC_KEY = "objDesc";
+   
+   private static final String COVERAGE_KEY = "coverage";
+   private static final String ENVIRONMENT_KEY = "environment";
    
    public static final String ITEM_LOCATOR_KEY_PREFIX = "colItem-";
    public static final String USER_LOCATOR_KEY_PREFIX = "colUser-";
@@ -52,7 +63,7 @@ public class Collection implements Comparable<Collection>{
    private HashMap<String,String> groupAccessMap = new HashMap<String,String>();
    
    private ArrayList<String> keywords = new ArrayList<String>();
-   private ArrayList<String> objectives = new ArrayList<String>();
+   private ArrayList<DarResourceObjective> objectives = new ArrayList<DarResourceObjective>();
    private String coverage = new String();
    private String environment = new String();
    
@@ -79,6 +90,8 @@ public class Collection implements Comparable<Collection>{
       if (collectionInfo.containsKey(USERS_KEY)) parseCollectionUsers(collectionInfo.get(USERS_KEY).isArray());
       if (collectionInfo.containsKey(ITEMS_KEY)) parseCollectionItems(collectionInfo.get(ITEMS_KEY).isArray());
       if (collectionInfo.containsKey(GROUPS_KEY)) parseCollectionGroups(collectionInfo.get(GROUPS_KEY).isArray());
+      
+      if (collectionInfo.containsKey(METADATA_KEY)) parseMetadata(collectionInfo.get(METADATA_KEY).isObject());
    }
    
    /**
@@ -110,6 +123,42 @@ public class Collection implements Comparable<Collection>{
    public boolean sessionUserCanModify() {
       if (CollectionAccess.MODIFY_ACCESS.equalsIgnoreCase(sessionUserAccess)) return true;
       return false;
+   }
+   
+   
+   private void parseMetadata(JSONObject metadata) {
+	   keywords.clear();
+	   if(metadata.containsKey(KEYWORD_KEY)){
+		   JSONArray metadataKeywords = metadata.get(KEYWORD_KEY).isArray();
+		   
+		   for(int i = 0; i < metadataKeywords.size(); i++){
+			   keywords.add(metadataKeywords.get(i).isString().stringValue());
+		   }
+	   }
+	   
+	   objectives.clear();
+	   if(metadata.containsKey(OBJECTIVES_KEY)){
+		   JSONArray metadataObjectives = metadata.get(OBJECTIVES_KEY).isArray();
+		   
+		   for(int i = 0; i < metadataObjectives.size(); i++){
+			   JSONObject metadataObj = metadataObjectives.get(i).isObject();
+			   DarResourceObjective obj = new DarResourceObjective(metadataObj.get(OBJECTIVE_TITLE_KEY).isString().stringValue(),
+	   																metadataObj.get(OBJECTIVE_DESC_KEY).isString().stringValue());
+			   
+			   objectives.add(obj);
+		   }
+	   }
+	   
+	   environment = "";
+	   if(metadata.containsKey(ENVIRONMENT_KEY)){
+		   environment = metadata.get(ENVIRONMENT_KEY).isString().stringValue();
+	   }
+	   
+	   coverage = "";
+	   if(metadata.containsKey(COVERAGE_KEY)){
+		   coverage = metadata.get(COVERAGE_KEY).isString().stringValue();
+	   }
+	   
    }
    
    //parses the collection's items
@@ -384,6 +433,32 @@ public class Collection implements Comparable<Collection>{
       else {
          jo.put(DESC_KEY, new JSONString(""));
       }
+      
+      JSONArray arr = new JSONArray();
+      if(keywords.size() != 0){
+    	  for(int i = 0; i < keywords.size(); i++){
+    		  String word = keywords.get(i);
+    		  arr.set(i, new JSONString(word));
+    	  }
+      }
+      jo.put(KEYWORD_KEY, arr);
+      
+      
+      arr = new JSONArray();
+      if(objectives.size() != 0){
+    	  for(int i = 0; i < objectives.size(); i++){
+    		  DarResourceObjective obj = objectives.get(i);
+    		  JSONObject jobj = new JSONObject();
+    		  jobj.put(OBJECTIVE_TITLE_KEY, new JSONString(obj.getTitle()));
+    		  jobj.put(OBJECTIVE_DESC_KEY, new JSONString(obj.getDescription()));
+    		  arr.set(i, jobj);
+    	  }
+      }
+      jo.put(OBJECTIVES_KEY, arr);
+      
+      jo.put(COVERAGE_KEY, new JSONString(coverage));
+      jo.put(ENVIRONMENT_KEY, new JSONString(environment));
+      
       jo.put(NAME_KEY, new JSONString(name.trim()));
       jo.put(ITEMS_KEY, buildItemArray());
       jo.put(USERS_KEY,buildUserArray());
@@ -482,22 +557,33 @@ public class Collection implements Comparable<Collection>{
    public void setMetadataBeingChanged(boolean metadataBeingChanged) {this.metadataBeingChanged = metadataBeingChanged;}
    
    
-   public String[] getKeywords() {return keywords.toArray(new String[1]);}
+   public String[] getKeywords() {return keywords.toArray(new String[keywords.size()]);}
    public void setKeywords(String keywords){
-	   this.keywords = new ArrayList<String>();
-	   String [] keys = keywords.split(",");
+	   this.keywords.clear();
+	   String[] keys = keywords.split(",");
 	   
 	   for(String key : keys){
-		   this.keywords.add(key);
+		   this.keywords.add(key.trim());
 	   }
    }
    
-   public String[] getObjectives() {return objectives.toArray(new String[1]);}
-   public void addObjective(String objective){
-	   objectives.add(objective);
+   public ArrayList<DarResourceObjective> getObjectives() {return objectives;}
+   public void setObjectives(ArrayList<DarResourceObjective> objectives){
+	   this.objectives.clear();
+	   this.objectives.addAll(objectives);
    }
-   public void removeObjectives(String objective){
+   public void removeObjectives(DarResourceObjective objective){
 	   objectives.remove(objective);
+   }
+   
+   public String getCoverage() { return coverage; }
+   public void setCoverage(String cov){
+	   coverage = cov;
+   }
+   
+   public String getEnvironment(){ return environment; }
+   public void setEnvironment(String env){
+	   environment = env;
    }
    
    /**

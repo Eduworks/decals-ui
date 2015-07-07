@@ -308,12 +308,18 @@ public class CollectionManager {
     * @param groupAccessMap The map containing group access
     */
    public void updateCollection(String collectionId, String description, HashMap<String,Integer> itemOrderMap, HashMap<String,String> userAccessMap, 
-         HashMap<String,String> groupAccessMap) {
+         HashMap<String,String> groupAccessMap, String keywords, String coverage, String env, ArrayList<DarResourceObjective> newObjectives, 
+         ArrayList<DarResourceObjective> oldObjectives) {
       Collection c = getCollection(collectionId);
       c.setDescription(description);
       c.updateItemIndices(itemOrderMap);
       c.updateUserAccesses(userAccessMap);      
       c.updateGroupAccesses(groupAccessMap);
+      
+      c.setKeywords(keywords);
+      c.setCoverage(coverage);
+      c.setEnvironment(env);
+      c.setObjectives(newObjectives);
    }
    
    /**

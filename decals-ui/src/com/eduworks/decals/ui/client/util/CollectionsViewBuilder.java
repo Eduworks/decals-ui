@@ -10,10 +10,16 @@ import com.eduworks.decals.ui.client.model.CollectionAccess;
 import com.eduworks.decals.ui.client.model.CollectionGroup;
 import com.eduworks.decals.ui.client.model.CollectionItem;
 import com.eduworks.decals.ui.client.model.CollectionUser;
+import com.eduworks.decals.ui.client.model.DarResourceObjective;
 import com.eduworks.decals.ui.client.model.Group;
+import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserHomeScreen;
+import com.eduworks.gwt.client.net.callback.EventCallback;
+import com.eduworks.gwt.client.pagebuilder.PageAssembler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -78,7 +84,7 @@ public class CollectionsViewBuilder {
    private static final String CCOL_SAVE_SUCCESS_MESSAGE = "curColSaveSuccess";
    
    private static final String EMPTY_CLASS = "curColEmpty";
-   private static final String NON_EMPTY_CLASS = "curColNonEmpty";  
+   public static final String NON_EMPTY_CLASS = "curColNonEmpty";  
    private static final String WORD_WRAP_CLASS = "textWrap";
    
    private static final String EMPTY_DESC_TEXT = "No description has been added to this collection.";
@@ -122,18 +128,25 @@ public class CollectionsViewBuilder {
    
    
    public static final String METADATA_VIEW_KEYWORDS = "curColKeywords";
-   public static final String METADATA_VIEW_OBJECTIVES = "curColObjectives";
    public static final String METADATA_VIEW_COVERAGE = "curColCoverage";
    public static final String METADATA_VIEW_ENVIRONMENT = "curColEnvironment";
+   public static final String METADATA_VIEW_OBJECTIVES = "curColObjectives";
    
    public static final String METADATA_EDIT_KEYWORDS = "curColKeywordsTextArea";
-   public static final String METADATA_EDIT_OBJECTIVES_LIST = "curColObjectivesList";
-   public static final String METADATA_EDIT_OBJECTIVES_Input = "curColObjectivesInput";
-   public static final String METADATA_EDIT_COVERAGE = "curColEditCoverage";
+   public static final String METADATA_EDIT_COVERAGE = "curColCoverageInput";
    public static final String METADATA_EDIT_ENVIRONMENT = "curColSelectEnvironment";
    
+   public static final String METADATA_EDIT_OBJECTIVES_LIST = "curColObjectivesList";
+   public static final String METADATA_EDIT_OBJECTIVES_NONE_ITEM = "noObjectivesItem";
+   public static final String METADATA_EDIT_OBJECTIVES_LINK = "addObjectiveLink";
+   public static final String METADATA_EDIT_OBJECTIVES_CONTAINER = "editMetadataCreateObjectiveWrapper";
+   public static final String METADATA_EDIT_OBJECTIVES_ADD_BTN = "editMetadataCreateObjectiveApply";
+   public static final String METADATA_EDIT_OBJECTIVES_CANCEL_BTN = "editMetadataCreateObjectiveCancel";
+   public static final String METADATA_EDIT_OBJECTIVES_TITLE_INPUT = "editMetadataNewObjectiveTitle";
+   public static final String METADATA_EDIT_OBJECTIVES_DESC_INPUT = "editMetadataNewObjectiveDesc";
+   
    public static void showCollectionMetadataView(Collection col){
-	   DsUtil.showLabel(METADATA_CONTAINER_ID);
+	   DsUtil.slideDownElement(DOM.getElementById(METADATA_CONTAINER_ID), null);
 	   
 	   Element toggle = DOM.getElementById(METADATA_TOGGLE_ID);
 	   toggle.setAttribute("data-toggle", "hide");
@@ -142,7 +155,7 @@ public class CollectionsViewBuilder {
    }
    
    public static void hideCollectionMetadataView(Collection col){
-	   DsUtil.hideLabel(METADATA_CONTAINER_ID);
+	   DsUtil.slideUpElement(DOM.getElementById(METADATA_CONTAINER_ID));
 	   
 	   Element toggle = DOM.getElementById(METADATA_TOGGLE_ID);
 	   toggle.setAttribute("data-toggle", "show");
@@ -156,6 +169,18 @@ public class CollectionsViewBuilder {
 	   }else{
 		  hideCollectionMetadataView(col);
 	   }
+   }
+   
+   public static void showEditMetadata(Collection col){
+	   setUpCollectionMetadata(col);
+	   
+	   DsUtil.showLabel(METADATA_EDIT_CONTAINER_ID);
+   }
+   
+   public static void hideEditMetadata(Collection col){
+	   setUpCollectionMetadata(col);
+	   
+	   DsUtil.showLabel(METADATA_CONTAINER_ID);
    }
    
    //sets up the collection description text area
@@ -177,7 +202,8 @@ public class CollectionsViewBuilder {
       DsUtil.showLabel(CCOL_SAVE_SUCCESS_MESSAGE);
    }
    
-   private static void setUpCollectionMetadata(Collection col, boolean canModify){
+   private static void setUpCollectionMetadata(Collection col){
+	   RootPanel.get(METADATA_VIEW_KEYWORDS).clear();
 	   if(col.getKeywords().length == 0){
 		   RootPanel.get(METADATA_VIEW_KEYWORDS).add(createMetadataField(EMPTY_CLASS, "None"));
 		   DsUtil.setTextAreaText(METADATA_EDIT_KEYWORDS, null);
@@ -193,19 +219,39 @@ public class CollectionsViewBuilder {
 		   DsUtil.setTextAreaText(METADATA_EDIT_KEYWORDS, sb.toString());
 	   }
 	   
-	   if(col.getObjectives().length == 0){
-		   RootPanel.get(METADATA_VIEW_OBJECTIVES).add(createMetadataField(EMPTY_CLASS, "None"));
-		   DOM.getElementById(METADATA_EDIT_OBJECTIVES_LIST).setInnerHTML("");
-		   InputElement.as(DOM.getElementById(METADATA_EDIT_OBJECTIVES_Input)).setValue("");
+	   RootPanel.get(METADATA_VIEW_OBJECTIVES).clear();
+	   DOM.getElementById(METADATA_EDIT_OBJECTIVES_LIST).setInnerHTML("");
+	   if(col.getObjectives().size() == 0){
+		   RootPanel.get(METADATA_VIEW_OBJECTIVES).add(createMetadataField(EMPTY_CLASS, "No Objectives Set"));
+		   DOM.getElementById(METADATA_EDIT_OBJECTIVES_LIST).setInnerHTML("<li id='noObjectivesItem' class='curColEmpty'>No Objectives Set</li>");
 	   }else{
-		   for(String objective : col.getObjectives()){
-			   RootPanel.get(METADATA_VIEW_OBJECTIVES).add(createMetadataField(NON_EMPTY_CLASS, objective));
-			   Element editListItem = DOM.createElement("li");
-			   editListItem.addClassName(NON_EMPTY_CLASS);
-			   editListItem.setInnerText(objective);
-			   DOM.getElementById(METADATA_EDIT_OBJECTIVES_LIST).appendChild(editListItem);
+		   for(int i = 0; i < col.getObjectives().size(); i++){
+			   DarResourceObjective objective = col.getObjectives().get(i);
+			   
+			   RootPanel.get(METADATA_VIEW_OBJECTIVES).add(createMetadataField(NON_EMPTY_CLASS, objective.getTitle()));
+			   
+			   addObjectiveItem(String.valueOf(i), objective.getTitle(), objective.getDescription());
 		   }
-		   InputElement.as(DOM.getElementById(METADATA_EDIT_OBJECTIVES_Input)).setValue("");
+	   }
+	   
+	   RootPanel.get(METADATA_VIEW_COVERAGE).clear();
+	   if(col.getCoverage().isEmpty()){
+		   RootPanel.get(METADATA_VIEW_COVERAGE).add(createMetadataField(EMPTY_CLASS, "No Coverage Defined"));
+		   InputElement.as(DOM.getElementById(METADATA_EDIT_COVERAGE)).setValue("");
+	   }else{
+		   RootPanel.get(METADATA_VIEW_COVERAGE).add(createMetadataField(NON_EMPTY_CLASS, col.getCoverage()));
+		   InputElement.as(DOM.getElementById(METADATA_EDIT_COVERAGE)).setValue(col.getCoverage());
+	   }
+	   
+	   RootPanel.get(METADATA_VIEW_ENVIRONMENT).clear();
+	   if(col.getEnvironment().isEmpty()){
+		   RootPanel.get(METADATA_VIEW_ENVIRONMENT).add(createMetadataField(EMPTY_CLASS, "No Environment Defined"));
+		   DOM.getElementById(METADATA_EDIT_ENVIRONMENT).addClassName("notSelected");
+		   SelectElement.as(DOM.getElementById(METADATA_EDIT_ENVIRONMENT)).setValue("");
+	   }else{
+		   RootPanel.get(METADATA_VIEW_ENVIRONMENT).add(createMetadataField(NON_EMPTY_CLASS, col.getEnvironment()));
+		   DOM.getElementById(METADATA_EDIT_ENVIRONMENT).removeClassName("notSelected");
+		   SelectElement.as(DOM.getElementById(METADATA_EDIT_ENVIRONMENT)).setValue(col.getEnvironment());
 	   }
 	   
 	   if(col.isMetadataBeingChanged()){
@@ -213,8 +259,75 @@ public class CollectionsViewBuilder {
 		   DsUtil.hideLabel(METADATA_CONTAINER_ID);
 	   }else{
 		   DsUtil.hideLabel(METADATA_EDIT_CONTAINER_ID);
+		   
+		   if(DOM.getElementById(METADATA_TOGGLE_ID).getAttribute("data-toggle").equals("hide")){
+			   DsUtil.showLabel(METADATA_CONTAINER_ID);
+		   }
 	   }
+	   
    }
+   
+   public static void addObjectiveItem(String id, String title, String description){
+	   Element editListItem = DOM.createElement("li");
+	   editListItem.addClassName(NON_EMPTY_CLASS);
+	   
+	   editListItem.setInnerHTML("<a id='colObjDelete-"+id+"' href='#' title='Remove' class='delete'></a>"+
+			   						"<p id='colObjEdit-"+id+"' class='objective meta-value editable' data-description='"+description+"' title='"+description+"'>" + title + "</p>");
+	   DOM.getElementById(METADATA_EDIT_OBJECTIVES_LIST).appendChild(editListItem);
+	   
+	   PageAssembler.attachHandler("colObjDelete-"+id, Event.ONCLICK, deleteObjectiveCallback);
+	   PageAssembler.attachHandler("colObjEdit-"+id, Event.ONCLICK, editObjectiveCallback);
+   }
+   
+   private static EventCallback deleteObjectiveCallback = new EventCallback() {
+	   @Override
+	   public void onEvent(Event event) {
+		   Element target = Element.as(event.getEventTarget());
+		 
+		   while(!target.getTagName().equalsIgnoreCase("li")){
+			   target = target.getParentElement();
+		   }
+		   
+		   target.removeFromParent();
+	   }
+   };
+   
+   private static EventCallback editObjectiveCallback = new EventCallback() {
+	   @Override
+	   public void onEvent(Event event) {
+		   Element target = Element.as(event.getEventTarget());
+		   while(!target.getTagName().equalsIgnoreCase("p")){
+			   target = target.getParentElement();
+		   }
+		   
+		   DsUserHomeScreen.editingId = target.getId();
+		   
+		   String title = target.getInnerText();
+		   String description = target.getAttribute("data-description");
+		   
+		   DsUserHomeScreen.startAddObjective();
+		   InputElement.as(DOM.getElementById(METADATA_EDIT_OBJECTIVES_TITLE_INPUT)).setValue(title);
+		   InputElement.as(DOM.getElementById(METADATA_EDIT_OBJECTIVES_DESC_INPUT)).setValue(description);
+		   
+		   PageAssembler.attachHandler(METADATA_EDIT_OBJECTIVES_ADD_BTN, Event.ONCLICK, finishEditObjectiveListener);
+	   }
+   };
+   
+   private static EventCallback finishEditObjectiveListener = new EventCallback() {
+	   @Override
+	   public void onEvent(Event event) {
+		   String title = InputElement.as(DOM.getElementById(METADATA_EDIT_OBJECTIVES_TITLE_INPUT)).getValue();
+		   String description = InputElement.as(DOM.getElementById(METADATA_EDIT_OBJECTIVES_DESC_INPUT)).getValue();
+		   
+		   Element objectiveElement = DOM.getElementById(DsUserHomeScreen.editingId);
+		   
+		   objectiveElement.setAttribute("data-description", description);
+		   objectiveElement.setAttribute("title", description);
+		   objectiveElement.setInnerText(title);
+		   
+		   DsUserHomeScreen.cancelAddObjective();
+	   }
+   };
    
    //sets up the collection description
    private static void setUpCollectionDescription(Collection col, boolean canModify) {
@@ -493,7 +606,7 @@ public class CollectionsViewBuilder {
       DsUtil.hideLabel(CCOL_SAVE_SUCCESS_MESSAGE);
       setUpToolBar(col,canModify);
       setUpCollectionDescription(col,canModify);
-      setUpCollectionMetadata(col, canModify);
+      setUpCollectionMetadata(col);
       setUpAddButtons(canModify);
       buildItemView(col,canModify,collectionItemDeleteWidgets);
       buildUserView(col,canModify,collectionUserDeleteWidgets);
