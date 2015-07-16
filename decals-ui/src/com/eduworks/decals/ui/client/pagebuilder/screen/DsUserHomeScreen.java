@@ -1003,8 +1003,9 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
          boolean added = collectionManager.addCollectionItem(currentCollection.getCollectionId(),aciTitle,aciUrl,aciDesc);
          if (added) {
             setCollectionAsChanged();
-            buildCurrentCollectionView();            
+            buildCurrentCollectionView(); 
             PageAssembler.closePopup(ACI_MODAL);
+            refreshMyContributionSearchResults();
          }
          else {
             DsUtil.hideLabel(ACI_SUBMIT_BTNS);

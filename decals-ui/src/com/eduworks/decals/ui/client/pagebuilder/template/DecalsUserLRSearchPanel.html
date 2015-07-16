@@ -141,6 +141,105 @@
 
 <!-- ********************************MODAL DIALOGS******************************** -->
 
+<!-- New Resource modal -->
+<div id="modalNewResource" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-files-o"></i> Add Similar / Duplicate</h2>    
+    <div id="addResourceDecision">
+    	<p>Would you like to add a similar resource, or duplicate <span id="decisionResourceTitle" style="font-style:italic; font-weight:bold;"></span>?</p>
+		<div id="newResourceDecisionButtons" class="row">
+			<div class="large-12 columns">
+				<button type="button" onclick="$('#addResourceDecision').css('display', 'none');$('#addSimilar').css('display', 'block');$('#addSimilarTypeButtons').css('display', 'block');$('#addSimilarUrl').css('display', 'none');$('#addSimilarFile').css('display', 'none');" class="small">Add Similar</button>
+				<button type="button" onclick="$('#addResourceDecision').css('display', 'none');$('#duplicate').css('display', 'block');" class="small">Duplicate</button>			
+				<button type="button" onclick="$('#modalAddToCollection').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>	
+	</div>       
+	<div id="addSimilar" style="display:none">		
+			<div class="row">
+				<p>
+            		Add resource similar to <span id="similarResourceTitle" style="font-style:italic; font-weight:bold;"></span>&nbsp;
+            		(<span id="similarResourceUrl" style="font-style:italic; color:#666;"></span>)
+            	</p>            	
+  			</div>
+  			<div id="addSimilarTypeButtons" class="row">
+  				<button class="small" id="addSimilarFileBtn"><i class="fa fa-file-o"></i> File ...</button>
+    			<button class="small" id="addSimilarUrlBtn"><i class="fa fa-globe"></i> Webpage ...</button>
+    			<button type="button" onclick="$('#modalAddToCollection').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+  			</div>
+  			<form id="addSimilarUrl" style="display:none;" data-abide>
+  				<div class="row">
+  					<div class="large-12 columns">
+						<div class="name-field">
+							<label><i class="fa fa-info"></i> Title <input type="text" id="addSimilarUrlTitle" name="title" required> </label> 
+							<small class="error">Enter the resource title</small>
+						</div>
+					</div>
+  				</div>
+  				<div class="row">
+	  				<div class="large-12 columns">
+						<div class="name-field">
+							<label><i class="fa fa-globe"></i> URL <input type="url" id="addSimilarUrlInput" name="url" required> </label> 
+							<small class="error">Enter the URL (ex: http://www.eduworks.com)</small>
+						</div>
+					</div>
+	  			</div>
+	  			<div id="addSimilarFileBtns" class="row">
+					<div class="large-12 columns">			
+						<button type="submit" class="small">Add</button>
+						<button type="button" onclick="$('#modalAddToCollection').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+					</div>
+				</div>
+  			</form>
+  			<div id="addSimilarFile" style="display:none;">
+	  			<form id="junk" data-abide="ajax"> 
+	  				<div class="row">
+	  					<div class="large-12 columns">
+							<div class="name-field">
+								<label><i class="fa fa-info"></i> Title <input type="text" id="addSimilarFileTitle" name="title" required> </label> 
+								<small class="error">Enter the resource title</small>
+							</div>
+						</div>
+	  				</div>
+	  			</form>
+	  			<form id="addSimilarFileForm" method="POST" data-abide="ajax"> 	
+	  				<div class="row" >
+		  				<div class="large-12 columns">
+							<input type="file" id="addSimilarFileInput" name="filedata">
+							<input type="hidden" id="decalsData" name="decalsData" />						
+						</div>
+		  			</div>
+			    	<div id="addSimilarUrlBtns" class="row">
+						<div class="large-12 columns">			
+							<button type="button" id="uploadSimilarFileBtn" class="small">Add</button>
+							<button type="button" onclick="$('#modalAddToCollection').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		<div id="addSimilarBusy" style="display:none" class="row">    	
+			<img src="images/status-busy.gif" style="display:inline"/>
+		</div>
+	</div>
+	<div id="duplicate" style="display:none">		
+		<div class="row">
+			<p>
+           		Duplicate Resource: <span id="duplicateResourceTitle" style="font-style:italic; font-weight:bold;"></span>&nbsp;
+           		(<span id="duplicateResourceUrl" style="font-style:italic; color:#666;"></span>)?
+           	</p>            	
+		</div>
+    	<div id="duplicateConfirmButtons" class="row">
+			<div class="large-12 columns">			
+				<button type="button" id="duplicateButton">Duplicate</button>
+				<button type="button" onclick="$('#modalAddToCollection').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+		<div id="duplicateBusy" style="display:none" class="row">    	
+			<img src="images/status-busy.gif" style="display:inline"/>
+		</div>
+	</div>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
+
 <!-- Add to collection modal -->
 <div id="modalAddToCollection" class="reveal-modal small" data-reveal>
     <h2><i class="fa fa-briefcase"></i> Add to collection</h2>    

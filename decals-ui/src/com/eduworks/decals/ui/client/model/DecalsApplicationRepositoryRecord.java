@@ -25,6 +25,9 @@ public class DecalsApplicationRepositoryRecord extends DarResourceMetadata {
    public static final String LR_PARADATA_ID = "lrParadataId_t";
    public static final String LR_PUBLISH_DATE = "lrPublishDate_l";
    
+   public static final String PUBLISHED_KEY = "published_t";
+   public static final String OLD_TITLE_KEY = "old_title_t";
+   
    private String uploadedBy;
    private long fileSizeBytes;
    private String uploadDateStr;
@@ -39,6 +42,9 @@ public class DecalsApplicationRepositoryRecord extends DarResourceMetadata {
    private String lrParadataId;
    private String lrPublishDateStr;
    private long pureLrPublishDate;
+   
+   private String published;
+   private String oldTitle;
    
    //TODO need to implement version...maybe
    private int version = 1;
@@ -100,7 +106,7 @@ public class DecalsApplicationRepositoryRecord extends DarResourceMetadata {
     * @return Returns true if LR publishing should be available.  Returns false otherwise.
     */
    public boolean canPublishToLr() {
-      if (getDescription() == null || getDescription().trim().isEmpty()) return false;
+      if (getDescription() == null || getDescription().trim().isEmpty() || published.equals("true") || getTitle().equals(oldTitle)) return false;
       return true;      
    }
    
@@ -208,6 +214,12 @@ public class DecalsApplicationRepositoryRecord extends DarResourceMetadata {
    public long getPureLrPublishDate() {return pureLrPublishDate;}
    public void setPureLrPublishDate(long pureLrPublishDate) {this.pureLrPublishDate = pureLrPublishDate;}
   
+   
+   public String getPublished() { return published; }
+   public void setPublished(String published) { this.published = published; }
+   
+   public void setOldTitle(String oldTitle) { this.oldTitle = oldTitle; }
+   
    
    /**
     * Returns a truncated string of the resource URL.

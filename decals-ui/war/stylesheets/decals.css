@@ -1673,3 +1673,15 @@ body.typing
  	margin-top:5px;
  	margin-bottom:5px;
  }
+ 
+ 
+ 
+ /**------------------------
+ 	Search Result Actions
+ --------------------------**/
+ 
+ 
+#userLRSearchResults .flip-container, #userLRSearchResults .flipFront, #userLRSearchResults .flipBack  {
+	width: 30px;
+	height: 30px;
+}

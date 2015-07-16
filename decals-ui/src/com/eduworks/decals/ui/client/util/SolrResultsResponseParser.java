@@ -172,6 +172,11 @@ public class SolrResultsResponseParser {
          sr.setKeywords(DsUtil.buildStringListFromJsonArray(doc.get(DarResourceMetadata.KEYWORDS_KEY).isArray()));
       if (doc.containsKey(DarResourceMetadata.OBJECTIVES_KEY)) 
          sr.setObjectives(DarResourceObjective.buildObjectiveListSolrReturn(doc.get(DarResourceMetadata.OBJECTIVES_KEY).isArray()));
+      
+      if (doc.containsKey(DecalsApplicationRepositoryRecord.PUBLISHED_KEY)) sr.setPublished(doc.get(DecalsApplicationRepositoryRecord.PUBLISHED_KEY).isString().stringValue());
+
+      if (doc.containsKey(DecalsApplicationRepositoryRecord.OLD_TITLE_KEY)) sr.setOldTitle(doc.get(DecalsApplicationRepositoryRecord.OLD_TITLE_KEY).isString().stringValue());
+      
       return sr;
    }
    

@@ -36,7 +36,7 @@ public class DsUserTabsHandler {
    public UserTabs getCurrentTab() {return currentTab;}
    public void setCurrentTab(UserTabs currentTab) {this.currentTab = currentTab;}
    
-   private void setHomeTabAsActive() {
+   public void setHomeTabAsActive() {
       currentTab = UserTabs.HOME_TAB;
       dispatcher.loadUserHomeScreen();      
    }

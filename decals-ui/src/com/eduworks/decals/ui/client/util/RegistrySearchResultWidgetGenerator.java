@@ -66,13 +66,16 @@ public class RegistrySearchResultWidgetGenerator {
    private static final String DETAILS_COMMENTS_LINK_SUFFIX = "-srDetailsCommentsLink";
    private static final String DETAILS_SCORE_SUFFIX = "-srDetailsScore";
    private static final String DETAILS_CREATE_DATE_SUFFIX = "-srDetailsCreateDate";   
-   private static final String DETAILS_ADD_TO_COL_CONTAINER_SUFFIX = "-srAddToCollectionContainer";
+   private static final String DETAILS_ADD_TO_COL_CONTAINER_SUFFIX = "-srFlipBoxContainer";
    
    private static final String DETAILS_VIEW_COUNT_SUFFIX = "-srDetailsViewCount";
    private static final String DETAILS_COLLECTION_COUNT_SUFFIX = "-srDetailsCollectionCount";
    
    private static final String FLIP_ADD_TO_COL_SUFFIX = "-srFlipAddToCollection";
-   private static final String ADD_TO_COL_LINK_SUFFIX = "-srAddToCollectionLink";   
+   private static final String ADD_TO_COL_LINK_SUFFIX = "-srAddToCollectionLink";
+   
+   private static final String FLIP_NEW_RESOURCE_SUFFIX = "-srFlipNewResource";
+   private static final String NEW_RESOURCE_LINK_SUFFIX = "-srNewResourceLink";
 
    private static final String DESC_FULL_STATUS = "full";
    private static final String DESC_SHORT_STATUS = "short";
@@ -383,14 +386,36 @@ public class RegistrySearchResultWidgetGenerator {
    //build the add to collection widgets
    private void buildAddToCollectionWidgets(String token, boolean build, InteractiveSearchResult isr) {
       if (!build) return;
-      if (!DsSession.userHasModifiableCollections()) DsUtil.hideLabel(token + DETAILS_ADD_TO_COL_CONTAINER_SUFFIX); 
-      else {
+      if (!DsSession.userHasModifiableCollections()){ 
+    	 DsUtil.hideLabel(token + token + FLIP_ADD_TO_COL_SUFFIX); 
+      }else {
          DOM.getElementById(token + ADD_TO_COL_LINK_SUFFIX).setAttribute(TITLE_ATTR,"Add '" + isr.getTitle() + "' to a collection");
          DOM.getElementById(token + FLIP_ADD_TO_COL_SUFFIX).setAttribute(HOVER_EVENT,getAddToColOnHoverAction(token));      
          DOM.getElementById(token + FLIP_ADD_TO_COL_SUFFIX).setAttribute(LEAVE_EVENT,getAddToColOnLeaveAction(token));
          actionHandler.addAddToCollectionClickListener(token + ADD_TO_COL_LINK_SUFFIX,isr);
       }
    }
+   
+   // build the on add to collection on hover action
+  private String getNewResourceOnHoverAction(String token) {
+     return "document.getElementById('" + token + FLIP_NEW_RESOURCE_SUFFIX + "').className='" + FLIPPED_CLASS + "';";
+  }
+  
+  //build the on add to collection on leave action
+  private String getNewResourceOnLeaveAction(String token) {
+     return "document.getElementById('" + token + FLIP_NEW_RESOURCE_SUFFIX + "').className='" + NON_FLIPPED_CLASS + "';";
+  }
+   
+   
+   //build the add to collection widgets
+   private void buildNewResourceWidgets(String token, boolean build, InteractiveSearchResult isr) {
+      if (!build) return;
+      DOM.getElementById(token + NEW_RESOURCE_LINK_SUFFIX).setAttribute(TITLE_ATTR,"Add Similar/Duplicate Resource");
+      DOM.getElementById(token + FLIP_NEW_RESOURCE_SUFFIX).setAttribute(HOVER_EVENT, getNewResourceOnHoverAction(token));      
+      DOM.getElementById(token + FLIP_NEW_RESOURCE_SUFFIX).setAttribute(LEAVE_EVENT, getNewResourceOnLeaveAction(token));
+      actionHandler.addNewResourceClickListener(token + NEW_RESOURCE_LINK_SUFFIX,isr);
+   }
+   
 
    /**
     * Builds a set of Basic Search result widgets and adds them to the given results container
@@ -434,8 +459,9 @@ public class RegistrySearchResultWidgetGenerator {
             urlTokenMap.put(isr.getResourceUrl(),token);
             assignSearchResultWidgetValues(token,isr);
             assignInteractiveSearchResultWidgetValues(token,isr);  
-            addRatingAndCommentHandlers(token,isr);  
-            buildAddToCollectionWidgets(token,buildAddToCollectionWidgets,isr);
+            addRatingAndCommentHandlers(token,isr);
+            buildNewResourceWidgets(token, buildAddToCollectionWidgets, isr);
+            buildAddToCollectionWidgets(token, buildAddToCollectionWidgets,isr);
          }
       }
       fetchRatingInfo(urlTokenMap);

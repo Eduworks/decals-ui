@@ -3,6 +3,7 @@ package com.eduworks.decals.ui.client.handler;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.eduworks.decals.ui.client.DsScreenDispatch;
 import com.eduworks.decals.ui.client.DsSession;
 import com.eduworks.decals.ui.client.api.DsESBApi;
 import com.eduworks.decals.ui.client.handler.InteractiveSearchHandler.CommentHandlerType;
@@ -17,15 +18,26 @@ import com.eduworks.decals.ui.client.util.DsUtil;
 import com.eduworks.decals.ui.client.util.RegistrySearchResultWidgetGenerator;
 import com.eduworks.decals.ui.client.util.ResourceCommentParser;
 import com.eduworks.decals.ui.client.util.ResourceRatingParser;
+import com.eduworks.gwt.client.component.AppSettings;
 import com.eduworks.gwt.client.net.api.ESBApi;
 import com.eduworks.gwt.client.net.callback.ESBCallback;
 import com.eduworks.gwt.client.net.callback.EventCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
 import com.eduworks.gwt.client.pagebuilder.PageAssembler;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 
 /**
  * Handles actions (ratings and comments) that happen to the resources returned from the registry/interactive search. 
@@ -65,7 +77,41 @@ public class RegistryResourceActionHandler {
    private static final String ARTC_REPLACE = "addToCollectionReplace";
    private static final String ARTC_SUCCESS = "addToCollectionSuccess";
    private static final String ARTC_BUSY = "addToCollectionBusy";  
-      
+   
+   private static final String SIMILAR_DUPLICATE_MODAL = "modalNewResource";
+   private static final String SIMILAR_DUPLICATE_DECISION_CONTAINER = "addResourceDecision";
+   private static final String DECISION_TITLE = "decisionResourceTitle";
+   
+   private static final String ADD_SIMILAR_CONTAINER = "addSimilar";
+   private static final String SIMILAR_TITLE = "similarResourceTitle";
+   private static final String SIMILAR_URL = "similarResourceUrl";
+   
+   private static final String DUPLICATE_CONTAINER = "duplicate";
+   private static final String DUPLICATE_TITLE = "duplicateResourceTitle";
+   private static final String DUPLICATE_URL = "duplicateResourceUrl";
+   private static final String DUPLICATE_BTN = "duplicateButton";
+   private static final String DUPLICATE_BUSY = "duplicateBusy";
+   private static final String DUPLICATE_CONFIRM_BTNS = "duplicateConfirmButtons";
+   
+   private static final String ADD_SIMILAR_BTN_CONTAINER = "addSimilarTypeButtons";
+   private static final String ADD_SIMILAR_URL_BTN = "addSimilarUrlBtn";
+   private static final String ADD_SIMILAR_FILE_BTN = "addSimilarFileBtn";
+   
+   private static final String ADD_SIMILAR_URL_FORM = "addSimilarUrl";
+   private static final String ADD_SIMILAR_URL_TITLE = "addSimilarUrlTitle";
+   private static final String ADD_SIMILAR_URL_INPUT = "addSimilarUrlInput";
+   private static final String ADD_SIMILAR_URL_BTNS = "addSimilarUrlBtns";
+   
+   private static final String ADD_SIMILAR_FILE_CONTAINER = "addSimilarFile";
+   private static final String ADD_SIMILAR_FILE_FORM = "addSimilarFileForm";
+   private static final String ADD_SIMILAR_FILE_TITLE = "addSimilarFileTitle";
+   private static final String ADD_SIMILAR_FILE_INPUT = "addSimilarFileInput";
+   private static final String ADD_SIMILAR_FILE_BTNS = "addSimilarFileBtns";
+   
+   private static final String ADD_SIMILAR_BUSY = "addSimilarBusy";
+  
+   
+   
    private static final int LIST_ITEMS_PER_PAGE = 5;
    
    private SearchHandlerParamPacket paramPacket;
@@ -350,6 +396,190 @@ public class RegistryResourceActionHandler {
     */
    public void addAddToCollectionClickListener(String widgetId, InteractiveSearchResult sr) {
       if (widgetId != null && sr != null) PageAssembler.attachHandler(widgetId,Event.ONCLICK, new AddToCollectionClickListener(widgetId,sr));
+   }
+   
+   /* New Resource Stuff*/
+   
+   private void handleNewResourceResponse(){
+	   PageAssembler.closePopup(SIMILAR_DUPLICATE_MODAL);
+	   
+	   DsUtil.setLabelAttribute("userLRSearchTab", "class", "tab");
+	   DsUtil.setLabelAttribute("userHomeTab", "class", "tab active");
+	   
+	   DsUserTabsHandler.getInstance().setHomeTabAsActive();
+   }
+   
+   private EventCallback duplicateResourceHandler = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {
+			DsUtil.hideLabel(DUPLICATE_CONFIRM_BTNS);
+	        DsUtil.showLabel(DUPLICATE_BUSY);
+	        String resourceUrl = result.getResourceUrl();
+	        DsESBApi.decalsDuplicateResource(resourceUrl, result.toJson(), new ESBCallback<ESBPacket>() {
+	            @Override
+	            public void onSuccess(ESBPacket result) {       
+	               handleNewResourceResponse();            
+	            }
+	            @Override
+	            public void onFailure(Throwable caught) {
+	               DsUtil.hideLabel(DUPLICATE_BUSY);
+	               DsUtil.handleFailedApiCall(caught);
+	            }
+	         }); 
+		}
+   };
+   
+   private class FileUploadFormSubmitHandler implements SubmitHandler {      
+      private String fileName;      
+      
+      public FileUploadFormSubmitHandler(String fileName) {
+         this.fileName = fileName;
+      }   
+      
+      @Override
+      public void onSubmit(SubmitEvent event) {
+         if (fileName == null || fileName.trim().isEmpty()) event.cancel();
+         
+         DOM.getElementById(ADD_SIMILAR_FILE_INPUT).setAttribute("name", fileName);
+         
+         JSONObject obj = new JSONObject();
+         obj.put("similar", result.toJson()); 
+         obj.put(DsESBApi.SESSION_ID_KEY, new JSONString(ESBApi.sessionId));
+         
+         DOM.getElementById(DsESBApi.DECALS_FORM_DATA_NAME).setAttribute("value",  obj.toString());        
+         
+         DsUtil.hideLabel(ADD_SIMILAR_FILE_BTNS);
+	     DsUtil.showLabel(ADD_SIMILAR_BUSY);
+      }
+   }
+   
+   private class FileUploadSubmitCompleteHandler implements SubmitCompleteHandler {      
+      private String fileName;      
+      public FileUploadSubmitCompleteHandler(String fileName) {
+         this.fileName = fileName;
+      }      
+      @Override
+      public void onSubmitComplete(SubmitCompleteEvent event) {
+         DsUtil.hideLabel(ADD_SIMILAR_BUSY);
+         
+         handleNewResourceResponse();
+      }
+   }
+   
+   private EventCallback uploadFileHandler = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {
+			
+	        final FormPanel fileUploadForm = (FormPanel)PageAssembler.elementToWidget(ADD_SIMILAR_FILE_FORM, PageAssembler.FORM);
+	        
+	        	 
+        	DsUtil.hideLabel(ADD_SIMILAR_FILE_BTNS);
+ 	        DsUtil.showLabel(ADD_SIMILAR_BUSY);
+            
+ 	        String fileName = InputElement.as(DOM.getElementById(ADD_SIMILAR_FILE_TITLE)).getValue();
+            
+ 	        if (fileName != null && !fileName.trim().isEmpty()) {
+               fileUploadForm.addSubmitHandler(new FileUploadFormSubmitHandler(fileName));
+               fileUploadForm.addSubmitCompleteHandler(new FileUploadSubmitCompleteHandler(fileName));
+               fileUploadForm.setEncoding(FormPanel.ENCODING_MULTIPART);
+               fileUploadForm.setAction(ESBApi.getESBActionURL("decalsAddSimilarFile"));
+               fileUploadForm.submit();
+            }
+	}
+	};
+   
+   
+   	private EventCallback addSimilarFileHandler = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {
+			DsUtil.hideLabel(ADD_SIMILAR_BTN_CONTAINER);
+			
+			InputElement.as(DOM.getElementById(ADD_SIMILAR_FILE_TITLE)).setValue("");
+
+			PageAssembler.attachHandler("uploadSimilarFileBtn", Event.ONCLICK, uploadFileHandler);
+			
+			DsUtil.showLabel(ADD_SIMILAR_FILE_CONTAINER);
+		}
+	};
+	
+	private EventCallback uploadUrlHandler = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {
+			String newTitle = InputElement.as(DOM.getElementById(ADD_SIMILAR_URL_TITLE)).getValue();
+			String newUrl = InputElement.as(DOM.getElementById(ADD_SIMILAR_URL_INPUT)).getValue();
+			
+			DsESBApi.addSimilarUrl(newTitle, newUrl, result.toJson(), new ESBCallback<ESBPacket>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					DsUtil.hideLabel(ADD_SIMILAR_BUSY);
+					DsUtil.handleFailedApiCall(caught);
+				}
+
+				@Override
+				public void onSuccess(ESBPacket result) {
+					handleNewResourceResponse();
+				}
+			});
+			
+		}
+	};
+	private EventCallback addSimilarUrlHandler = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {
+			DsUtil.hideLabel(ADD_SIMILAR_BTN_CONTAINER);
+			
+			InputElement.as(DOM.getElementById(ADD_SIMILAR_URL_TITLE)).setValue("");
+			InputElement.as(DOM.getElementById(ADD_SIMILAR_URL_INPUT)).setValue("");
+			
+			PageAssembler.attachHandler(ADD_SIMILAR_URL_FORM, DecalsScreen.VALID_EVENT, uploadUrlHandler);
+			
+			DsUtil.showLabel(ADD_SIMILAR_URL_FORM);
+		}
+	};
+   
+   //handle add to collection
+   private void handleNewResource(String widgetId, InteractiveSearchResult sr) {
+	  result = sr;
+	   
+      DsUtil.hideLabel(ADD_SIMILAR_CONTAINER);
+      DsUtil.hideLabel(DUPLICATE_CONTAINER);
+      DsUtil.showLabel(SIMILAR_DUPLICATE_DECISION_CONTAINER);       
+      DsUtil.showLabel(ARTC_CANCEL_BTN);
+      DsUtil.setLabelText(DECISION_TITLE,sr.getTitle());
+      DsUtil.setLabelText(SIMILAR_TITLE,sr.getTitle());
+      DsUtil.setLabelText(SIMILAR_URL,sr.getResourceUrl());
+      DsUtil.setLabelText(DUPLICATE_TITLE,sr.getTitle());
+      DsUtil.setLabelText(DUPLICATE_URL,sr.getResourceUrl());
+
+      PageAssembler.attachHandler(DUPLICATE_BTN, Event.ONCLICK, duplicateResourceHandler);
+      
+      PageAssembler.attachHandler(ADD_SIMILAR_FILE_BTN, Event.ONCLICK, addSimilarFileHandler);
+      PageAssembler.attachHandler(ADD_SIMILAR_URL_BTN, Event.ONCLICK, addSimilarUrlHandler);
+      
+      PageAssembler.openPopup(SIMILAR_DUPLICATE_MODAL);
+   }
+   
+   // new resource click event listener
+   private class NewResourceClickListener extends EventCallback {      
+      private String widgetId;    
+      private InteractiveSearchResult sr;
+      
+      public NewResourceClickListener(String widgetId, InteractiveSearchResult sr) {
+         this.widgetId = widgetId;
+         this.sr = sr;         
+      }      
+      @Override
+      public void onEvent(Event event) {handleNewResource(widgetId,sr);}
+   }
+   
+   /**
+    * Adds a add to collection click listener for the given widget ID
+    * 
+    * @param widgetId The widget ID 
+    * @param sr The search result
+    */
+   public void addNewResourceClickListener(String widgetId, InteractiveSearchResult sr) {
+      if (widgetId != null && sr != null) PageAssembler.attachHandler(widgetId,Event.ONCLICK, new NewResourceClickListener(widgetId,sr));
    }
    
 }

@@ -1240,4 +1240,33 @@ public class DsESBApi extends ESBApi {
 	   mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
 	   return CommunicationHub.sendMultipartPost(getESBActionURL("decalsAddDesiredCompetency"),mp,false,callback);
    }
+   
+   public static String decalsDuplicateResource(String resourceUrl, JSONObject flrInfo, ESBCallback<ESBPacket> callback){
+	   MultipartPost mp = new MultipartPost();
+	   ESBPacket jo = new ESBPacket();
+	   
+	   jo.put(USER_ID_KEY, username);
+	   jo.put(SESSION_ID_KEY, DsSession.getUser().getCompetencySessionId());
+	   
+	   jo.put("itemInfo", flrInfo);
+	   
+	   mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+	   return CommunicationHub.sendMultipartPost(getESBActionURL("decalsDuplicateResource"),mp,false,callback);
+   }
+   
+   public static String addSimilarUrl(String resourceTitle, String resourceUrl, JSONObject similarFields, ESBCallback<ESBPacket> callback){
+	   MultipartPost mp = new MultipartPost();
+	   ESBPacket jo = new ESBPacket();
+	   
+	   jo.put(USER_ID_KEY, username);
+	   jo.put(SESSION_ID_KEY, DsSession.getUser().getCompetencySessionId());
+	   
+	   jo.put("pageTitle", resourceTitle);
+	   jo.put("url", resourceUrl);
+	   
+	   jo.put("similar", similarFields);
+	   
+	   mp.appendMultipartFormData(DECALS_FORM_DATA_NAME, jo);
+	   return CommunicationHub.sendMultipartPost(getESBActionURL("decalsAddSimilarUrl"),mp,false,callback);
+   }
 }
