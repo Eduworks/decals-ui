@@ -120,6 +120,7 @@ public class DsUserPreferences {
 	
 	public void savePreferencesToServer(ESBCallback<ESBPacket> preferencesSavedCallback){
 		DsESBApi.decalsUpdateUserPreferences(resourceTypes, languages, gradeLevels, learningObjectives, preferencesSavedCallback);
+		DsSession.getInstance().setCachedLrSearchHandler(null);
 	}
 	
 	public void addDesiredCompetenciesToServer(ArrayList<String> newDesiredCompetencyIds, ESBCallback<ESBPacket> competenciesSavedCallback){

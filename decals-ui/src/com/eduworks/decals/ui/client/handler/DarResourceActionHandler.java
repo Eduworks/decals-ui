@@ -13,9 +13,12 @@ import com.eduworks.decals.ui.client.model.LrPublishResponse;
 import com.eduworks.decals.ui.client.model.SearchHandlerParamPacket;
 import com.eduworks.decals.ui.client.model.DecalsApplicationRepositoryRecord.BasicMimeType;
 import com.eduworks.decals.ui.client.pagebuilder.DecalsScreen;
+import com.eduworks.decals.ui.client.pagebuilder.DsHtmlTemplates;
+import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserHomeScreen;
 import com.eduworks.decals.ui.client.util.CollectionsViewBuilder;
 import com.eduworks.decals.ui.client.util.DarConverter;
 import com.eduworks.decals.ui.client.util.DsUtil;
+import com.eduworks.gwt.client.component.AppSettings;
 import com.eduworks.gwt.client.net.api.ESBApi;
 import com.eduworks.gwt.client.net.api.FLRPacketGenerator;
 import com.eduworks.gwt.client.net.callback.ESBCallback;
@@ -85,6 +88,8 @@ public class DarResourceActionHandler {
    private static final String ARTC_SUCCESS = "addToCollectionSuccess";
    private static final String ARTC_BUSY = "addToCollectionBusy";  
       
+   private static final String ARTC_CONFIRM_RESOURCE_ID = "addToCollectionResourceId";
+   
    private static final int LIST_ITEMS_PER_PAGE = 5;
    
    private DarSearchHandler searchHandler;
@@ -560,6 +565,8 @@ public class DarResourceActionHandler {
       DsSession.getUserCollectionManager().replaceCollection(col);
       DsUtil.hideLabel(ARTC_BUSY);
       DsUtil.showLabel(ARTC_SUCCESS);
+      
+      DsUserHomeScreen.getDarSearchHandler().performDarSearchByUserDate(DsSession.getUser().getUserId(), ((DsHtmlTemplates) AppSettings.templates).getDarSearchResultWidget().getText(), DsUserHomeScreen.generateDarSearchParamPacket());
    }
    
    //handle add to collection submit
@@ -572,7 +579,9 @@ public class DarResourceActionHandler {
          String resourceTitle = DsUtil.getLabelText(ARTC_CONFIRM_RESOURCE_TITLE_HIDDEN);
          String resourceUrl = DsUtil.getLabelText(ARTC_CONFIRM_RESOURCE_URL_HIDDEN);
          String resourceDescription = DsUtil.getLabelText(ARTC_CONFIRM_RESOURCE_DESC);
-         DsESBApi.decalsAddCollectionItem(collectionId,resourceUrl,resourceTitle,resourceDescription, null, "0",new ESBCallback<ESBPacket>() {
+         String resourceId = DsUtil.getLabelText(ARTC_CONFIRM_RESOURCE_ID);
+         
+         DsESBApi.decalsAddCollectionItem(collectionId,resourceId,resourceUrl,resourceTitle,resourceDescription, null, "0",new ESBCallback<ESBPacket>() {
             @Override
             public void onSuccess(ESBPacket result) {       
                handleAddToCollectionResponse(result.get(ESBApi.ESBAPI_RETURN_OBJ).isObject());            
@@ -594,6 +603,7 @@ public class DarResourceActionHandler {
       DsUtil.setLabelText(ARTC_CONFIRM_COL_ID,col.getCollectionId());
       DsUtil.setLabelText(ARTC_CONFIRM_RESOURCE_TITLE_HIDDEN,sr.getTitle());
       DsUtil.setLabelText(ARTC_CONFIRM_RESOURCE_URL_HIDDEN,sr.getUrl());
+      DsUtil.setLabelText(ARTC_CONFIRM_RESOURCE_ID, sr.getId());
       if (sr.getDescription() == null || sr.getDescription().trim().isEmpty()) DsUtil.setLabelText(ARTC_CONFIRM_RESOURCE_DESC,sr.getTitle());         
       else DsUtil.setLabelText(ARTC_CONFIRM_RESOURCE_DESC,sr.getDescription());
       DsUtil.hideLabel(ARTC_PICKLIST);      

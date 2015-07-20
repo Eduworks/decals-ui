@@ -297,7 +297,11 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
    private boolean collectionsViewInitialized = false;
    private boolean groupsInitialized = false;
    
-   private DarSearchHandler darSearchHandler = new DarSearchHandler();
+   private static DarSearchHandler darSearchHandler = new DarSearchHandler();
+   
+   public static DarSearchHandler getDarSearchHandler(){
+	   return darSearchHandler;
+   }
    
    private NavMode currentColNavMode = NavMode.LESS;   
    private Collection currentCollection;
@@ -319,7 +323,7 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
    }
             
    //Generates a SearchHandlerParamPacket with the needed element IDs for an DAR search...so many :(
-   private SearchHandlerParamPacket generateDarSearchParamPacket() {
+   public static SearchHandlerParamPacket generateDarSearchParamPacket() {
       SearchHandlerParamPacket packet = new SearchHandlerParamPacket();
       packet.setResultsContainerId(MCNT_SEARCH_RESULTS_CONTAINER);
       packet.setCounterElementId(MCNT_COUNTER);
