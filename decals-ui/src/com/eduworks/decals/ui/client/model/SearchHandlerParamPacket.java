@@ -115,6 +115,7 @@ public class SearchHandlerParamPacket {
    private String commentContainerId;
    private String commentInputId;
    private String commentBusyId;
+private String competencyListId;
    
    public String getDeleteContentBusyId() {return deleteContentBusyId;}
    public void setDeleteContentBusyId(String deleteContentBusyId) {this.deleteContentBusyId = deleteContentBusyId;}
@@ -424,5 +425,8 @@ public class SearchHandlerParamPacket {
    
    public String getCommentBusyId() {return commentBusyId;}
    public void setCommentBusyId(String commentBusyId) {this.commentBusyId = commentBusyId;}
+
+   public String getEditContentCompetencyListId() { return competencyListId;}
+   public void setEditContentCompetencyListId(String competencyListId) {this.competencyListId = competencyListId;}
       
 }

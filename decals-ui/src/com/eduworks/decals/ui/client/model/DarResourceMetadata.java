@@ -52,6 +52,8 @@ public class DarResourceMetadata {
    private String techRequirements;
    private String isPartOf;
    private String requires;
+   private ArrayList<String> competencyIds;
+   private ArrayList<DarResourceCompetency> competencyList;
    
    public DarResourceMetadata() {}
    
@@ -87,6 +89,10 @@ public class DarResourceMetadata {
       //these need to be sent even if they are empty or else they can never be cleared...probably true for all the values :/     
       jo.put(KEYWORDS_KEY,DsUtil.buildJsonArrayFromStringList(keywords));
       jo.put(OBJECTIVES_KEY,DarResourceObjective.buildJsonArrayFromObjectiveList(objectives));
+      
+      jo.put("competencies_txt", DarResourceCompetency.buildJsonArrayFromCompetencyList(competencyList));
+      jo.put("competencyIds_txt",  DsUtil.buildJsonArrayFromStringList(competencyIds));
+      
       return jo;
    }
 
@@ -203,5 +209,13 @@ public class DarResourceMetadata {
     */
    public String getRequires() {return requires;}
    public void setRequires(String requires) {this.requires = requires;}
+   
+   public ArrayList<DarResourceCompetency> getCompetencyList() { return competencyList; }
+   public void setCompetencyList(ArrayList<DarResourceCompetency> competencyList) { this.competencyList = competencyList; }
+   
+   public ArrayList<String> getCompetencyIds() { return competencyIds; }
+   public void setCompetencyIds(ArrayList<String> competencyIds) { this.competencyIds = competencyIds; }
+   
+   
 
 }

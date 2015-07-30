@@ -28,6 +28,8 @@ public class DecalsApplicationRepositoryRecord extends DarResourceMetadata {
    public static final String PUBLISHED_KEY = "published_t";
    public static final String OLD_TITLE_KEY = "old_title_t";
    
+   public static final String COMPETENCY_LIST_KEY = "competencies_txt";
+   
    private String uploadedBy;
    private long fileSizeBytes;
    private String uploadDateStr;

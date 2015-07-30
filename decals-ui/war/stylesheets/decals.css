@@ -1159,14 +1159,15 @@ body.typing
 /*DECALS isn't currently using the display-objective-list and project-objective-list but I am going to leave it in here for now*/
 
 #editContentObjectivesList li > input {width: 85%;}
-#editContentObjectivesList .delete , #curColObjectivesList .delete{margin-right: 20px;}
+#editContentObjectivesList .delete , #curColObjectivesList .delete, #editContentCompetencyList .delete{margin-right: 20px;}
 
 #editContentObjectivesList .objective,
-#display-objective-list .objective {margin-bottom: 0;}
+#display-objective-list .objective,
+#editContentCompetencyList .competency {margin-bottom: 0;}
 
-#display-objective-list .meta-value {display:block; padding-right: 0px;}
+#display-objective-list .meta-value , #editContentCompetencyList .meta-value {display:block; padding-right: 0px;}
 
-#display-objective-list .meta-value.editable:hover, #curColObjectivesList .meta-value.editable:hover {
+#display-objective-list .meta-value.editable:hover, #curColObjectivesList .meta-value.editable:hover , #editContentCompetencyList .meta-value.editable:hover{
 	cursor: pointer;
 	color: #2A85E8;
 	background: url(../images/icon-edit.png) top right no-repeat;
@@ -1177,16 +1178,19 @@ body.typing
 #display-objective-list .objective.editable,
 #display-objective-list .objective.value,
 #display-objective-list .objective.meta-value,
-#curColObjectivesList.objective.editable, 
+#curColObjectivesList .objective.editable, 
 #curColObjectivesList .objective.value,
-#curColObjectivesList .objective.meta-value,{
+#curColObjectivesList .objective.meta-value,
+#editContentCompetencyList .competency.editable ,
+#editContentCompetencyList .competency.value, 
+#editContentCompetencyList .competency.meta-value{
 	cursor: pointer;
 	font-size: 14px;
 	padding: 0px;
 	margin: 0px;
 }
 
-#editContentObjectivesList li .delete, #curColObjectivesList li .delete {
+#editContentObjectivesList li .delete, #curColObjectivesList li .delete, #editContentCompetencyList li .delete{
 	margin-top:7px;
 	display: none;
 	float:right;
@@ -1199,17 +1203,17 @@ body.typing
 	border-radius: 6px;
 	background: url(../images/btn-delete-idle.png) no-repeat;
 }
-#editContentObjectivesList li:hover .delete, #curColObjectivesList li:hover .delete {display: block;}
-#editContentObjectivesList li .delete:hover, #curColObjectivesList li .delete:hover {background-image: url(../images/btn-delete-over.png); }
+#editContentObjectivesList li:hover .delete, #curColObjectivesList li:hover .delete, #editContentCompetencyList li:hover .delete {display: block;}
+#editContentObjectivesList li .delete:hover, #curColObjectivesList li .delete:hover, #editContentCompetencyList li .delete:hover{background-image: url(../images/btn-delete-over.png); }
 
-#editContentCreateObjectiveWrapper, #editMetadataCreateObjectiveWrapper {
+#editContentCreateObjectiveWrapper, #editMetadataCreateObjectiveWrapper, #editContentAddCompetencyWrapper {
 	margin-top: 10px;
 	padding: 10px;
 	-webkit-border-radius: 6px;
 	border-radius: 6px;
 	background-color: #eee;
 }
-#editContentCreateObjectiveWrapper input, #editMetadataCreateObjectiveWrapper input {width: 100%;}
+#editContentCreateObjectiveWrapper input, #editMetadataCreateObjectiveWrapper input, #editContentAddCompetencyWrapper input{width: 100%;}
 #editContentCreateObjectiveHelp, #editMetadataCreateObjectiveHelp{float: right;}
 #editContentCreateObjectiveHelp img, #editMetadataCreateObjectiveHelp img{ vertical-align: middle; padding-right: 3px;}
 
@@ -1684,4 +1688,13 @@ body.typing
 #userLRSearchResults .flip-container, #userLRSearchResults .flipFront, #userLRSearchResults .flipBack  {
 	width: 30px;
 	height: 30px;
+}
+
+
+/**-------------------------
+	Competency Stuff
+--------------------------**/
+
+#editContentAddCompetency:hover{
+	text-decoration:underline;
 }

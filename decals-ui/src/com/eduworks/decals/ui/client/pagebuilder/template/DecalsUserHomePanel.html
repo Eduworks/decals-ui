@@ -1070,6 +1070,26 @@
 									</div>
 								</div>
 							</div>
+							<div class="row meta">
+								<div class="small-2 columns meta-label">Competencies</div>
+								<div class="small-10 columns">
+									<div id="editContentDisplayCompetencies" class="meta-value">
+										<ul id="editContentCompetencyList" class="objList" ></ul>
+										<span id="editContentAddCompetency" style="cursor:pointer; color: #0066cc;">Align with Competency</span>
+										<div id="editContentAddCompetencyWrapper" style="display: none;">
+											<input id="editContentAddCompetencyUri" type="text" placeholder="Competency URI" value="">	
+											<div id="editCompetencySearching" style="text-align:center;margin-bottom:10px;" class="hidden">
+												<i class="fa fa-circle-o-notch fa-spin"></i>
+												Finding Competency...
+											</div>
+											<input id="editContentAddCompetencyTitle" type="text" class="hidden" disabled="disabled" value="">
+											<input id="editContentAddCompetencyDescription" type="text" class="hidden" disabled="disabled" value="">												
+											<div id="editContentAddCompetencyApply" class="button tiny radius" >Apply</div> 
+											<button id="editContentAddCompetencyCancel" class="tiny radius secondary" onclick="$('#editContentAddCompetencyWrapper').slideUp('slow'); return false;">Cancel</button>  
+										</div>
+									</div>
+								</div>
+							</div>
 							<hr>
 							<div class="row meta">
 								<div class="small-2 columns meta-label">Classification</div>

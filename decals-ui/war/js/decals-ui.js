@@ -450,3 +450,6 @@ function boxedCustomAppJavascript() {
     });
     
 }
+
+
+/*************** Competency Stuff ********************/

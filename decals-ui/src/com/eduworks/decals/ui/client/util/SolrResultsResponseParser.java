@@ -2,6 +2,7 @@ package com.eduworks.decals.ui.client.util;
 
 import java.util.ArrayList;
 
+import com.eduworks.decals.ui.client.model.DarResourceCompetency;
 import com.eduworks.decals.ui.client.model.DarResourceMetadata;
 import com.eduworks.decals.ui.client.model.DarResourceObjective;
 import com.eduworks.decals.ui.client.model.DarSearchResultSetReturn;
@@ -176,6 +177,8 @@ public class SolrResultsResponseParser {
       if (doc.containsKey(DecalsApplicationRepositoryRecord.PUBLISHED_KEY)) sr.setPublished(doc.get(DecalsApplicationRepositoryRecord.PUBLISHED_KEY).isString().stringValue());
 
       if (doc.containsKey(DecalsApplicationRepositoryRecord.OLD_TITLE_KEY)) sr.setOldTitle(doc.get(DecalsApplicationRepositoryRecord.OLD_TITLE_KEY).isString().stringValue());
+      
+      if(doc.containsKey(DecalsApplicationRepositoryRecord.COMPETENCY_LIST_KEY)) sr.setCompetencyList(DarResourceCompetency.buildCompetencyListSolrReturn(doc.get(DecalsApplicationRepositoryRecord.COMPETENCY_LIST_KEY).isArray()));
       
       return sr;
    }

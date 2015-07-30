@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.eduworks.decals.ui.client.DsSession;
 import com.eduworks.decals.ui.client.api.DsESBApi;
 import com.eduworks.decals.ui.client.model.Collection;
+import com.eduworks.decals.ui.client.model.DarResourceCompetency;
 import com.eduworks.decals.ui.client.model.DarResourceMetadata;
 import com.eduworks.decals.ui.client.model.DarResourceObjective;
 import com.eduworks.decals.ui.client.model.DecalsApplicationRepositoryRecord;
@@ -25,6 +26,7 @@ import com.eduworks.gwt.client.net.callback.ESBCallback;
 import com.eduworks.gwt.client.net.callback.EventCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
 import com.eduworks.gwt.client.pagebuilder.PageAssembler;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.NodeList;
@@ -142,6 +144,45 @@ public class DarResourceActionHandler {
       }
    }
    
+   private void buildCompetencyList(DecalsApplicationRepositoryRecord resource){
+	   DsUtil.removeAllChildrenFromElement(paramPacket.getEditContentCompetencyListId());
+	   
+	   if(resource.getCompetencyList() == null || resource.getCompetencyList().size() == 0)return;
+	   
+	   int i = 0;
+	   for(DarResourceCompetency comp : resource.getCompetencyList()){
+		   StringBuffer sb = new StringBuffer();
+		   i++;
+		   
+		   sb.append("<span id=\"compDelete-" + i + "\" title=\"Remove\" class=\"delete\"></span>");
+	       sb.append("<a id=\"compText-" + i + "\" class=\"competency meta-value\" href='"+comp.getCompetencyUri()+"' target='_blank'");
+	       sb.append("title=\"" + comp.getDescription() + "\" data-uri='"+comp.getCompetencyUri()+"'>" + comp.getTitle() + "</pa>");
+	       
+	       HTMLPanel objectivesHtml = new HTMLPanel("li", sb.toString());
+	       objectivesHtml.getElement().setId("comp-"+i);
+	       RootPanel.get(paramPacket.getEditContentCompetencyListId()).add(objectivesHtml);
+	       
+	       final int x = i;
+	       
+	       PageAssembler.attachHandler("compDelete-"+i, Event.ONCLICK, new EventCallback(){
+				@Override
+				public void onEvent(Event event) {
+					DsUtil.slideUpElement(DOM.getElementById("comp-"+x), new Callback<Object, Object>() {
+						@Override
+						public void onFailure(Object reason) {}
+
+						@Override
+						public void onSuccess(Object result) {
+							DOM.getElementById("comp-"+x).removeFromParent();
+						}
+					});
+				}
+		   });
+	       
+	   }
+	   
+   }
+   
    //populate the edit modal fields from the resource data
    private void populateEditModalInfo(DecalsApplicationRepositoryRecord resource) {
       DsUtil.setLabelText(paramPacket.getEditContentResourceIdId(),resource.getId());
@@ -167,6 +208,8 @@ public class DarResourceActionHandler {
       DsUtil.setLabelText(paramPacket.getEditContentTechReqsId(),checkDisplayValue(resource.getTechRequirements()));
       DsUtil.setLabelText(paramPacket.getEditContentPartOfId(),checkDisplayValue(resource.getIsPartOf()));
       DsUtil.setLabelText(paramPacket.getEditContentRequiresId(),checkDisplayValue(resource.getRequires()));
+      
+      buildCompetencyList(resource);
    }
    
    //Retrieves the object element 'token' from the given objective element id...
@@ -192,6 +235,45 @@ public class DarResourceActionHandler {
          else {ret.add(new DarResourceObjective(title,desc));}         
       }
       return ret;
+   }
+   
+   private ArrayList<DarResourceCompetency> parseCompetencyList(){
+	   ArrayList<DarResourceCompetency> ret = new ArrayList<DarResourceCompetency>();
+	   
+	   NodeList<Node> nl = DOM.getElementById(paramPacket.getEditContentCompetencyListId()).getChildNodes();
+	   
+	   String uri;
+	   String title;
+	   String description;
+	   for(int i = 0; i < nl.getLength(); i++){
+		   Element e = ((Element)nl.getItem(i).getLastChild());
+		   if(e.getTagName().equalsIgnoreCase("a")){
+			   uri = e.getAttribute("data-uri");;
+			   title = e.getInnerText();
+			   description = e.getTitle();
+			   
+			   if(title != null && uri != null){
+				   ret.add(new DarResourceCompetency(uri, title, description));
+			   }
+		   }
+	   }
+	   
+	   return ret;
+   }
+   
+   private ArrayList<String> parseCompetencyIds(){
+	   ArrayList<String> ret = new ArrayList<String>();
+	   
+	   NodeList<Node> nl = DOM.getElementById(paramPacket.getEditContentCompetencyListId()).getChildNodes();
+	   
+	   for(int i = 0; i < nl.getLength(); i++){
+		   Element e = ((Element)nl.getItem(i).getLastChild());
+		   if(e.getTagName().equalsIgnoreCase("a")){
+			   ret.add(e.getAttribute("data-uri"));
+		   }
+	   }
+	   
+	   return ret;
    }
    
    //Does a 'Click to edit' check.
@@ -222,6 +304,10 @@ public class DarResourceActionHandler {
       drm.setTechRequirements(checkCTE(DsUtil.getLabelText(paramPacket.getEditContentTechReqsId())));
       drm.setIsPartOf(checkCTE(DsUtil.getLabelText(paramPacket.getEditContentPartOfId())));
       drm.setRequires(checkCTE(DsUtil.getLabelText(paramPacket.getEditContentRequiresId())));
+      
+      drm.setCompetencyList(parseCompetencyList());
+      drm.setCompetencyIds(parseCompetencyIds());
+      
       return drm;
    }
    

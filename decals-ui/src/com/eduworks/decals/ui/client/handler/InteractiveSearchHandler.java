@@ -1415,7 +1415,7 @@ public class InteractiveSearchHandler extends SearchHandler {
    }
    
    //Synchronize the grade level check boxes with the applied values
-   private void synchGradeLevelCheckBoxes() {
+   protected void synchGradeLevelCheckBoxes() {
       applyAllGradeLevelCheckBoxValues(false);
       if (kgGlApplied) DsUtil.applyCheckBoxValue(filterNavGrdLvlKgCbId,true);      
       if (esGlApplied) DsUtil.applyCheckBoxValue(filterNavGrdLvlEsCbId,true);

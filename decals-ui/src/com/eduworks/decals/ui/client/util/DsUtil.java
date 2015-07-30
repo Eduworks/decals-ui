@@ -897,6 +897,14 @@ public class DsUtil {
       return dm;
    }
    
+   public static native JavaScriptObject slideDownElement(com.google.gwt.dom.client.Element e, double duration, Callback cb) /*-{
+			$wnd.$(e).slideDown(duration, function(){
+			if(cb != undefined){
+				cb.@com.google.gwt.core.client.Callback::onSuccess(Ljava/lang/Object;)(undefined);
+			}
+		});
+	}-*/;
+   
    public static native JavaScriptObject slideDownElement(com.google.gwt.dom.client.Element e, Callback cb) /*-{
    		$wnd.$(e).slideDown("slow", function(){
 			if(cb != undefined){
@@ -915,6 +923,22 @@ public class DsUtil {
 
 	public static native JavaScriptObject slideUpElement(com.google.gwt.dom.client.Element e) /*-{
 		return $wnd.$(e).slideUp("slow");
+	}-*/;
+	
+	public static native JavaScriptObject slideUpElement(com.google.gwt.dom.client.Element e, double duration, Callback cb) /*-{
+		return $wnd.$(e).slideUp(duration,  function(){
+			if(cb != undefined){
+				cb.@com.google.gwt.core.client.Callback::onSuccess(Ljava/lang/Object;)(undefined);
+			}
+		});
+	}-*/;
+	
+	public static native JavaScriptObject slideUpElement(com.google.gwt.dom.client.Element e, Callback cb) /*-{
+		return $wnd.$(e).slideUp("slow",  function(){
+			if(cb != undefined){
+				cb.@com.google.gwt.core.client.Callback::onSuccess(Ljava/lang/Object;)(undefined);
+			}
+		});
 	}-*/;
 	
 	public static native JavaScriptObject alert(String str) /*-{

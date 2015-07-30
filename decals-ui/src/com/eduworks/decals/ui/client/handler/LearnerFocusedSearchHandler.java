@@ -503,7 +503,7 @@ public class LearnerFocusedSearchHandler extends InteractiveSearchHandler {
 		updateAppliedGradeLevels();      
 		addAppliedGradeLevelDisplay();
 		ignoreGradeLevelPrefs = true;
-		performLearnerFocusedSolrSearch(searchQuery,RESULTS_PER_PAGE,0,currentSyncId,false);
+		performLearnerFocusedSolrSearch(searchQuery+getAppliedGradeLevelsQueryString(),RESULTS_PER_PAGE,0,currentSyncId,false);
 	}
 	
 	/* Word Disambiguation Handlers */
@@ -685,7 +685,15 @@ public class LearnerFocusedSearchHandler extends InteractiveSearchHandler {
 		addNavAnswer(navAnswerLiId,answerId,item.getName());
 		PageAssembler.attachHandler(answerId,Event.ONCLICK,topicSelectedListener);
 	}
-	   
+	
+	
+	//Display grade level navigation.
+	protected void showGradeLevelNavigation() {
+      super.showGradeLevelNavigation();
+      PageAssembler.attachHandler(filterNavGrdLvlApplyLinkId,Event.ONCLICK,applyGradeLevelListener);
+      super.synchGradeLevelCheckBoxes();
+   }
+	
 	//Add the next set of topic navigation if there are any.  If not, show grade level navigation
 	private void addNextTopicNavigation() {
 		currentNavMode = NavMode.TOPIC;

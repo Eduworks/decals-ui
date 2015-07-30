@@ -30,11 +30,13 @@ import com.eduworks.gwt.client.net.callback.ESBCallback;
 import com.eduworks.gwt.client.net.callback.EventCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
 import com.eduworks.gwt.client.pagebuilder.PageAssembler;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FileUpload;
@@ -371,6 +373,9 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       packet.setEditContentObjectiveDescId(EDIT_CONTENT_OBJ_DESC_PREFIX);
       packet.setEditContentObjectiveDeleteId(EDIT_CONTENT_OBJ_DELETE_PREFIX);
       packet.setEditContentObjectiveTextId(EDIT_CONTENT_OBJ_TEXT_PREFIX);
+      
+      packet.setEditContentCompetencyListId("editContentCompetencyList");
+      
       packet.setPublishContentConfirmModalId(PUBLISH_CONTENT_CONFIRM_MODAL);
       packet.setPublishContentFileNameId(PUBLISH_CONTENT_FILENAME);
       packet.setPublishContentFormId(PUBLISH_CONTENT_FORM);
@@ -1322,9 +1327,150 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       
       PageAssembler.attachHandler(CollectionsViewBuilder.METADATA_EDIT_ENVIRONMENT, Event.ONCHANGE, environmentChangedListener);
       
+      PageAssembler.attachHandler("editContentAddCompetency", Event.ONCLICK, alignCompetencyListener);
+      PageAssembler.attachHandler("editContentAddCompetencyUri", Event.ONCHANGE, competencyUriChangedListener);
+      
       attachGroupHandlers();
       refreshMyContributionSearchResults();      
    }
+   
+   
+   	public static EventCallback competencyUriChangedListener = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {
+			String competencyUri = InputElement.as(DOM.getElementById("editContentAddCompetencyUri")).getValue();
+			
+			if(DOM.getElementById("editContentCompetencyList").getInnerHTML().contains(competencyUri)){
+				DsUtil.alert("Resource is already aligned with this competency");
+				return;
+			}
+			
+			
+			DOM.getElementById("editCompetencySearching").removeClassName("hidden");
+			
+			DsESBApi.decalsGetCompetencyInfo(competencyUri, new ESBCallback<ESBPacket>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					DsUtil.alert("Unable to Find Competency with the URI provided");
+					DOM.getElementById("editCompetencySearching").addClassName("hidden");
+				}
+
+				@Override
+				public void onSuccess(ESBPacket esbPacket) {
+					String title = "";
+					String description = "";
+					
+					for (String id : esbPacket.keySet()){
+						JSONObject competencyObj = esbPacket.get(id).isObject();
+						
+						title = competencyObj.get(":competencyTitle").isArray().get(0).isString().stringValue();
+						description = competencyObj.get(":competencyDescription").isArray().get(0).isString().stringValue();
+					}
+					
+					DOM.getElementById("editContentAddCompetencyTitle").removeClassName("hidden");
+					DOM.getElementById("editCompetencySearching").addClassName("hidden");
+					
+					InputElement.as(DOM.getElementById("editContentAddCompetencyTitle")).setValue(title);
+					InputElement.as(DOM.getElementById("editContentAddCompetencyDescription")).setValue(description);
+					
+					DOM.getElementById("editContentAddCompetencyApply").removeAttribute("disabled");
+					
+					PageAssembler.attachHandler("editContentAddCompetencyApply", Event.ONCLICK, alignCompetencyBtnListener);
+				}
+			});
+		}
+	};
+   
+   public static void startAlignCompetency(){
+	   	DOM.getElementById("editContentAddCompetencyApply").setAttribute("disabled", "disabled");
+	   	DOM.getElementById("editCompetencySearching").addClassName("hidden");
+	   	DOM.getElementById("editContentAddCompetencyTitle").addClassName("hidden");
+	   	
+	   	InputElement.as(DOM.getElementById("editContentAddCompetencyUri")).setValue("");
+	   	InputElement.as(DOM.getElementById("editContentAddCompetencyTitle")).setValue("");
+		
+	   	DsUtil.slideDownElement(DOM.getElementById("editContentAddCompetencyWrapper"), 0.1, new Callback<Object, Object>(){
+			@Override
+			public void onFailure(Object reason) {}
+			
+			@Override
+			public void onSuccess(Object result) {
+				DsUtil.slideUpElement(DOM.getElementById("editContentAddCompetencyWrapper"), 0.1, new Callback<Object, Object>(){
+					@Override
+					public void onFailure(Object reason) {}
+
+					@Override
+					public void onSuccess(Object result) {
+						DsUtil.slideDownElement(DOM.getElementById("editContentAddCompetencyWrapper"), null);
+					}
+				});
+			}
+	   	});	
+	   	
+		
+		PageAssembler.attachHandler("editContentAddCompetencyApply", Event.ONCLICK, alignCompetencyBtnListener);
+   }
+   
+   public static EventCallback alignCompetencyListener = new EventCallback(){
+	   public void onEvent(Event event) {
+			if(DOM.getElementById("editContentAddCompetencyWrapper").getStyle().getDisplay().equals("block")){
+			}else{
+				startAlignCompetency();
+			}
+		}
+   };
+   
+   public static void createCompetencyItem(final String id, String uri, String title, String description){
+	   String item = "<li id='comp-"+id+"'><span id='compDelete-"+id+"' href='#' title='Remove' class='delete' style='cursor:pointer;'></span><a id='compText-" + id +"' class='competency meta-value' title='"+ description +"' data-uri='"+uri+"'  href='"+uri+"' target='_blank'>"+title+"</a></li>";
+	   
+	   DOM.getElementById("editContentCompetencyList").setInnerHTML(DOM.getElementById("editContentCompetencyList").getInnerHTML() + item);
+	   
+	   PageAssembler.attachHandler("compDelete-"+id, Event.ONCLICK, new EventCallback(){
+			@Override
+			public void onEvent(Event event) {
+				DsUtil.slideUpElement(DOM.getElementById("comp-"+id), new Callback<Object, Object>() {
+					@Override
+					public void onFailure(Object reason) {}
+
+					@Override
+					public void onSuccess(Object result) {
+						DOM.getElementById("comp-"+id).removeFromParent();
+						
+					}
+				});
+			}
+	   });
+   }
+   
+   public static EventCallback alignCompetencyBtnListener = new EventCallback(){
+	   public void onEvent(Event event) {
+			if(DOM.getElementById("editContentAddCompetencyWrapper").getStyle().getDisplay().equals("block")){
+				String competencyUri = InputElement.as(DOM.getElementById("editContentAddCompetencyUri")).getValue();
+		
+				if(competencyUri.isEmpty()){
+					return;
+				}
+				
+				String title = InputElement.as(DOM.getElementById("editContentAddCompetencyTitle")).getValue();
+				
+				if(title.isEmpty()){
+					return;
+				}
+				
+				String description = InputElement.as(DOM.getElementById("editContentAddCompetencyDescription")).getValue();
+				
+				String id = (DOM.getElementById("editContentCompetencyList").getChildCount()+1) +"";
+				
+				createCompetencyItem(id, competencyUri, title, description);
+				
+				DsUtil.slideUpElement(DOM.getElementById("editContentAddCompetencyWrapper"));
+			}
+		}
+   };
+   
+   /*
+    * Add Collection Objective Stuff
+    */
    
    public static boolean addingObjective = false;
    
@@ -1377,8 +1523,6 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
    };
    
    public static void cancelAddObjective(){
-	   	InputElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_TITLE_INPUT)).setValue("");
-		InputElement.as(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_DESC_INPUT)).setValue("");
 		DsUtil.slideUpElement(DOM.getElementById(CollectionsViewBuilder.METADATA_EDIT_OBJECTIVES_CONTAINER));
 		addingObjective = false;
    }
