@@ -109,6 +109,14 @@ public class RegistryResourceActionHandler {
    private static final String ADD_SIMILAR_FILE_BTNS = "addSimilarFileBtns";
    
    private static final String ADD_SIMILAR_BUSY = "addSimilarBusy";
+   
+   private static final String FIND_SIMILAR_MODAL = "modalFindSimilar";
+   private static final String FIND_SIMILAR_BTN = "findSimilarBtn";
+   
+   private static final String FIND_SIMILAR_BUSY = "findSimilarBusy";
+   
+   private static final String FIND_SIMILAR_TITLE = "findSimilarResourceTitle";
+   private static final String FIND_SIMILAR_URL = "findSimilarResourceUrl";
   
    
    
@@ -573,13 +581,72 @@ public class RegistryResourceActionHandler {
    }
    
    /**
-    * Adds a add to collection click listener for the given widget ID
+    * Adds a new resource click listener for the given widget ID
     * 
     * @param widgetId The widget ID 
     * @param sr The search result
     */
    public void addNewResourceClickListener(String widgetId, InteractiveSearchResult sr) {
       if (widgetId != null && sr != null) PageAssembler.attachHandler(widgetId,Event.ONCLICK, new NewResourceClickListener(widgetId,sr));
+   }
+   
+   
+   
+   private EventCallback findSimilarHandler = new EventCallback() {
+		@Override
+		public void onEvent(Event event) {
+			DsUtil.showLabel(FIND_SIMILAR_BUSY);
+			
+			String url = DOM.getElementById(FIND_SIMILAR_URL).getInnerText();
+			
+			DsESBApi.findSimilarResources(url, new ESBCallback<ESBPacket>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					DsUtil.hideLabel(FIND_SIMILAR_BUSY);
+					DsUtil.handleFailedApiCall(caught);
+				}
+
+				@Override
+				public void onSuccess(ESBPacket result) {
+					handleNewResourceResponse();
+				}
+			});
+		}
+	};
+   
+   private void handleFindSimilar(String widgetId, InteractiveSearchResult sr) {
+	  result = sr;
+	   
+      DsUtil.setLabelText(FIND_SIMILAR_TITLE,sr.getTitle());
+      DsUtil.setLabelText(FIND_SIMILAR_URL,sr.getResourceUrl());
+
+      PageAssembler.attachHandler(FIND_SIMILAR_BTN, Event.ONCLICK, findSimilarHandler);
+      
+      PageAssembler.openPopup(FIND_SIMILAR_MODAL);
+   }
+   
+   // new resource click event listener
+   private class FindSimilarClickListener extends EventCallback {      
+      private String widgetId;    
+      private InteractiveSearchResult sr;
+      
+      public FindSimilarClickListener(String widgetId, InteractiveSearchResult sr) {
+         this.widgetId = widgetId;
+         this.sr = sr;         
+      }      
+      @Override
+      public void onEvent(Event event) {handleFindSimilar(widgetId,sr);}
+   }
+   
+   
+   /**
+    * Adds an find similar click listener for the given widget ID
+    * 
+    * @param widgetId The widget ID 
+    * @param sr The search result
+    */
+   public void addFindSimilarClickListener(String widgetId, InteractiveSearchResult sr) {
+      if (widgetId != null && sr != null) PageAssembler.attachHandler(widgetId,Event.ONCLICK, new FindSimilarClickListener(widgetId,sr));
    }
    
 }

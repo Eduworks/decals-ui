@@ -76,6 +76,9 @@ public class RegistrySearchResultWidgetGenerator {
    
    private static final String FLIP_NEW_RESOURCE_SUFFIX = "-srFlipNewResource";
    private static final String NEW_RESOURCE_LINK_SUFFIX = "-srNewResourceLink";
+   
+   private static final String FLIP_FIND_SIMILAR_SUFFIX = "-srFlipFindSimilar";
+   private static final String FIND_SIMILAR_LINK_SUFFIX = "-srFindSimilarLink";
 
    private static final String DESC_FULL_STATUS = "full";
    private static final String DESC_SHORT_STATUS = "short";
@@ -388,6 +391,7 @@ public class RegistrySearchResultWidgetGenerator {
       if (!build) return;
       if (!DsSession.userHasModifiableCollections()){ 
     	 DsUtil.hideLabel(token + token + FLIP_ADD_TO_COL_SUFFIX); 
+    	 DsUtil.hideLabel(token + ADD_TO_COL_LINK_SUFFIX);
       }else {
          DOM.getElementById(token + ADD_TO_COL_LINK_SUFFIX).setAttribute(TITLE_ATTR,"Add '" + isr.getTitle() + "' to a collection");
          DOM.getElementById(token + FLIP_ADD_TO_COL_SUFFIX).setAttribute(HOVER_EVENT,getAddToColOnHoverAction(token));      
@@ -416,7 +420,25 @@ public class RegistrySearchResultWidgetGenerator {
       actionHandler.addNewResourceClickListener(token + NEW_RESOURCE_LINK_SUFFIX,isr);
    }
    
-
+   // build the on add to collection on hover action
+   private String getFindSimilarOnHoverAction(String token) {
+      return "document.getElementById('" + token + FIND_SIMILAR_LINK_SUFFIX + "').className='" + FLIPPED_CLASS + "';";
+   }
+   
+   //build the on add to collection on leave action
+   private String getFindSimilarOnLeaveAction(String token) {
+      return "document.getElementById('" + token + FIND_SIMILAR_LINK_SUFFIX + "').className='" + NON_FLIPPED_CLASS + "';";
+   }
+   
+   private void buildFindSimilarWidgets(String token, boolean build, InteractiveSearchResult isr) {
+      if (!build) return;
+      DOM.getElementById(token + FIND_SIMILAR_LINK_SUFFIX).setAttribute(TITLE_ATTR,"Find Similar Resources");
+      DOM.getElementById(token + FLIP_FIND_SIMILAR_SUFFIX).setAttribute(HOVER_EVENT, getFindSimilarOnHoverAction(token));      
+      DOM.getElementById(token + FLIP_FIND_SIMILAR_SUFFIX).setAttribute(LEAVE_EVENT, getFindSimilarOnLeaveAction(token));
+      actionHandler.addFindSimilarClickListener(token + FIND_SIMILAR_LINK_SUFFIX,isr);
+   }
+   
+   
    /**
     * Builds a set of Basic Search result widgets and adds them to the given results container
     * 
@@ -460,6 +482,7 @@ public class RegistrySearchResultWidgetGenerator {
             assignSearchResultWidgetValues(token,isr);
             assignInteractiveSearchResultWidgetValues(token,isr);  
             addRatingAndCommentHandlers(token,isr);
+            buildFindSimilarWidgets(token, buildAddToCollectionWidgets, isr);
             buildNewResourceWidgets(token, buildAddToCollectionWidgets, isr);
             buildAddToCollectionWidgets(token, buildAddToCollectionWidgets,isr);
          }

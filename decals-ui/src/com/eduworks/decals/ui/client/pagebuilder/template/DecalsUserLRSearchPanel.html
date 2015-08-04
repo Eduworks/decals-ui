@@ -141,6 +141,28 @@
 
 <!-- ********************************MODAL DIALOGS******************************** -->
 
+<!-- Find Similar modal -->
+<div id="modalFindSimilar" class="reveal-modal small" data-reveal>
+    <h2><i class="fa fa-files-o"></i> Find Similar Resources</h2>    
+    <div>
+    	<p>
+    		Would you like to find similar resources to 
+    		<span id="findSimilarResourceTitle" style="font-style:italic; font-weight:bold;"></span> 
+    		(<span id="findSimilarResourceUrl" style="font-style:italic; color:#666;"></span>)?
+    	</p>
+		<div id="findSimilarButtons" class="row">
+			<div class="large-12 columns">
+				<button type="button" id="findSimilarBtn" class="small">Find Similar</button>		
+				<button type="button" onclick="$('#modalAddToCollection').foundation('reveal', 'close');" class="small secondary">Cancel</button>
+			</div>
+		</div>
+		<div id="findSimilarBusy" style="display:none" class="row">    	
+			<img src="images/status-busy.gif" style="display:inline"/>
+		</div>	
+	</div>       
+    <a class="close-reveal-modal">&#215;</a>
+</div>
+
 <!-- New Resource modal -->
 <div id="modalNewResource" class="reveal-modal small" data-reveal>
     <h2><i class="fa fa-files-o"></i> Add Similar / Duplicate</h2>    
