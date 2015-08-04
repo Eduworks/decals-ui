@@ -13,6 +13,7 @@ import com.eduworks.decals.ui.client.model.ResourceComment;
 import com.eduworks.decals.ui.client.model.ResourceCommentSummaryInfo;
 import com.eduworks.decals.ui.client.model.SearchHandlerParamPacket;
 import com.eduworks.decals.ui.client.pagebuilder.DecalsScreen;
+import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserLrRSearchScreen;
 import com.eduworks.decals.ui.client.util.CollectionsViewBuilder;
 import com.eduworks.decals.ui.client.util.DsUtil;
 import com.eduworks.decals.ui.client.util.RegistrySearchResultWidgetGenerator;
@@ -590,7 +591,15 @@ public class RegistryResourceActionHandler {
       if (widgetId != null && sr != null) PageAssembler.attachHandler(widgetId,Event.ONCLICK, new NewResourceClickListener(widgetId,sr));
    }
    
-   
+   private void handleFindSimilarResult(ESBPacket result){
+	   PageAssembler.closePopup(FIND_SIMILAR_MODAL);
+	   
+	   DsUtil.hideLabel(FIND_SIMILAR_BUSY);
+	   
+	   DsUtil.scrollToTop(DOM.getElementById("userLRSearchResults"));
+	   
+	   ((DsUserLrRSearchScreen) DsScreenDispatch.getScreen(new DsUserLrRSearchScreen().getScreenName())).userLRSearchHandler.populateFindSimilarResults(result);
+   }
    
    private EventCallback findSimilarHandler = new EventCallback() {
 		@Override
@@ -608,7 +617,7 @@ public class RegistryResourceActionHandler {
 
 				@Override
 				public void onSuccess(ESBPacket result) {
-					handleNewResourceResponse();
+					handleFindSimilarResult(result);
 				}
 			});
 		}

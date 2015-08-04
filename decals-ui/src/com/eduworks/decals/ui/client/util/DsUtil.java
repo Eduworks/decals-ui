@@ -944,5 +944,9 @@ public class DsUtil {
 	public static native JavaScriptObject alert(String str) /*-{
 		return $wnd.alert(str);
 	}-*/;
+	
+	public static native JavaScriptObject scrollToTop(com.google.gwt.dom.client.Element e) /*-{
+		return $wnd.$(e).scrollTop();
+	}-*/;
 
 }

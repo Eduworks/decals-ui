@@ -86,7 +86,7 @@ public class DsUserLrRSearchScreen  extends DecalsScreen {
    
    private static final String ULRS_TYPING = "userLRSearchTyping";
    
-   private LearnerFocusedSearchHandler userLRSearchHandler = new LearnerFocusedSearchHandler();
+   public LearnerFocusedSearchHandler userLRSearchHandler = new LearnerFocusedSearchHandler();
    
    //Generates a SearchHandlerParamPacket with the needed element IDs for an interactive search...so many :(
    private SearchHandlerParamPacket generateSearchParamPacket() {

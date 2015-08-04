@@ -12,6 +12,7 @@ import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserPreferencesScreen;
 import com.eduworks.gwt.client.net.callback.ESBCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
 import com.eduworks.gwt.client.pagebuilder.ScreenDispatch;
+import com.eduworks.gwt.client.pagebuilder.ScreenTemplate;
 
 public class DsScreenDispatch extends ScreenDispatch
 {
@@ -71,4 +72,15 @@ public class DsScreenDispatch extends ScreenDispatch
 	   });
 	   
    }
+   
+   public static ScreenTemplate getScreen(String token){
+		for (int x=history.size()-1;x>-1;x--) {
+			if (history.get(x).token.equals(token)) {
+				if (history.get(x).screen!=null)
+					return history.get(x).screen;
+			}
+		}
+		
+		return null;
+	}
 }

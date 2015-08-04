@@ -865,4 +865,18 @@ public class LearnerFocusedSearchHandler extends InteractiveSearchHandler {
 			catch (Exception e) {}                        
 		}
 	};
+	
+	
+	public void populateFindSimilarResults(ESBPacket result){
+		int currentSyncId = 5;
+		syncId = currentSyncId;
+		
+		int start = 0;
+		
+		if (intSearchResultSet == null) intSearchResultSet = new InteractiveSearchResultSetReturn();
+		if (start == 0) intSearchResultSet.clearSearchResults(); 
+		//if (updateHistory) updateSearchHistory(displayedSearchTerm,query);
+		SolrResultsResponseParser.parseSolrRegistryResponse(result.getObject(ESBApi.ESBAPI_RETURN_OBJ), intSearchResultSet, DsSession.getInstance().getInteractiveSearchThumbnailRootUrl());                                    
+		populateInteractiveResults(start,currentSyncId);
+	}
 }
