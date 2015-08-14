@@ -1289,7 +1289,7 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       PageAssembler.ready(new HTML(getTemplates().getUserHomePanel().getText()));
       PageAssembler.buildContents();
       DsHeaderHandler dhh = new DsHeaderHandler(getDispatcher());
-      dhh.setUpHeader(DsSession.getUser().getFirstName());
+      dhh.setUpHeader(DsSession.getUser().getFirstName(), DsSession.getUser().getEmailAddress());
       PageAssembler.attachHandler(ADD_WEBPAGE_FORM,VALID_EVENT,addWebpageListener);
       PageAssembler.attachHandler(ADD_FILE_BUTTON,Event.ONCLICK,addFileListener);
       PageAssembler.attachHandler(MY_COLLECTIONS_LINK,Event.ONCLICK,gotoMyCollectionsListener);

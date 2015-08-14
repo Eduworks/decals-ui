@@ -32,6 +32,9 @@ public class DsHeaderHandler {
    private static final String HEADER_USER_PREFS = "headerUserPrefs";
    private static final String HEADER_USER_PREFS_DIVIDER = "headerUserPrefsDivider";
    
+   private static final String SEARCH_HEADER_USERNAME = "searchHeaderUsername";
+   private static final String HEADER_USERID = "headerUserId";
+   
    /**
     * DsHeaderHandler constructor
     * 
@@ -128,7 +131,8 @@ public class DsHeaderHandler {
     * @param headerUsernameText The user name to attach
     */
    public void attachUsernameToHeader(String headerUsernameText) {
-      DsUtil.setLabelText(HEADER_USERNAME, headerUsernameText);      
+      DsUtil.setLabelText(HEADER_USERNAME, headerUsernameText);     
+      DsUtil.setLabelText(SEARCH_HEADER_USERNAME, headerUsernameText);
    }
    
    /**
@@ -136,11 +140,17 @@ public class DsHeaderHandler {
     * 
     * @param headerUsernameText The user name to attach to the header
     */
-   public void setUpHeader(String headerUsernameText) {
+   public void setUpHeader(String headerUsernameText, String headerUserId) {
       attachLogoutHandler();
       attachUserPreferencesHandler();
       attachUsernameToHeader(headerUsernameText);
       setUpAdvancedPermissions();
+      
+      attachUserId(headerUserId);
+   }
+   
+   public void attachUserId(String userId){
+	   DsUtil.setLabelText(HEADER_USERID, userId);
    }
 
 }

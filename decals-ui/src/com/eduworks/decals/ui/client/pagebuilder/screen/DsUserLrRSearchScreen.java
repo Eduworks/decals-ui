@@ -221,7 +221,7 @@ public class DsUserLrRSearchScreen  extends DecalsScreen {
       PageAssembler.ready(new HTML(getTemplates().getUserLRSearchPanel().getText()));
       PageAssembler.buildContents();
       DsHeaderHandler dhh = new DsHeaderHandler(getDispatcher());
-      dhh.setUpHeader(DsSession.getUser().getFirstName());
+      dhh.setUpHeader(DsSession.getUser().getFirstName(), DsSession.getUser().getEmailAddress());
       PageAssembler.attachHandler(ULRS_FIELD,Event.ONKEYDOWN,userLRSearchListener);
       PageAssembler.attachHandler(ULRS_HEADER_FIELD,Event.ONKEYDOWN,userLRSearchHeaderListener);
       DsUtil.setFocus(ULRS_FIELD);  

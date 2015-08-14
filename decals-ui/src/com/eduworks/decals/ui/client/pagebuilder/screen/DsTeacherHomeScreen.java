@@ -22,7 +22,7 @@ public class DsTeacherHomeScreen extends DecalsScreen {
       PageAssembler.buildContents();
       DOM.getElementById("teacher").setAttribute("style", "display:block;");
       DsHeaderHandler dhh = new DsHeaderHandler(getDispatcher());
-      dhh.setUpHeader(DsSession.getUser().getFullName());
+      dhh.setUpHeader(DsSession.getUser().getFirstName(), DsSession.getUser().getEmailAddress());
    }
    
    @Override

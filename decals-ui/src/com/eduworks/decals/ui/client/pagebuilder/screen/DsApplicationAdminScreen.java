@@ -443,7 +443,7 @@ public class DsApplicationAdminScreen extends DecalsScreen implements ViewHandle
       PageAssembler.ready(new HTML(getTemplates().getApplicationAdminPanel().getText()));
       PageAssembler.buildContents();
       DsHeaderHandler dhh = new DsHeaderHandler(getDispatcher());
-      dhh.setUpHeader(DsSession.getUser().getFirstName());
+      dhh.setUpHeader(DsSession.getUser().getFirstName(), DsSession.getUser().getEmailAddress());
       PageAssembler.attachHandler(ADMINISTRATORS_LINK,Event.ONCLICK,showAdministratorsListener);
       PageAssembler.attachHandler(PARA_PUB_LINK,Event.ONCLICK,showParaPubListener);
       PageAssembler.attachHandler(DAA_PUBLISH_ALL,Event.ONCLICK,publishAllParadataListener);

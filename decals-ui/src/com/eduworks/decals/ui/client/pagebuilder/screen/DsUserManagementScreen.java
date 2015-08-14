@@ -767,7 +767,7 @@ public class DsUserManagementScreen extends DecalsWithGroupMgmtScreen implements
       PageAssembler.ready(new HTML(getTemplates().getUserManagementPanel().getText()));
       PageAssembler.buildContents();
       DsHeaderHandler dhh = new DsHeaderHandler(getDispatcher());
-      dhh.setUpHeader(DsSession.getUser().getFirstName());
+      dhh.setUpHeader(DsSession.getUser().getFirstName(), DsSession.getUser().getEmailAddress());
       PageAssembler.attachHandler(USERS_LINK,Event.ONCLICK,showUsersListener);
       PageAssembler.attachHandler(USER_MGR_LINK,Event.ONCLICK,showUserManagersListener);      
       PageAssembler.attachHandler(UM_NEW_USER,Event.ONCLICK,addNewUserListener);
