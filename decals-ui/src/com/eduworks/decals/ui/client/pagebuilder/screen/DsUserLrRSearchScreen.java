@@ -28,6 +28,7 @@ public class DsUserLrRSearchScreen  extends DecalsScreen {
    private static final String ULRS_FIELD = "userLRSearchInput";
    private static final String ULRS_HEADER_FIELD = "userLRSearchHeaderInput";
    private static final String ULRS_DIV = "userLRSearch";
+   private static final String ULRS_SEARCH_ICON = "searchIcon";
    
    private static final String ULRS_RESULTS = "userLRSearchResults";
    private static final String ULRS_COUNTER_CONTAINER = "numberOfUserLRSearchResults";
@@ -189,11 +190,19 @@ public class DsUserLrRSearchScreen  extends DecalsScreen {
    protected EventCallback userLRSearchHeaderListener = new EventCallback() {
       @Override
       public void onEvent(Event event) {
-         if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
-            String searchTerm = DsUtil.getTextBoxText(ULRS_HEADER_FIELD).trim();            
-            if (searchTerm == null || searchTerm.isEmpty()) resetInteractiveSearch();
-            else performLRSearch(searchTerm);
-         }
+    	  if(event.getTypeInt() == Event.ONKEYDOWN){
+    		  if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
+	            String searchTerm = DsUtil.getTextBoxText(ULRS_HEADER_FIELD).trim();            
+	            if (searchTerm == null || searchTerm.isEmpty()) resetInteractiveSearch();
+	            else performLRSearch(searchTerm);
+    		  }
+    	  }else if(event.getTypeInt() == Event.ONCLICK){
+    		  String searchTerm = DsUtil.getTextBoxText(ULRS_HEADER_FIELD).trim();            
+    		  if (searchTerm == null || searchTerm.isEmpty()) resetInteractiveSearch();
+	          else performLRSearch(searchTerm);
+    	  }
+    	  
+         
       }
    };
    
@@ -224,6 +233,7 @@ public class DsUserLrRSearchScreen  extends DecalsScreen {
       dhh.setUpHeader(DsSession.getUser().getFirstName(), DsSession.getUser().getEmailAddress());
       PageAssembler.attachHandler(ULRS_FIELD,Event.ONKEYDOWN,userLRSearchListener);
       PageAssembler.attachHandler(ULRS_HEADER_FIELD,Event.ONKEYDOWN,userLRSearchHeaderListener);
+      PageAssembler.attachHandler(ULRS_SEARCH_ICON,Event.ONCLICK,userLRSearchHeaderListener);
       DsUtil.setFocus(ULRS_FIELD);  
       checkForCachedSearch();
    }

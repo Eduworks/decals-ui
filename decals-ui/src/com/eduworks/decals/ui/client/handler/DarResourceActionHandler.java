@@ -113,6 +113,8 @@ public class DarResourceActionHandler {
    public DarResourceActionHandler(DarSearchHandler searchHandler, SearchHandlerParamPacket paramPacket) {
       this.searchHandler = searchHandler;
       this.paramPacket = paramPacket;
+      
+      PageAssembler.removeHandler(paramPacket.getGenMdContentFormId());
       PageAssembler.attachHandler(paramPacket.getEditContentFormId(),DecalsScreen.VALID_EVENT,editContentSubmitListener);
       PageAssembler.attachHandler(paramPacket.getDeleteContentFormId(),DecalsScreen.VALID_EVENT,deleteContentSubmitListener);
       PageAssembler.attachHandler(paramPacket.getGenMdContentFormId(),DecalsScreen.VALID_EVENT,generateMetadataContentSubmitListener);      

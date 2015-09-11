@@ -148,7 +148,8 @@ public class DarSearchHandler extends SearchHandler {
       this.widgetText = widgetText;
       this.userId = userId;
       parseParamPacket(paramPacket);
-      actionHandler = new DarResourceActionHandler(this,paramPacket);
+      if(actionHandler == null)
+    	  actionHandler = new DarResourceActionHandler(this,paramPacket);
       executeNewUserUpdateDateSearch();
    }  
    

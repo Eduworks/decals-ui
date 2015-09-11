@@ -114,14 +114,23 @@
 						</p>				       	
 					</div>	
 				</div>					
-				<div id="currentCollectionContainer" class="row" style="display:none;">					
-					<form id="curColForm" data-abide="ajax">						
+				<div id="currentCollectionContainer" class="row" style="display:none;">									
 						<div class="row">
-							<div class="small-8 columns">
-								<h3><i class="fa fa-suitcase"></i> <span id="curColName" style="font-size: 20px;"></span></h3>
+							<div class="small-6 columns" >
+								<h3>
+									<i class="fa fa-suitcase"></i> 
+									<span id="curColName" style="font-size: 20px;text-overflow: ellipsis;white-space: nowrap;max-width: 90%;overflow: hidden;display: inline-block;"></span>
+								</h3>
 							</div>
-							<div class="small-4 columns" style="margin-top:1em;padding: 0px;">							
+							<div class="small-6 columns" style="margin-top:1em;padding: 0px;">							
 								<ul id="curColModifyButtons" class="button-group radius">
+    								<li style="padding-right:2px">
+    									<form id="curColExportForm" method="post" target="_blank" enctype="multipart/form-data">
+    										<input type="hidden" id="curColSessionId" name="sessionId"/>
+    										<input type="hidden" id="curColId" name="collectionId"/>
+    										<input type="submit" value="TRADEM Export" id="curColExportLink" title="Export Collection in a Package consumable by TRADEM" class="curColButton button secondary"/>
+    									</form>
+    								</li>
     								<li style="padding-right:2px">
     									<button id="curColSaveLink" title="Save collection changes" type="submit" class="curColButton secondary">
 											<i class="fa fa-save"></i> <b>Save</b>
@@ -274,7 +283,6 @@
 								Changes have been made to this collection. Don't forget to save them!
 							</div>
 					 	</div>					 	
-					</form>
 					<div id="curColSaveSuccess" class="row" style="display:none;">
 				 		<div data-alert class="alert-box success round" style="padding:10px 20px; margin: 20px;">
 							Collection saved.

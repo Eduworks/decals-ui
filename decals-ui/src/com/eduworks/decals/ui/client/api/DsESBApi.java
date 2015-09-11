@@ -17,7 +17,7 @@ import com.eduworks.gwt.client.net.MultipartPost;
 import com.eduworks.gwt.client.net.api.ESBApi;
 import com.eduworks.gwt.client.net.callback.ESBCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
-import com.eduworks.gwt.client.pagebuilder.ScreenDispatch;
+import com.eduworks.gwt.client.pagebuilder.screen.ScreenDispatch;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;

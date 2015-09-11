@@ -11,8 +11,8 @@ import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserManagementScreen;
 import com.eduworks.decals.ui.client.pagebuilder.screen.DsUserPreferencesScreen;
 import com.eduworks.gwt.client.net.callback.ESBCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
-import com.eduworks.gwt.client.pagebuilder.ScreenDispatch;
-import com.eduworks.gwt.client.pagebuilder.ScreenTemplate;
+import com.eduworks.gwt.client.pagebuilder.screen.ScreenDispatch;
+import com.eduworks.gwt.client.pagebuilder.screen.ScreenTemplate;
 
 public class DsScreenDispatch extends ScreenDispatch
 {

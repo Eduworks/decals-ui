@@ -67,7 +67,8 @@ public class DsGuestScreen extends DecalsScreen {
    private static final String LOGIN_BUSY = "loginBusy";
    private static final String REGISTRATION_BUSY = "registrationBusy";   
    
-   private static final String BS_FIELD = "basicSearchInput";   
+   private static final String BS_FIELD = "basicSearchInput";  
+   private static final String BS_SEARCH_ICON = "basicSearchIcon";
    private static final String BS_RESULTS = "basicSearchResults";
    private static final String BS_WHATIS = "whatIsThisBasicSearch";
    private static final String BS_COUNTER_CONTAINER = "numberOfBasicSearchResults";
@@ -85,6 +86,8 @@ public class DsGuestScreen extends DecalsScreen {
    
    private static final String IS_FIELD = "interactiveSearchInput";
    private static final String IS_HEADER_FIELD = "interactiveSearchHeaderInput";
+   private static final String IS_HEADER_SEARCH_ICON = "interactiveSearchIcon";
+
    private static final String IS_RESULTS = "interactiveSearchResults";
    private static final String IS_COUNTER_CONTAINER = "numberOfInteractiveSearchResults";
    private static final String IS_COUNTER = "interactiveSearchResultsCounter";
@@ -301,11 +304,17 @@ public class DsGuestScreen extends DecalsScreen {
    protected EventCallback basicSearchListener = new EventCallback() {
       @Override
       public void onEvent(Event event) {
-         if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
-            String basicSearchTerm = DsUtil.getTextBoxText(BS_FIELD).trim();            
-            if (basicSearchTerm == null || basicSearchTerm.trim().isEmpty()) resetBasicSearch();
-            else performBasicSearch(basicSearchTerm);        
-         }
+    	  if(event.getTypeInt() == Event.ONKEYDOWN){
+    		  if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
+    			  String basicSearchTerm = DsUtil.getTextBoxText(BS_FIELD).trim();            
+    			  if (basicSearchTerm == null || basicSearchTerm.trim().isEmpty()) resetBasicSearch();
+    			  else performBasicSearch(basicSearchTerm);        
+    		  }
+    	  }else if (event.getTypeInt() == Event.ONCLICK){
+    		  String basicSearchTerm = DsUtil.getTextBoxText(BS_FIELD).trim();            
+			  if (basicSearchTerm == null || basicSearchTerm.trim().isEmpty()) resetBasicSearch();
+			  else performBasicSearch(basicSearchTerm);
+    	  }
       }
    };
    
@@ -396,11 +405,17 @@ public class DsGuestScreen extends DecalsScreen {
    protected EventCallback interactiveSearchHeaderListener = new EventCallback() {
       @Override
       public void onEvent(Event event) {
-         if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
-            String interactiveSearchTerm = DsUtil.getTextBoxText(IS_HEADER_FIELD).trim();            
-            if (interactiveSearchTerm == null || interactiveSearchTerm.isEmpty()) resetInteractiveSearch();
-            else performInteractiveSearch(interactiveSearchTerm);
-         }
+    	if(event.getTypeInt() == Event.ONKEYDOWN){
+    		if (event.getKeyCode() == KeyCodes.KEY_ENTER) {
+    			String interactiveSearchTerm = DsUtil.getTextBoxText(IS_HEADER_FIELD).trim();            
+    			if (interactiveSearchTerm == null || interactiveSearchTerm.isEmpty()) resetInteractiveSearch();
+    			else performInteractiveSearch(interactiveSearchTerm);
+    		}
+    	}else if(event.getTypeInt() == Event.ONCLICK){
+    		String interactiveSearchTerm = DsUtil.getTextBoxText(IS_HEADER_FIELD).trim();            
+    		if (interactiveSearchTerm == null || interactiveSearchTerm.isEmpty()) resetInteractiveSearch();
+    		else performInteractiveSearch(interactiveSearchTerm);
+    	}
       }
    };
    
@@ -547,7 +562,11 @@ public class DsGuestScreen extends DecalsScreen {
       PageAssembler.attachHandler(REGISTER_FORM,VALID_EVENT,createAccountListener);
       PageAssembler.attachHandler(LOGIN_FORM,VALID_EVENT,loginListener);
       PageAssembler.attachHandler(BS_FIELD,Event.ONKEYDOWN,basicSearchListener);
+      PageAssembler.attachHandler(BS_SEARCH_ICON, Event.ONCLICK, basicSearchListener);
+      
       PageAssembler.attachHandler(IS_HEADER_FIELD,Event.ONKEYDOWN,interactiveSearchHeaderListener);
+      PageAssembler.attachHandler(IS_HEADER_SEARCH_ICON, Event.ONCLICK, interactiveSearchHeaderListener);
+      
       PageAssembler.attachHandler(IS_FIELD,Event.ONKEYDOWN,interactiveSearchListener);
       getAssignmentIdFromQueryString();
       getSearchTypeFromQueryString();

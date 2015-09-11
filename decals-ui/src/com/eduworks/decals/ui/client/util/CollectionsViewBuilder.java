@@ -369,6 +369,7 @@ public class CollectionsViewBuilder {
    //sets up the collection tool bar
    private static void setUpToolBar(Collection col, boolean canModify) {
       DsUtil.setLabelText(CCOL_NAME,col.getName());
+      DOM.getElementById(CCOL_NAME).setTitle(col.getName());
       DsUtil.setLabelText(CCOL_USER_COUNT,"(" + String.valueOf(col.getNumberofUsers()) + ")");
       DsUtil.setLabelText(CCOL_ITEM_COUNT,"(" + String.valueOf(col.getNumberofItems()) + ")");
       DsUtil.setLabelText(CCOL_GROUP_COUNT,"(" + String.valueOf(col.getNumberofGroups()) + ")");

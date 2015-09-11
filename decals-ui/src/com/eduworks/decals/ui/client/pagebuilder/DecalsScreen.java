@@ -1,12 +1,15 @@
 package com.eduworks.decals.ui.client.pagebuilder;
 
+import com.eduworks.decals.ui.client.Decals_ui;
 import com.eduworks.decals.ui.client.DsScreenDispatch;
 import com.eduworks.decals.ui.client.DsSession;
 import com.eduworks.decals.ui.client.pagebuilder.DsHtmlTemplates;
 import com.eduworks.gwt.client.component.AppSettings;
 import com.eduworks.gwt.client.net.callback.ESBCallback;
 import com.eduworks.gwt.client.net.packet.ESBPacket;
-import com.eduworks.gwt.client.pagebuilder.ScreenTemplate;
+import com.eduworks.gwt.client.pagebuilder.modal.ModalDispatch;
+import com.eduworks.gwt.client.pagebuilder.overlay.OverlayDispatch;
+import com.eduworks.gwt.client.pagebuilder.screen.ScreenTemplate;
 
 /**
  * Base screen class.
@@ -21,7 +24,11 @@ public abstract class DecalsScreen extends ScreenTemplate {
    
 	public DsScreenDispatch getDispatcher() {return (DsScreenDispatch) AppSettings.dispatcher;}
 	public DsHtmlTemplates getTemplates() {return (DsHtmlTemplates) AppSettings.templates;}
+	@Override
+	public OverlayDispatch getOverlayDispatcher() {return Decals_ui.overlayDispatcher;}
 
+	@Override
+	public ModalDispatch getModalDispatcher() {return Decals_ui.modalDispatcher;}
 	
 	 protected void validateSession(){
 		   DsSession.getInstance().validateSession(new ESBCallback<ESBPacket>() {

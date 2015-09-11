@@ -32,6 +32,7 @@ import com.eduworks.gwt.client.net.packet.ESBPacket;
 import com.eduworks.gwt.client.pagebuilder.PageAssembler;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.FormElement;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.SelectElement;
@@ -204,6 +205,10 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
    private static final String CCOL_RESET_LINK = "curColResetLink";   
    private static final String CCOL_LIST_NAME = "curColItemList";
    private static final String CCOL_FORM = "curColForm";   
+   private static final String CCOL_EXPORT_FORM = "curColExportForm";
+   private static final String CCOL_EXPORT_FORM_COLLECTION_ID = "curColId";
+   private static final String CCOL_EXPORT_FORM_SESSION = "curColSessionId";
+   
    
    private static final String AC_MODAL = "modalAddCollection";
    private static final String AC_FORM = "addCollectionForm";
@@ -513,7 +518,12 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
          currentCollection.setDescription(DsUtil.getTextAreaText(CCOL_DESC_TEXT_AREA));
       }
    }
-         
+   
+   private void setCollectionExportForm(){
+	   InputElement.as(DOM.getElementById(CCOL_EXPORT_FORM_SESSION)).setValue(DsESBApi.sessionId);
+	   InputElement.as(DOM.getElementById(CCOL_EXPORT_FORM_COLLECTION_ID)).setValue(currentCollection.getCollectionId());
+   }
+   
    //collection selection event listener
    private class SelectCollectionClickListener extends EventCallback {      
       private Collection col;    
@@ -669,6 +679,8 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       if (currentCollection.getNumberofItems() > 0 && currentCollection.sessionUserCanModify()) {
          initCollectionsSortable(CCOL_LIST_NAME);
       }
+      
+      setCollectionExportForm();
    }
       
    //builds the collections view
@@ -880,6 +892,7 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
          });         
       }
    };
+   
       
    //handle add collection response
    private void handleAddCollectionResponse(JSONObject colRes) {
@@ -1317,6 +1330,8 @@ public class DsUserHomeScreen extends DecalsWithGroupMgmtScreen {
       PageAssembler.attachHandler(CCOL_USERS_LINK,Event.ONCLICK,showCollectionUsersListener);
       PageAssembler.attachHandler(CCOL_GROUPS_LINK,Event.ONCLICK,showCollectionGroupsListener);
       PageAssembler.attachHandler(ACG_FORM,VALID_EVENT,addCollectionGroupSubmitHandler);
+      
+      FormElement.as(DOM.getElementById(CCOL_EXPORT_FORM)).setAction(DsESBApi.getESBActionURL("decalsExportTrademPackage"));
       
       PageAssembler.attachHandler(CollectionsViewBuilder.METADATA_TOGGLE_ID, Event.ONCLICK, toggleViewCollectionMetadataListener);
       

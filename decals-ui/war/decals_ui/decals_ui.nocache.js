@@ -292,11 +292,11 @@ function decals_ui(){
   $stats && $stats({moduleName:'decals_ui', sessionId:$sessionId_0, subSystem:'startup', evtGroup:'bootstrap', millis:(new Date).getTime(), type:'selectingPermutation'});
   if (!isHostedMode()) {
     try {
-      unflattenKeylistIntoAnswers(['gecko1_8'], '4C250220D1562159F53A6DC84576EC93');
-      unflattenKeylistIntoAnswers(['ie10'], '6EE86D3261048A23570D791FCF7D08B7');
-      unflattenKeylistIntoAnswers(['safari'], '97D8402E06A328C06D0C9E33ED933302');
-      unflattenKeylistIntoAnswers(['ie8'], 'BD57527A0C24D9A7B8BBA12ECFF44CDF');
-      unflattenKeylistIntoAnswers(['ie9'], 'FB7CCBC7185368A49AD599B7F2097EE0');
+      unflattenKeylistIntoAnswers(['ie8'], '4F5EAD6EAB2A17FE5DE1DD4D45F6A459');
+      unflattenKeylistIntoAnswers(['safari'], '6B5B2FDE68EC59EDCD7E69CC89DB4BDE');
+      unflattenKeylistIntoAnswers(['ie9'], '6D82A801D87B8982D22A4B2FAFCD3FD4');
+      unflattenKeylistIntoAnswers(['gecko1_8'], '8C6118D71C9497D26163BC111EBB7E34');
+      unflattenKeylistIntoAnswers(['ie10'], 'B718FD07FDD0470379462A64B9DEACCD');
       strongName = answers[computePropValue('user.agent')];
       var idx = strongName.indexOf(':');
       if (idx != -1) {
